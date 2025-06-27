@@ -1,2 +1,2 @@
 # CurvNR
-Numerical Relativity using Curvilinear Coordinates
+Numerical Relativity using Curvilinear Coordinates based on CarpetX
