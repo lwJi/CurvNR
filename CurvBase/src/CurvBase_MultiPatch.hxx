@@ -4,6 +4,7 @@ struct PatchMap {
                                                  const void *) = nullptr;
   CCTK_HOST CCTK_DEVICE Coord (*global_to_local)(const Coord &,
                                                  const void *) = nullptr;
+  CCTK_HOST CCTK_DEVICE bool (*is_valid_local)(const Coord &) = nullptr;
 };
 
 struct Patch {
@@ -30,7 +31,7 @@ public:
                                               std::size_t &id_out) const {
     for (std::size_t i = 0; i < count_; ++i) {
       const Coord loc = patches_[i].map.global_to_local(g, patches_[i].meta);
-      if (is_valid_local(loc)) {
+      if (patches_[i].map.is_valid_local(loc)) {
         id_out = i;
         return loc;
       }
@@ -44,9 +45,4 @@ public:
 private:
   Patch patches_[N];
   std::size_t count_;
-
-  CCTK_HOST CCTK_DEVICE static constexpr bool is_valid_local(const Coord &l) {
-    return (l[0] >= -1.1 && l[0] <= 1.1) && (l[1] >= -1.1 && l[1] <= 1.1) &&
-           (l[2] >= -1.1 && l[2] <= 1.1);
-  }
 };
