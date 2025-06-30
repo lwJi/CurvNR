@@ -1,0 +1,61 @@
+
+CCTK_HOST CCTK_DEVICE inline Coord cube_local_to_global(const Coord &l,
+                                                        const void *m) {
+  const auto *p = static_cast<const CubedSphereMeta *>(m);
+  const double xi = l[0], eta = l[1], rho = l[2];
+  const double r = p->r_inner + rho * (p->r_outer - p->r_inner);
+  const double d = std::sqrt(1.0 + xi * xi + eta * eta);
+
+  switch (p->face) {
+  case Face::PX:
+    return {r / d, r * xi / d, r * eta / d};
+  case Face::NX:
+    return {-r / d, -r * xi / d, r * eta / d};
+  case Face::PY:
+    return {-r * xi / d, r / d, r * eta / d};
+  case Face::NY:
+    return {r * xi / d, -r / d, r * eta / d};
+  case Face::PZ:
+    return {r * xi / d, r * eta / d, r / d};
+  case Face::NZ:
+    return {r * xi / d, -r * eta / d, -r / d};
+  }
+  return {0, 0, 0}; // unreachable
+}
+
+CCTK_HOST CCTK_DEVICE inline Coord cube_global_to_local(const Coord &g,
+                                                        const void *m) {
+  const auto *p = static_cast<const CubedSphereMeta *>(m);
+  const double x = g[0], y = g[1], z = g[2];
+  const double r = std::sqrt(sq(x) + sq(y) + sq(z));
+
+  double xi = 0, eta = 0;
+  switch (p->face) {
+  case Face::PX:
+    xi = y / x;
+    eta = z / x;
+    break;
+  case Face::NX:
+    xi = -y / x;
+    eta = z / x;
+    break;
+  case Face::PY:
+    xi = -x / y;
+    eta = z / y;
+    break;
+  case Face::NY:
+    xi = x / y;
+    eta = z / y;
+    break;
+  case Face::PZ:
+    xi = x / z;
+    eta = y / z;
+    break;
+  case Face::NZ:
+    xi = x / z;
+    eta = -y / z;
+    break;
+  }
+  const double rho = (r - p->r_inner) / (p->r_outer - p->r_inner);
+  return {xi, eta, rho};
+}
