@@ -1,4 +1,8 @@
 
+struct SphericalMeta {
+  double r_min, r_max; // inner / outer radius
+};
+
 CCTK_HOST CCTK_DEVICE inline Coord sph_local_to_global(const Coord &l,
                                                        const void *m) {
   const auto *p = static_cast<const SphericalMeta *>(m);

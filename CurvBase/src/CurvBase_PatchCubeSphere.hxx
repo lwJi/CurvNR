@@ -1,4 +1,11 @@
 
+enum class Face { PX, NX, PY, NY, PZ, NZ };
+
+struct CubedSphereMeta {
+  Face face;               // which cube face
+  double r_inner, r_outer; // radial extent of the wedge
+};
+
 CCTK_HOST CCTK_DEVICE inline Coord cube_local_to_global(const Coord &l,
                                                         const void *m) {
   const auto *p = static_cast<const CubedSphereMeta *>(m);
