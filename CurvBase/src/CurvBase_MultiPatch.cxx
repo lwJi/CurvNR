@@ -29,4 +29,7 @@ extern "C" void CurvBase_MultiPatch_Setup() {
 
 extern "C" void CurvBase_MultiPatch_Setup_Coordinates() {
   DECLARE_CCTK_PARAMETERS;
+
+  // access active multipatch system
+  auto& mp = active_mp();
 }
