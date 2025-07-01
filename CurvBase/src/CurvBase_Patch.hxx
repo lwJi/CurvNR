@@ -36,7 +36,9 @@ inline Patch make_sph_patch(double r0, double r1) {
 }
 inline Patch make_wedge(Face f, double r0, double r1) {
   static CubedSphereMeta meta{f, r0, r1};
-  return Patch{{cube_local_to_global, cube_global_to_local, cube_valid}, &meta};
+  return Patch{{cubesphere_local_to_global, cubesphere_global_to_local,
+                cubesphere_valid},
+               &meta};
 }
 
 } // namespace CurvBase
