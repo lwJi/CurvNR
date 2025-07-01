@@ -3,7 +3,7 @@ extern "C" void CurvBase_MultiPatch_Setup() {
   DECLARE_CCTK_PARAMETERS;
 
   {
-    AnyMultiPatch tmp;
+    ActiveMultiPatch tmp;
     tmp.mode = mode;
 
     if (mode == MultiPatchMode::Cartesian) {
