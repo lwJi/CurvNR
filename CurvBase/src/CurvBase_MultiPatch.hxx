@@ -1,18 +1,5 @@
 enum class MultiPatchMode { Cartesian, Spherical, CubeSphere };
 
-struct PatchMap {
-  CCTK_HOST CCTK_DEVICE Coord (*local_to_global)(const Coord &,
-                                                 const void *) = nullptr;
-  CCTK_HOST CCTK_DEVICE Coord (*global_to_local)(const Coord &,
-                                                 const void *) = nullptr;
-  CCTK_HOST CCTK_DEVICE bool (*is_valid_local)(const Coord &) = nullptr;
-};
-
-struct Patch {
-  PatchMap map;
-  void *meta = nullptr;
-};
-
 template <std::size_t N> class MultiPatch {
   Patch patches_[N];
   std::size_t count_;
