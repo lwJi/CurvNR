@@ -24,3 +24,24 @@ CCTK_INT FUNCTION MultiPatch_GetSystemSpecification( \
 PROVIDES FUNCTION MultiPatch_GetSystemSpecification \
   WITH CurvBase_MultiPatch_GetSystemSpecification \
   LANGUAGE C
+
+# Overall size of the domain
+CCTK_INT FUNCTION MultiPatch_GetPatchSpecification2( \
+  CCTK_INT IN patch, \
+  CCTK_INT OUT is_cartesian, \
+  CCTK_INT IN size, \
+  CCTK_INT OUT ARRAY ncells, \
+  CCTK_REAL OUT ARRAY xmin, \
+  CCTK_REAL OUT ARRAY xmax)
+PROVIDES FUNCTION MultiPatch_GetPatchSpecification2 \
+  WITH CurvBase_MultiPatch_GetPatchSpecification \
+  LANGUAGE C
+
+# Patch boundaries
+CCTK_INT FUNCTION MultiPatch_GetBoundarySpecification2( \
+  CCTK_INT IN patch, \
+  CCTK_INT IN size, \
+  CCTK_INT OUT ARRAY is_interpatch_boundary)
+PROVIDES FUNCTION MultiPatch_GetBoundarySpecification2 \
+  WITH CurvBase_MultiPatch_GetBoundarySpecification \
+  LANGUAGE C
