@@ -14,8 +14,8 @@ extern "C" void CurvBase_MultiPatch_Setup() {
     tmp.mp1.add_patch(make_sph_patch(p.r_min, p.r_max));
     break;
 
-  case MultiPatchMode::CubeSphere:
-    // CubeSphere: 6 wedges + central Cartesian at the end
+  case MultiPatchMode::CubedSphere:
+    // CubedSphere: 6 wedges + central Cartesian at the end
     tmp.mp7.add_patch(make_wedge(Face::PX, p.r_min, p.r_max)); // id 0
     tmp.mp7.add_patch(make_wedge(Face::NX, p.r_min, p.r_max)); // id 1
     tmp.mp7.add_patch(make_wedge(Face::PY, p.r_min, p.r_max)); // id 2

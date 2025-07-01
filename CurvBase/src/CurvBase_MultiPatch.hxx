@@ -41,7 +41,7 @@ public:
 // Runtime-selectable patch system
 //------------------------------------------------------------------------------
 
-enum class MultiPatchMode { Cartesian, Spherical, CubeSphere };
+enum class MultiPatchMode { Cartesian, Spherical, CubedSphere };
 
 struct ActiveMultiPatch {
   MultiPatchMode mode{MultiPatchMode::Cartesian};
@@ -54,18 +54,18 @@ struct ActiveMultiPatch {
   ActiveMultiPatch() : mp1{} {} // default single patch
 
   CCTK_HOST CCTK_DEVICE std::size_t size() const {
-    return (mode == MultiPatchMode::CubeSphere) ? mp7.size() : mp1.size();
+    return (mode == MultiPatchMode::CubedSphere) ? mp7.size() : mp1.size();
   }
 
   CCTK_HOST CCTK_DEVICE Coord local_to_global(std::size_t id,
                                               const Coord &l) const {
-    return (mode == MultiPatchMode::CubeSphere) ? mp7.local_to_global(id, l)
-                                                : mp1.local_to_global(id, l);
+    return (mode == MultiPatchMode::CubedSphere) ? mp7.local_to_global(id, l)
+                                                 : mp1.local_to_global(id, l);
   }
 
   CCTK_HOST CCTK_DEVICE Coord global_to_local(const Coord &g,
                                               std::size_t &id_out) const {
-    return (mode == MultiPatchMode::CubeSphere)
+    return (mode == MultiPatchMode::CubedSphere)
                ? mp7.global_to_local(g, id_out)
                : mp1.global_to_local(g, id_out);
   }
