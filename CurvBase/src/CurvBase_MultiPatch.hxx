@@ -1,11 +1,11 @@
 enum class MultiPatchMode { Cartesian, Spherical, CubeSphere };
 
 template <std::size_t N> class MultiPatch {
-  Patch patches_[N];
-  std::size_t count_;
+  Patch patches_[N]{};
+  std::size_t count_{0};
 
 public:
-  CCTK_HOST CCTK_DEVICE MultiPatch() : count_(0) {} // empty by default
+  CCTK_HOST CCTK_DEVICE MultiPatch() = default;
 
   CCTK_HOST CCTK_DEVICE std::size_t add_patch(const Patch &p) {
     return (count_ < N) ? (patches_[count_] = p, count_++) : N;
