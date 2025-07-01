@@ -1,4 +1,7 @@
-enum class MultiPatchMode { Cartesian, Spherical, CubeSphere };
+
+//------------------------------------------------------------------------------
+// Container for a fixed maximum number of patches
+//------------------------------------------------------------------------------
 
 template <std::size_t N> class MultiPatch {
   Patch patches_[N]{};
@@ -34,6 +37,12 @@ public:
   CCTK_HOST CCTK_DEVICE std::size_t size() const { return count_; }
 };
 
+//------------------------------------------------------------------------------
+// Runtime-selectable patch system
+//------------------------------------------------------------------------------
+
+enum class MultiPatchMode { Cartesian, Spherical, CubeSphere };
+
 struct ActiveMultiPatch {
   MultiPatchMode mode{MultiPatchMode::Cartesian};
 
@@ -42,9 +51,8 @@ struct ActiveMultiPatch {
     MultiPatch<7> mp7;
   };
 
-  ActiveMultiPatch() : mp1{} {} // default Cartesian
+  ActiveMultiPatch() : mp1{} {} // default single patch
 
-  // uniform API
   CCTK_HOST CCTK_DEVICE std::size_t size() const {
     return (mode == MultiPatchMode::CubeSphere) ? mp7.size() : mp1.size();
   }
@@ -56,13 +64,15 @@ struct ActiveMultiPatch {
   }
 
   CCTK_HOST CCTK_DEVICE Coord global_to_local(const Coord &g,
-                                              std::size_t &out) const {
-    return (mode == MultiPatchMode::CubeSphere) ? mp7.global_to_local(g, out)
-                                                : mp1.global_to_local(g, out);
+                                              std::size_t &id_out) const {
+    return (mode == MultiPatchMode::CubeSphere)
+               ? mp7.global_to_local(g, id_out)
+               : mp1.global_to_local(g, id_out);
   }
 };
 
+// Singleton access (thread-safe since C++11)
 inline ActiveMultiPatch &active_mp() {
-  static ActiveMultiPatch holder; // Thread-safe in C++11
+  static ActiveMultiPatch holder;
   return holder;
 }
