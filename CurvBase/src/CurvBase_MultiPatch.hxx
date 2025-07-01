@@ -14,6 +14,10 @@ public:
     return (count_ < N) ? (patches_[count_] = p, count_++) : N;
   }
 
+  CCTK_HOST CCTK_DEVICE const Patch *get_patch(std::size_t id) const noexcept {
+    return (id < count_) ? &patches_[id] : nullptr;
+  }
+
   CCTK_HOST CCTK_DEVICE Coord local_to_global(std::size_t id,
                                               const Coord &l) const {
     return (id < count_)

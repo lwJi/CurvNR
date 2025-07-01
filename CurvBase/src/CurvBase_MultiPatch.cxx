@@ -54,18 +54,21 @@ extern "C" CCTK_INT CurvBase_MultiPatch_GetPatchSpecification(
     const CCTK_INT size, CCTK_INT *restrict const ncells,
     CCTK_REAL *restrict const xmin, CCTK_REAL *restrict const xmax) {
   auto &mp = active_mp();
-  assert(ipatch >= 0 && ipatch < static_cast<CCTK_INT>(mp.size()));
-  assert(size == dim);
-  const Patch &patch = mp.get_patch(static_cast<std::size_t>(ipatch));
 
-  if (is_cartesian != nullptr) {
-    *is_cartesian = static_cast<CCTK_INT>(patch.is_cartesian);
+  assert(size == dim);
+  assert(ipatch >= 0 && ipatch < static_cast<CCTK_INT>(mp.size()));
+
+  const Patch *patch = mp.get_patch(static_cast<std::size_t>(ipatch));
+  assert(patch != nullptr);
+
+  if (is_cartesian) {
+    *is_cartesian = patch->is_cartesian ? 1 : 0;
   }
 
   for (int d = 0; d < dim; ++d) {
-    ncells[d] = patch.ncells[d];
-    xmin[d] = patch.xmin[d];
-    xmax[d] = patch.xmax[d];
+    ncells[d] = patch->ncells[d];
+    xmin[d] = patch->xmin[d];
+    xmax[d] = patch->xmax[d];
   }
 
   return 0;
