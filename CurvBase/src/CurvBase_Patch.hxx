@@ -5,7 +5,7 @@
 #include <cmath>
 
 #include "CurvBase_PatchCartesian.hxx"
-#include "CurvBase_PatchCubeSphere.hxx"
+#include "CurvBase_PatchCubedSphere.hxx"
 #include "CurvBase_PatchSpherical.hxx"
 
 namespace CurvBase {
