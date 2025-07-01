@@ -1,3 +1,7 @@
+#ifndef CURVBASE_PATCHSPHERICAL
+#define CURVBASE_PATCHSPHERICAL
+
+namespace CurvBase {
 
 struct SphericalMeta {
   double r_min, r_max; // inner / outer radius
@@ -28,3 +32,7 @@ CCTK_HOST CCTK_DEVICE inline bool sph_valid(const Coord &l) {
   return (l[0] >= 0 && l[0] <= 1) && (l[1] >= 0 && l[1] <= 2 * M_PI) &&
          (l[2] >= 0 && l[2] <= M_PI);
 }
+
+} // namespace CurvBase
+
+#endif // #ifndef CURVBASE_PATCHSPHERICAL

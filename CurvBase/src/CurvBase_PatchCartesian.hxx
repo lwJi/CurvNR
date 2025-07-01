@@ -1,3 +1,7 @@
+#ifndef CURVBASE_PATCHCARTESIAN
+#define CURVBASE_PATCHCARTESIAN
+
+namespace CurvBase {
 
 struct CartesianMeta {};
 
@@ -12,3 +16,7 @@ CCTK_HOST CCTK_DEVICE inline Coord cart_global_to_local(const Coord &g,
 }
 
 CCTK_HOST CCTK_DEVICE inline bool cart_valid(const Coord &) { return true; }
+
+} // namespace CurvBase
+
+#endif // #ifndef CURVBASE_PATCHCARTESIAN

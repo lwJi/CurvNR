@@ -1,3 +1,7 @@
+#ifndef CURVBASE_PATCHCUBEDSPHERE
+#define CURVBASE_PATCHCUBEDSPHERE
+
+namespace CurvBase {
 
 enum class Face { PX, NX, PY, NY, PZ, NZ };
 
@@ -71,3 +75,7 @@ CCTK_HOST CCTK_DEVICE inline bool cubesphere_valid(const Coord &l) {
   return (l[0] >= -1 && l[0] <= 1) && (l[1] >= -1 && l[1] <= 1) &&
          (l[2] >= 0 && l[2] <= 1);
 }
+
+} // namespace CurvBase
+
+#endif // #ifndef CURVBASE_PATCHCUBEDSPHERE
