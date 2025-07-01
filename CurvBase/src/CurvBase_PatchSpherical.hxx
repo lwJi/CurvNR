@@ -13,6 +13,7 @@ CCTK_HOST CCTK_DEVICE inline Coord sph_local_to_global(const Coord &l,
   return {r * std::sin(phi) * std::cos(theta),
           r * std::sin(phi) * std::sin(theta), r * std::cos(phi)};
 }
+
 CCTK_HOST CCTK_DEVICE inline Coord sph_global_to_local(const Coord &g,
                                                        const void *m) {
   const auto *p = static_cast<const SphericalMeta *>(m);
@@ -21,4 +22,9 @@ CCTK_HOST CCTK_DEVICE inline Coord sph_global_to_local(const Coord &g,
   return {(r - p->r_min) / (p->r_max - p->r_min), // ρ
           std::atan2(y, x),                       // theta
           std::acos(z / r)};                      // phi
+}
+
+CCTK_HOST CCTK_DEVICE inline bool sph_valid(const Coord &l) {
+  return (l[0] >= 0 && l[0] <= 1) && (l[1] >= 0 && l[1] <= 2 * M_PI) &&
+         (l[2] >= 0 && l[2] <= M_PI);
 }
