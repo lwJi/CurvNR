@@ -13,6 +13,9 @@ struct Patch {
 };
 
 template <std::size_t N> class MultiPatch {
+  Patch patches_[N];
+  std::size_t count_;
+
 public:
   CCTK_HOST CCTK_DEVICE MultiPatch() : count_(0) {} // empty by default
 
@@ -41,8 +44,4 @@ public:
   }
 
   CCTK_HOST CCTK_DEVICE std::size_t size() const { return count_; }
-
-private:
-  Patch patches_[N];
-  std::size_t count_;
 };
