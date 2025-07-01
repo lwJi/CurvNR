@@ -26,3 +26,7 @@ extern "C" void CurvBase_MultiPatch_Setup() {
     active_mp() = tmp; // move into the global store
   }
 }
+
+extern "C" void CurvBase_MultiPatch_Setup_Coordinates() {
+  DECLARE_CCTK_PARAMETERS;
+}
