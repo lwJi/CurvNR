@@ -78,12 +78,19 @@ extern "C" CCTK_INT CurvBase_MultiPatch_GetBoundarySpecification(
     const CCTK_INT ipatch, const CCTK_INT size,
     CCTK_INT *restrict const is_interpatch_boundary) {
   auto &mp = active_mp();
-  assert(ipatch >= 0 && ipatch < static_cast<CCTK_INT>(mp.size()));
+
   assert(size == 2 * dim);
-  const Patch &patch = mp.get_patch(static_cast<std::size_t>(ipatch));
-  for (int f = 0; f < 2; ++f)
-    for (int d = 0; d < dim; ++d)
-      is_interpatch_boundary[2 * d + f] = !patch.faces[f][d].is_outer_boundary;
+  assert(ipatch >= 0 && ipatch < static_cast<CCTK_INT>(mp.size()));
+
+  const Patch *patch = mp.get_patch(static_cast<std::size_t>(ipatch));
+  assert(patch != nullptr);
+
+  for (int d = 0; d < dim; ++d) {
+    is_interpatch_boundary[2 * d + 0] =
+        patch->faces[0][d].is_outer_boundary ? 0 : 1;
+    is_interpatch_boundary[2 * d + 1] =
+        patch->faces[1][d].is_outer_boundary ? 0 : 1;
+  }
 
   return 0;
 }
