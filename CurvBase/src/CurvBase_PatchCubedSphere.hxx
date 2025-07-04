@@ -10,8 +10,8 @@ struct CubedSphereMeta {
   double r_inner, r_outer; // radial extent of the wedge
 };
 
-CCTK_HOST CCTK_DEVICE inline Coord cubedsphere_local_to_global(const Coord &l,
-                                                               const void *m) {
+CCTK_HOST CCTK_DEVICE inline Coord cubedsphere_l2g(const Coord &l,
+                                                   const void *m) {
   const auto *p = static_cast<const CubedSphereMeta *>(m);
   const double xi = l[0], eta = l[1], rho = l[2];
   const double r = p->r_inner + rho * (p->r_outer - p->r_inner);
@@ -34,8 +34,8 @@ CCTK_HOST CCTK_DEVICE inline Coord cubedsphere_local_to_global(const Coord &l,
   return {0, 0, 0}; // unreachable
 }
 
-CCTK_HOST CCTK_DEVICE inline Coord cubedsphere_global_to_local(const Coord &g,
-                                                               const void *m) {
+CCTK_HOST CCTK_DEVICE inline Coord cubedsphere_g2l(const Coord &g,
+                                                   const void *m) {
   const auto *p = static_cast<const CubedSphereMeta *>(m);
   const double x = g[0], y = g[1], z = g[2];
   const double r = std::sqrt(sq(x) + sq(y) + sq(z));

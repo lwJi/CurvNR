@@ -7,8 +7,7 @@ struct SphericalMeta {
   double r_min, r_max; // inner / outer radius
 };
 
-CCTK_HOST CCTK_DEVICE inline Coord sph_local_to_global(const Coord &l,
-                                                       const void *m) {
+CCTK_HOST CCTK_DEVICE inline Coord sph_l2g(const Coord &l, const void *m) {
   const auto *p = static_cast<const SphericalMeta *>(m);
   const double rho = l[0];   // [0,1]
   const double theta = l[1]; // [0,2π]
@@ -18,8 +17,7 @@ CCTK_HOST CCTK_DEVICE inline Coord sph_local_to_global(const Coord &l,
           r * std::sin(phi) * std::sin(theta), r * std::cos(phi)};
 }
 
-CCTK_HOST CCTK_DEVICE inline Coord sph_global_to_local(const Coord &g,
-                                                       const void *m) {
+CCTK_HOST CCTK_DEVICE inline Coord sph_g2l(const Coord &g, const void *m) {
   const auto *p = static_cast<const SphericalMeta *>(m);
   const double x = g[0], y = g[1], z = g[2];
   const double r = std::sqrt(sq(x) + sq(y) + sq(z));

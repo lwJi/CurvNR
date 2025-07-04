@@ -18,18 +18,14 @@ public:
     return (id < count_) ? &patches_[id] : nullptr;
   }
 
-  CCTK_HOST CCTK_DEVICE Coord local_to_global(std::size_t id,
-                                              const Coord &l) const {
-    return (id < count_)
-               ? patches_[id].map.local_to_global(l, patches_[id].meta_ptr())
-               : Coord{0, 0, 0};
+  CCTK_HOST CCTK_DEVICE Coord l2g(std::size_t id, const Coord &l) const {
+    return (id < count_) ? patches_[id].map.l2g(l, patches_[id].meta_ptr())
+                         : Coord{0, 0, 0};
   }
 
-  CCTK_HOST CCTK_DEVICE Coord global_to_local(const Coord &g,
-                                              std::size_t &id_out) const {
+  CCTK_HOST CCTK_DEVICE Coord g2l(const Coord &g, std::size_t &id_out) const {
     for (std::size_t i = 0; i < count_; ++i) {
-      const Coord loc =
-          patches_[i].map.global_to_local(g, patches_[i].meta_ptr());
+      const Coord loc = patches_[i].map.g2l(g, patches_[i].meta_ptr());
       if (patches_[i].map.is_valid_local(loc)) {
         id_out = i;
         return loc;
@@ -58,16 +54,12 @@ struct ActiveMultiPatch {
     return std::visit([](auto const &m) { return m.size(); }, mp);
   }
 
-  CCTK_HOST CCTK_DEVICE Coord local_to_global(std::size_t id,
-                                              const Coord &l) const {
-    return std::visit([&](auto const &m) { return m.local_to_global(id, l); },
-                      mp);
+  CCTK_HOST CCTK_DEVICE Coord l2g(std::size_t id, const Coord &l) const {
+    return std::visit([&](auto const &m) { return m.l2g(id, l); }, mp);
   }
 
-  CCTK_HOST CCTK_DEVICE Coord global_to_local(const Coord &g,
-                                              std::size_t &id_out) const {
-    return std::visit(
-        [&](auto const &m) { return m.global_to_local(g, id_out); }, mp);
+  CCTK_HOST CCTK_DEVICE Coord g2l(const Coord &g, std::size_t &id_out) const {
+    return std::visit([&](auto const &m) { return m.g2l(g, id_out); }, mp);
   }
 
   // activate the 1-patch or 7-patch variant

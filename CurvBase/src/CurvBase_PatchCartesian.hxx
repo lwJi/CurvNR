@@ -5,13 +5,11 @@ namespace CurvBase {
 
 struct CartesianMeta {};
 
-CCTK_HOST CCTK_DEVICE inline Coord cart_local_to_global(const Coord &l,
-                                                        const void *) {
+CCTK_HOST CCTK_DEVICE inline Coord cart_l2g(const Coord &l, const void *) {
   return l;
 }
 
-CCTK_HOST CCTK_DEVICE inline Coord cart_global_to_local(const Coord &g,
-                                                        const void *) {
+CCTK_HOST CCTK_DEVICE inline Coord cart_g2l(const Coord &g, const void *) {
   return g;
 }
 
