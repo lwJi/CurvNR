@@ -47,33 +47,46 @@ public:
 //------------------------------------------------------------------------------
 
 enum class MultiPatchMode { Cartesian, Spherical, CubedSphere };
+using MP1 = MultiPatch<1>;
+using MP7 = MultiPatch<7>;
 
 struct ActiveMultiPatch {
   MultiPatchMode mode{MultiPatchMode::Cartesian};
+  std::variant<MP1, MP7> mp{MP1{}}; // default = single patch
 
-  union {
-    MultiPatch<1> mp1;
-    MultiPatch<7> mp7;
-  };
-
-  ActiveMultiPatch() : mp1{} {} // default single patch
-
-  CCTK_HOST CCTK_DEVICE std::size_t size() const {
-    return (mode == MultiPatchMode::CubedSphere) ? mp7.size() : mp1.size();
+  CCTK_HOST CCTK_DEVICE std::size_t size() const noexcept {
+    return std::visit([](auto const &m) { return m.size(); }, mp);
   }
 
   CCTK_HOST CCTK_DEVICE Coord local_to_global(std::size_t id,
                                               const Coord &l) const {
-    return (mode == MultiPatchMode::CubedSphere) ? mp7.local_to_global(id, l)
-                                                 : mp1.local_to_global(id, l);
+    return std::visit([&](auto const &m) { return m.local_to_global(id, l); },
+                      mp);
   }
 
   CCTK_HOST CCTK_DEVICE Coord global_to_local(const Coord &g,
                                               std::size_t &id_out) const {
-    return (mode == MultiPatchMode::CubedSphere)
-               ? mp7.global_to_local(g, id_out)
-               : mp1.global_to_local(g, id_out);
+    return std::visit(
+        [&](auto const &m) { return m.global_to_local(g, id_out); }, mp);
   }
+
+  // activate the 1-patch or 7-patch variant
+  void select_cartesian() {
+    mp.emplace<MP1>();
+    mode = MultiPatchMode::Cartesian;
+  }
+  void select_spherical() {
+    mp.emplace<MP1>();
+    mode = MultiPatchMode::Spherical;
+  }
+  void select_cubedsphere() {
+    mp.emplace<MP7>();
+    mode = MultiPatchMode::CubedSphere;
+  }
+
+  // expose references if needed (host-only helpers, no device qualifier)
+  MP1 &get_mp1() { return std::get<MP1>(mp); }
+  MP7 &get_mp7() { return std::get<MP7>(mp); }
 };
 
 // Singleton access (thread-safe since C++11)

@@ -3,37 +3,38 @@ extern "C" void CurvBase_MultiPatch_Setup() {
   DECLARE_CCTK_PARAMETERS;
 
   ActiveMultiPatch tmp;
-  tmp.mode = mode;
 
   switch (mode) {
   case MultiPatchMode::Cartesian:
-    tmp.mp1.add_patch(make_cart_patch());
+    tmp.select_cartesian();
+    tmp.get_mp1().add_patch(make_cart_patch());
     break;
 
   case MultiPatchMode::Spherical:
-    const CCTK_REAL r_min = spherical_rmin;
-    const CCTK_REAL r_max = spherical_rmax;
-    tmp.mp1.add_patch(make_sph_patch(r_min, r_max));
+    tmp.select_spherical();
+    tmp.get_mp1().add_patch(make_sph_patch(spherical_rmin, spherical_rmax));
     break;
 
   case MultiPatchMode::CubedSphere:
-    const CCTK_REAL r_min = cubedsphere_rmin;
-    const CCTK_REAL r_max = cubedsphere_rmax;
-    // CubedSphere: 6 wedges + central Cartesian at the end
-    tmp.mp7.add_patch(make_wedge(Face::PX, r_min, r_max)); // id 0
-    tmp.mp7.add_patch(make_wedge(Face::NX, r_min, r_max)); // id 1
-    tmp.mp7.add_patch(make_wedge(Face::PY, r_min, r_max)); // id 2
-    tmp.mp7.add_patch(make_wedge(Face::NY, r_min, r_max)); // id 3
-    tmp.mp7.add_patch(make_wedge(Face::PZ, r_min, r_max)); // id 4
-    tmp.mp7.add_patch(make_wedge(Face::NZ, r_min, r_max)); // id 5
-    tmp.mp7.add_patch(make_cart_patch());                  // id 6 (core)
+    tmp.select_cubedsphere();
+    {
+      auto &mp7 = tmp.get_mp7();
+      const CCTK_REAL r0 = cubedsphere_rmin, r1 = cubedsphere_rmax;
+      mp7.add_patch(make_wedge(Face::PX, r0, r1));
+      mp7.add_patch(make_wedge(Face::NX, r0, r1));
+      mp7.add_patch(make_wedge(Face::PY, r0, r1));
+      mp7.add_patch(make_wedge(Face::NY, r0, r1));
+      mp7.add_patch(make_wedge(Face::PZ, r0, r1));
+      mp7.add_patch(make_wedge(Face::NZ, r0, r1));
+      mp7.add_patch(make_cart_patch()); // core
+    }
     break;
 
   default:
     CCTK_VERROR("Unknown multi-patch system \"%s\"", patch_system);
   }
 
-  active_mp() = tmp; // move into the global store
+  active_mp() = tmp; // plain struct copy: variant knows which alt is active
 }
 
 extern "C" void CurvBase_MultiPatch_Setup_Coordinates() {
