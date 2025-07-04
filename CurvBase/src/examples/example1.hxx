@@ -144,6 +144,8 @@ struct Patch {
   std::array<CCTK_REAL, dim> xmax{};  // upper physical bounds
 
   std::array<std::array<FaceInfo, dim>, 2> faces{};
+
+  bool is_cartesian;
 };
 
 //------------------------------------------------------------------------------
@@ -266,18 +268,22 @@ extern "C" void CurvBase_MultiPatch_Setup() {
     break;
 
   case MultiPatchMode::Spherical:
-    tmp.mp1.add_patch(make_sph_patch(p.r_min, p.r_max));
+    const CCTK_REAL r_min = spherical_rmin;
+    const CCTK_REAL r_max = spherical_rmax;
+    tmp.mp1.add_patch(make_sph_patch(r_min, r_max));
     break;
 
   case MultiPatchMode::CubedSphere:
+    const CCTK_REAL r_min = cubedsphere_rmin;
+    const CCTK_REAL r_max = cubedsphere_rmax;
     // CubedSphere: 6 wedges + central Cartesian at the end
-    tmp.mp7.add_patch(make_wedge(Face::PX, p.r_min, p.r_max)); // id 0
-    tmp.mp7.add_patch(make_wedge(Face::NX, p.r_min, p.r_max)); // id 1
-    tmp.mp7.add_patch(make_wedge(Face::PY, p.r_min, p.r_max)); // id 2
-    tmp.mp7.add_patch(make_wedge(Face::NY, p.r_min, p.r_max)); // id 3
-    tmp.mp7.add_patch(make_wedge(Face::PZ, p.r_min, p.r_max)); // id 4
-    tmp.mp7.add_patch(make_wedge(Face::NZ, p.r_min, p.r_max)); // id 5
-    tmp.mp7.add_patch(make_cart_patch());                      // id 6 (core)
+    tmp.mp7.add_patch(make_wedge(Face::PX, r_min, r_max)); // id 0
+    tmp.mp7.add_patch(make_wedge(Face::NX, r_min, r_max)); // id 1
+    tmp.mp7.add_patch(make_wedge(Face::PY, r_min, r_max)); // id 2
+    tmp.mp7.add_patch(make_wedge(Face::NY, r_min, r_max)); // id 3
+    tmp.mp7.add_patch(make_wedge(Face::PZ, r_min, r_max)); // id 4
+    tmp.mp7.add_patch(make_wedge(Face::NZ, r_min, r_max)); // id 5
+    tmp.mp7.add_patch(make_cart_patch());                  // id 6 (core)
     break;
 
   default:
@@ -300,7 +306,7 @@ extern "C" void CurvBase_MultiPatch_Setup_Coordinates() {
 
 extern "C" CCTK_INT
 CurvBase_MultiPatch_GetSystemSpecification(CCTK_INT *restrict const npatches) {
-  *npatches = *npatches = static_cast<CCTK_INT>(active_mp().size());
+  *npatches = static_cast<CCTK_INT>(active_mp().size());
   return 0;
 }
 
