@@ -51,6 +51,7 @@ inline Patch make_cart_patch() {
   Patch p;
   p.map = {cart_local_to_global, cart_global_to_local, cart_valid};
   p.meta = CartesianMeta{}; // active alt set
+  p.is_cartesian = true;
   return p;
 }
 
@@ -58,6 +59,7 @@ inline Patch make_sph_patch(CCTK_REAL r0, CCTK_REAL r1) {
   Patch p;
   p.map = {sph_local_to_global, sph_global_to_local, sph_valid};
   p.meta = SphericalMeta{r0, r1};
+  p.is_cartesian = false;
   return p;
 }
 
@@ -66,6 +68,7 @@ inline Patch make_wedge(Face f, CCTK_REAL r0, CCTK_REAL r1) {
   p.map = {cubedsphere_local_to_global, cubedsphere_global_to_local,
            cubedsphere_valid};
   p.meta = CubedSphereMeta{f, r0, r1};
+  p.is_cartesian = false;
   return p;
 }
 
