@@ -41,7 +41,7 @@ struct Patch {
 
   std::array<std::array<FaceInfo, dim>, 2> faces{};
 
-  bool is_cartesian;
+  bool is_cartesian{false};
 };
 
 //------------------------------------------------------------------------------
