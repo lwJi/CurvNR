@@ -133,7 +133,7 @@ struct Patch {
   std::variant<CartesianMeta, SphericalMeta, CubedSphereMeta> meta{};
 
   // helper: return pointer to the **concrete** meta inside the variant
-  CCTK_HOST CCTK_DEVICE const void *meta_ptr() const noexcept {
+  CCTK_HOST const void *meta_ptr() const noexcept {
     return std::visit([](auto const &m) -> const void * { return &m; }, meta);
   }
 
@@ -145,7 +145,7 @@ struct Patch {
 
   std::array<std::array<FaceInfo, dim>, 2> faces{};
 
-  bool is_cartesian;
+  bool is_cartesian{false};
 };
 
 //------------------------------------------------------------------------------
