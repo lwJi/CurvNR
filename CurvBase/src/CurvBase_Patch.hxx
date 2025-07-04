@@ -40,6 +40,8 @@ struct Patch {
   std::array<CCTK_REAL, dim> xmax{};  // upper physical bounds
 
   std::array<std::array<FaceInfo, dim>, 2> faces{};
+
+  bool is_cartesian;
 };
 
 //------------------------------------------------------------------------------
