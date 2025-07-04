@@ -129,8 +129,15 @@ struct FaceInfo {
 };
 
 struct Patch {
+  // metadata container
+  std::variant<CartesianMeta, SphericalMeta, CubedSphereMeta> meta{};
+
+  // helper: return pointer to the **concrete** meta inside the variant
+  CCTK_HOST CCTK_DEVICE const void *meta_ptr() const noexcept {
+    return std::visit([](auto const &m) -> const void * { return &m; }, meta);
+  }
+
   PatchMap map{};
-  void *meta{nullptr};
 
   std::array<CCTK_INT, dim> ncells{}; // cells per dimension
   std::array<CCTK_REAL, dim> xmin{};  // lower physical bounds
@@ -139,20 +146,29 @@ struct Patch {
   std::array<std::array<FaceInfo, dim>, 2> faces{};
 };
 
+//------------------------------------------------------------------------------
 // Helpers that create individual Patch objects
+//------------------------------------------------------------------------------
 inline Patch make_cart_patch() {
-  static CartesianMeta meta{};
-  return Patch{{cart_local_to_global, cart_global_to_local, cart_valid}, &meta};
+  Patch p;
+  p.map = {cart_local_to_global, cart_global_to_local, cart_valid};
+  p.meta = CartesianMeta{}; // active alt set
+  return p;
 }
+
 inline Patch make_sph_patch(CCTK_REAL r0, CCTK_REAL r1) {
-  static SphericalMeta meta{r0, r1};
-  return Patch{{sph_local_to_global, sph_global_to_local, sph_valid}, &meta};
+  Patch p;
+  p.map = {sph_local_to_global, sph_global_to_local, sph_valid};
+  p.meta = SphericalMeta{r0, r1};
+  return p;
 }
+
 inline Patch make_wedge(Face f, CCTK_REAL r0, CCTK_REAL r1) {
-  static CubedSphereMeta meta{f, r0, r1};
-  return Patch{{cubedsphere_local_to_global, cubedsphere_global_to_local,
-                cubedsphere_valid},
-               &meta};
+  Patch p;
+  p.map = {cubedsphere_local_to_global, cubedsphere_global_to_local,
+           cubedsphere_valid};
+  p.meta = CubedSphereMeta{f, r0, r1};
+  return p;
 }
 
 //------------------------------------------------------------------------------
@@ -177,14 +193,15 @@ public:
   CCTK_HOST CCTK_DEVICE Coord local_to_global(std::size_t id,
                                               const Coord &l) const {
     return (id < count_)
-               ? patches_[id].map.local_to_global(l, patches_[id].meta)
+               ? patches_[id].map.local_to_global(l, patches_[id].meta_ptr())
                : Coord{0, 0, 0};
   }
 
   CCTK_HOST CCTK_DEVICE Coord global_to_local(const Coord &g,
                                               std::size_t &id_out) const {
     for (std::size_t i = 0; i < count_; ++i) {
-      const Coord loc = patches_[i].map.global_to_local(g, patches_[i].meta);
+      const Coord loc =
+          patches_[i].map.global_to_local(g, patches_[i].meta_ptr());
       if (patches_[i].map.is_valid_local(loc)) {
         id_out = i;
         return loc;

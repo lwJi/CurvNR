@@ -21,14 +21,15 @@ public:
   CCTK_HOST CCTK_DEVICE Coord local_to_global(std::size_t id,
                                               const Coord &l) const {
     return (id < count_)
-               ? patches_[id].map.local_to_global(l, patches_[id].meta)
+               ? patches_[id].map.local_to_global(l, patches_[id].meta_ptr())
                : Coord{0, 0, 0};
   }
 
   CCTK_HOST CCTK_DEVICE Coord global_to_local(const Coord &g,
                                               std::size_t &id_out) const {
     for (std::size_t i = 0; i < count_; ++i) {
-      const Coord loc = patches_[i].map.global_to_local(g, patches_[i].meta);
+      const Coord loc =
+          patches_[i].map.global_to_local(g, patches_[i].meta_ptr());
       if (patches_[i].map.is_valid_local(loc)) {
         id_out = i;
         return loc;
