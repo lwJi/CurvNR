@@ -8,7 +8,7 @@
 namespace CurvBase {
 using namespace Loop;
 
-extern "C" void CurvBase_MultiPatch_Setup() {
+extern "C" int CurvBase_MultiPatch_Setup() {
   DECLARE_CCTK_PARAMETERS;
 
   ActiveMultiPatch tmp;
@@ -44,9 +44,11 @@ extern "C" void CurvBase_MultiPatch_Setup() {
   }
 
   active_mp() = tmp; // plain struct copy: variant knows which alt is active
+
+  return 0;
 }
 
-extern "C" void CurvBase_MultiPatch_Coordinates_Setup() {
+extern "C" void CurvBase_MultiPatch_Coordinates_Setup(CCTK_ARGUMENTS) {
   DECLARE_CCTK_PARAMETERS;
 
   // access active multipatch system
