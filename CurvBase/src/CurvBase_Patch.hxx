@@ -62,7 +62,7 @@ inline Patch make_sph_patch(CCTK_REAL r0, CCTK_REAL r1) {
   return p;
 }
 
-inline Patch make_wedge(Face f, CCTK_REAL r0, CCTK_REAL r1) {
+inline Patch make_wedge_patch(Face f, CCTK_REAL r0, CCTK_REAL r1) {
   Patch p;
   p.map = {&cubedsphere_l2g, &cubedsphere_g2l, &cubedsphere_valid};
   p.meta = CubedSphereMeta{f, r0, r1};
