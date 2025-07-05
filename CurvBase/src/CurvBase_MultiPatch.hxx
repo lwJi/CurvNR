@@ -13,15 +13,15 @@ namespace CurvBase {
 // Container for a fixed maximum number of patches
 //------------------------------------------------------------------------------
 
-template <std::size_t N> class MultiPatch {
-  Patch patches_[N]{};
+template <std::size_t MaxP> class MultiPatch {
+  Patch patches_[MaxP]{};
   std::size_t count_{0};
 
 public:
   CCTK_HOST CCTK_DEVICE MultiPatch() = default;
 
   CCTK_HOST CCTK_DEVICE std::size_t add_patch(const Patch &p) {
-    return (count_ < N) ? (patches_[count_] = p, count_++) : N;
+    return (count_ < MaxP) ? (patches_[count_] = p, count_++) : MaxP;
   }
 
   CCTK_HOST CCTK_DEVICE const Patch *get_patch(std::size_t id) const noexcept {
@@ -51,56 +51,56 @@ public:
 // Runtime-selectable patch system
 //------------------------------------------------------------------------------
 
-enum class MultiPatchMode { Cartesian, Spherical, CubedSphere };
-using MP1 = MultiPatch<1>;
-using MP7 = MultiPatch<7>;
+template <std::size_t MaxP> struct ActiveMultiPatch {
+  MultiPatch<MaxP> mp; // just one concrete object
 
-struct ActiveMultiPatch {
-  MultiPatchMode mode{MultiPatchMode::Cartesian};
-  std::variant<MP1, MP7> mp{MP1{}}; // default = single patch
+  // thin wrappers forward to mp
+  CCTK_HOST CCTK_DEVICE std::size_t size() const { return mp.size(); }
 
-  CCTK_HOST CCTK_DEVICE const Patch *get_patch(std::size_t id) const noexcept {
-    return std::visit([&](auto const &m) { return m.get_patch(id); }, mp);
+  CCTK_HOST CCTK_DEVICE const Patch *get_patch(std::size_t id) const {
+    return mp.get_patch(id);
   }
 
-  CCTK_HOST CCTK_DEVICE Coord l2g(std::size_t id, const Coord &l) const {
-    return std::visit([&](auto const &m) { return m.l2g(id, l); }, mp);
+  CCTK_HOST CCTK_DEVICE Coord l2g(std::size_t id, Coord const &l) const {
+    return mp.l2g(id, l);
   }
 
-  CCTK_HOST CCTK_DEVICE Coord g2l(const Coord &g, std::size_t &id_out) const {
-    return std::visit([&](auto const &m) { return m.g2l(g, id_out); }, mp);
+  CCTK_HOST CCTK_DEVICE Coord g2l(Coord const &g, std::size_t &idp) const {
+    return mp.g2l(g, idp);
   }
 
-  CCTK_HOST CCTK_DEVICE std::size_t size() const noexcept {
-    return std::visit([](auto const &m) { return m.size(); }, mp);
-  }
-
-  // activate the 1-patch or 7-patch variant
+  // helpers that *build* the patch set on the host
   void select_cartesian() {
-    mp.emplace<MP1>();
-    mode = MultiPatchMode::Cartesian;
-  }
-  void select_spherical() {
-    mp.emplace<MP1>();
-    mode = MultiPatchMode::Spherical;
-  }
-  void select_cubedsphere() {
-    mp.emplace<MP7>();
-    mode = MultiPatchMode::CubedSphere;
+    mp = {};
+    mp.add_patch(make_cart_patch());
   }
 
-  // expose references if needed (host-only helpers, no device qualifier)
-  MP1 &get_mp1() { return std::get<MP1>(mp); }
-  MP7 &get_mp7() { return std::get<MP7>(mp); }
+  void select_spherical(const CCTK_REAL r0, const CCTK_REAL r1) {
+    mp = {};
+    mp.add_patch(make_sph_patch(r0, r1));
+  }
+
+  void select_cubedsphere(const CCTK_REAL r0, const CCTK_REAL r1) {
+    mp = {};
+    mp.add_patch(make_cart_patch()); // core
+    mp.add_patch(make_wedge_patch(Face::PX, r0, r1));
+    mp.add_patch(make_wedge_patch(Face::NX, r0, r1));
+    mp.add_patch(make_wedge_patch(Face::PY, r0, r1));
+    mp.add_patch(make_wedge_patch(Face::NY, r0, r1));
+    mp.add_patch(make_wedge_patch(Face::PZ, r0, r1));
+    mp.add_patch(make_wedge_patch(Face::NZ, r0, r1));
+  }
 };
 
 //------------------------------------------------------------------------------
 // Live in unified memory
 //------------------------------------------------------------------------------
 
-AMREX_GPU_MANAGED ActiveMultiPatch g_active_mp;
+using AMP = ActiveMultiPatch<10>; // maximum 10 patches
 
-inline ActiveMultiPatch &active_mp() { return g_active_mp; }
+AMREX_GPU_MANAGED AMP g_active_mp;
+
+inline AMP &active_mp() { return g_active_mp; }
 
 } // namespace CurvBase
 

@@ -11,27 +11,14 @@ using namespace Loop;
 extern "C" int CurvBase_MultiPatch_Setup() {
   DECLARE_CCTK_PARAMETERS;
 
-  ActiveMultiPatch tmp;
+  AMP tmp;
 
   if (CCTK_EQUALS(patch_system, "Cartesian")) {
     tmp.select_cartesian();
-    tmp.get_mp1().add_patch(make_cart_patch());
   } else if (CCTK_EQUALS(patch_system, "Spherical")) {
-    tmp.select_spherical();
-    tmp.get_mp1().add_patch(make_sph_patch(spherical_rmin, spherical_rmax));
+    tmp.select_spherical(spherical_rmin, spherical_rmax);
   } else if (CCTK_EQUALS(patch_system, "CubedSphere")) {
-    tmp.select_cubedsphere();
-    {
-      auto &mp7 = tmp.get_mp7();
-      const CCTK_REAL r0 = cubedsphere_rmin, r1 = cubedsphere_rmax;
-      mp7.add_patch(make_cart_patch()); // core
-      mp7.add_patch(make_wedge_patch(Face::PX, r0, r1));
-      mp7.add_patch(make_wedge_patch(Face::NX, r0, r1));
-      mp7.add_patch(make_wedge_patch(Face::PY, r0, r1));
-      mp7.add_patch(make_wedge_patch(Face::NY, r0, r1));
-      mp7.add_patch(make_wedge_patch(Face::PZ, r0, r1));
-      mp7.add_patch(make_wedge_patch(Face::NZ, r0, r1));
-    }
+    tmp.select_cubedsphere(cubedsphere_rmin, cubedsphere_rmax);
   } else {
     CCTK_VERROR("Unknown multi-patch system \"%s\"", patch_system);
   }
