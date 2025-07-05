@@ -65,7 +65,7 @@ CCTK_HOST CCTK_DEVICE inline Coord cubedsphere_g2l(const Coord &g,
                                                    const void *m) {
   const auto *p = static_cast<const CubedSphereMeta *>(m);
   const double x = g[0], y = g[1], z = g[2];
-  const double r = std::sqrt(sq(x) + sq(y) + sq(z));
+  const double r = std::sqrt(x * x + y * y + z * z);
 
   double xi = 0, eta = 0;
   switch (p->face) {
@@ -123,7 +123,7 @@ CCTK_HOST CCTK_DEVICE inline Coord sph_l2g(const Coord &l, const void *m) {
 CCTK_HOST CCTK_DEVICE inline Coord sph_g2l(const Coord &g, const void *m) {
   const auto *p = static_cast<const SphericalMeta *>(m);
   const double x = g[0], y = g[1], z = g[2];
-  const double r = std::sqrt(sq(x) + sq(y) + sq(z));
+  const double r = std::sqrt(x * x + y * y + z * z);
   return {(r - p->r_min) / (p->r_max - p->r_min), // ρ
           std::atan2(y, x),                       // theta
           std::acos(z / r)};                      // phi
@@ -172,7 +172,7 @@ struct Patch {
 //------------------------------------------------------------------------------
 inline Patch make_cart_patch() {
   Patch p;
-  p.map = {cart_l2g, cart_g2l, cart_valid};
+  p.map = {&cart_l2g, &cart_g2l, &cart_valid};
   p.meta = CartesianMeta{}; // active alt set
   p.is_cartesian = true;
   return p;
@@ -180,7 +180,7 @@ inline Patch make_cart_patch() {
 
 inline Patch make_sph_patch(CCTK_REAL r0, CCTK_REAL r1) {
   Patch p;
-  p.map = {sph_l2g, sph_g2l, sph_valid};
+  p.map = {&sph_l2g, &sph_g2l, &sph_valid};
   p.meta = SphericalMeta{r0, r1};
   p.is_cartesian = false;
   return p;
@@ -188,7 +188,7 @@ inline Patch make_sph_patch(CCTK_REAL r0, CCTK_REAL r1) {
 
 inline Patch make_wedge(Face f, CCTK_REAL r0, CCTK_REAL r1) {
   Patch p;
-  p.map = {cubedsphere_l2g, cubedsphere_g2l, cubedsphere_valid};
+  p.map = {&cubedsphere_l2g, &cubedsphere_g2l, &cubedsphere_valid};
   p.meta = CubedSphereMeta{f, r0, r1};
   p.is_cartesian = false;
   return p;
