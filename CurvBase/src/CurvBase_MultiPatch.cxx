@@ -13,18 +13,13 @@ extern "C" int CurvBase_MultiPatch_Setup() {
 
   ActiveMultiPatch tmp;
 
-  switch (mode) {
-  case MultiPatchMode::Cartesian:
+  if (CCTK_EQUALS(patch_system, "Cartesian")) {
     tmp.select_cartesian();
     tmp.get_mp1().add_patch(make_cart_patch());
-    break;
-
-  case MultiPatchMode::Spherical:
+  } else if (CCTK_EQUALS(patch_system, "Spherical")) {
     tmp.select_spherical();
     tmp.get_mp1().add_patch(make_sph_patch(spherical_rmin, spherical_rmax));
-    break;
-
-  case MultiPatchMode::CubedSphere:
+  } else if (CCTK_EQUALS(patch_system, "CubedSphere")) {
     tmp.select_cubedsphere();
     {
       auto &mp7 = tmp.get_mp7();
@@ -37,9 +32,7 @@ extern "C" int CurvBase_MultiPatch_Setup() {
       mp7.add_patch(make_wedge(Face::NZ, r0, r1));
       mp7.add_patch(make_cart_patch()); // core
     }
-    break;
-
-  default:
+  } else {
     CCTK_VERROR("Unknown multi-patch system \"%s\"", patch_system);
   }
 
