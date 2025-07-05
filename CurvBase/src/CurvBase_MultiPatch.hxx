@@ -18,9 +18,9 @@ template <std::size_t MaxP> class MultiPatch {
   std::size_t count_{0};
 
 public:
-  CCTK_HOST CCTK_DEVICE MultiPatch() = default;
+  CCTK_HOST MultiPatch() = default;
 
-  CCTK_HOST CCTK_DEVICE std::size_t add_patch(const Patch &p) {
+  CCTK_HOST std::size_t add_patch(const Patch &p) {
     return (count_ < MaxP) ? (patches_[count_] = p, count_++) : MaxP;
   }
 
