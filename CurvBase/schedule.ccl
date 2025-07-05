@@ -1,0 +1,27 @@
+# Schedule definitions for thorn CurvBase
+
+STORAGE: vertex_Jacobians
+STORAGE: vertex_dJacobians
+
+SCHEDULE CurvBase_MultiPatch_Setup AT startup BEFORE Driver_Startup
+{
+  LANG: C
+} "Define multi-patch system"
+
+if (!CCTK_EQUALS(patch_system, "none")) {
+  SCHEDULE CurvBase_MultiPatch_Coordinates_Setup AT basegrid AFTER Coordinates_Setup
+  {
+    LANG: C
+    WRITES: CoordinatesX::vertex_coords(everywhere)
+    WRITES: CoordinatesX::cell_coords(everywhere)
+    WRITES: CoordinatesX::cell_volume(everywhere)
+    WRITES: vertex_Jacobians(everywhere)
+    WRITES: vertex_dJacobians(everywhere)
+  } "Set coordinate grid functions"
+
+  SCHEDULE MultiPatch_Check_Parameters AT paramcheck
+  {
+    LANG: C
+    OPTIONS: meta
+  } "Check parameters"
+}

@@ -46,7 +46,7 @@ extern "C" void CurvBase_MultiPatch_Setup() {
   active_mp() = tmp; // plain struct copy: variant knows which alt is active
 }
 
-extern "C" void CurvBase_MultiPatch_Setup_Coordinates() {
+extern "C" void CurvBase_MultiPatch_Coordinates_Setup() {
   DECLARE_CCTK_PARAMETERS;
 
   // access active multipatch system
