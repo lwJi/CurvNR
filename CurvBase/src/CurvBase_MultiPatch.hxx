@@ -1,3 +1,9 @@
+#ifndef CURVBASE_MULTIPATCH_HXX
+#define CURVBASE_MULTIPATCH_HXX
+
+#include "CurvBase_Patch.hxx"
+
+namespace CurvBase {
 
 //------------------------------------------------------------------------------
 // Container for a fixed maximum number of patches
@@ -86,3 +92,7 @@ inline ActiveMultiPatch &active_mp() {
   static ActiveMultiPatch holder;
   return holder;
 }
+
+} // namespace CurvBase
+
+#endif // #ifndef CURVBASE_MULTIPATCH_HXX
