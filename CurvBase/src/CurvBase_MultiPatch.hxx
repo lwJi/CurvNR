@@ -58,8 +58,8 @@ struct ActiveMultiPatch {
   MultiPatchMode mode{MultiPatchMode::Cartesian};
   std::variant<MP1, MP7> mp{MP1{}}; // default = single patch
 
-  CCTK_HOST CCTK_DEVICE std::size_t size() const noexcept {
-    return std::visit([](auto const &m) { return m.size(); }, mp);
+  CCTK_HOST CCTK_DEVICE const Patch *get_patch(std::size_t id) const noexcept {
+    return std::visit([&](auto const &m) { return m.get_patch(id); }, mp);
   }
 
   CCTK_HOST CCTK_DEVICE Coord l2g(std::size_t id, const Coord &l) const {
@@ -68,6 +68,10 @@ struct ActiveMultiPatch {
 
   CCTK_HOST CCTK_DEVICE Coord g2l(const Coord &g, std::size_t &id_out) const {
     return std::visit([&](auto const &m) { return m.g2l(g, id_out); }, mp);
+  }
+
+  CCTK_HOST CCTK_DEVICE std::size_t size() const noexcept {
+    return std::visit([](auto const &m) { return m.size(); }, mp);
   }
 
   // activate the 1-patch or 7-patch variant
