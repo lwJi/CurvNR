@@ -45,3 +45,17 @@ CCTK_INT FUNCTION MultiPatch_GetBoundarySpecification2( \
 PROVIDES FUNCTION MultiPatch_GetBoundarySpecification2 \
   WITH CurvBase_MultiPatch_GetBoundarySpecification \
   LANGUAGE C
+
+void FUNCTION MultiPatch_GlobalToLocal2( \
+  CCTK_INT IN npoints, \
+  CCTK_REAL ARRAY IN globalsx, \
+  CCTK_REAL ARRAY IN globalsy, \
+  CCTK_REAL ARRAY IN globalsz, \
+  CCTK_INT ARRAY OUT patches, \
+  CCTK_REAL ARRAY OUT localsx, \
+  CCTK_REAL ARRAY OUT localsy, \
+  CCTK_REAL ARRAY OUT localsz)
+PROVIDES FUNCTION MultiPatch_GlobalToLocal2 \
+  WITH CurvBase_MultiPatch_GlobalToLocal \
+  LANGUAGE C
+

@@ -99,3 +99,21 @@ extern "C" CCTK_INT CurvBase_MultiPatch_GetBoundarySpecification(
 
   return 0;
 }
+
+extern "C" void CurvBase_MultiPatch_GlobalToLocal(
+    const CCTK_INT npoints, const CCTK_REAL *restrict const globalsx,
+    const CCTK_REAL *restrict const globalsy,
+    const CCTK_REAL *restrict const globalsz, CCTK_INT *restrict const patches,
+    CCTK_REAL *restrict const localsx, CCTK_REAL *restrict const localsy,
+    CCTK_REAL *restrict const localsz) {
+  const auto &mp = active_mp();
+  for (int n = 0; n < npoints; ++n) {
+    const std::array<CCTK_REAL, dim> x{globalsx[n], globalsy[n], globalsz[n]};
+    std::size_t patch_id = std::size_t(-1);
+    const auto l = mp.g2l(x, patch);
+    patches[n] = static_cast<CCTK_INT>(patch_id);
+    localsx[n] = l[0];
+    localsy[n] = l[1];
+    localsz[n] = l[2];
+  }
+}
