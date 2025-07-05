@@ -1,0 +1,95 @@
+# Parameter definitions for thorn CurvBase
+
+KEYWORD patch_system "Patch system"
+{
+  "none" :: "disable multi-patch systems"
+  "Cartesian" :: ""
+  "CubedSphere" :: "1 cartesian + 6 wedges"
+  "Spherical" :: ""
+} "none"
+
+# Cartesian patch system
+
+INT cartesian_ncells_i "Number of cells in i direction"
+{
+  0:* :: ""
+} 10
+
+INT cartesian_ncells_j "Number of cells in j direction"
+{
+  0:* :: ""
+} 10
+
+INT cartesian_ncells_k "Number of cells in k direction"
+{
+  0:* :: ""
+} 10
+
+REAL cartesian_xmin "xmin"
+{
+  *:* :: ""
+} -1.0
+
+REAL cartesian_ymin "ymin"
+{
+  *:* :: ""
+} -1.0
+
+REAL cartesian_zmin "zmin"
+{
+  *:* :: ""
+} -1.0
+
+REAL cartesian_xmax "xmax"
+{
+  *:* :: ""
+} +1.0
+
+REAL cartesian_ymax "ymax"
+{
+  *:* :: ""
+} +1.0
+
+REAL cartesian_zmax "zmax"
+{
+  *:* :: ""
+} +1.0
+
+# Cubed sphere patch system
+
+REAL cubedsphere_rmin "rmin"
+{
+  0:* :: ""
+} +1.0
+
+REAL cubedsphere_rmax "rmax"
+{
+  0:* :: ""
+} +3.0
+
+# Spherical patch system
+
+INT spherical_ncells_r "Number of cells in r direction"
+{
+  0:* :: ""
+} 10
+
+INT spherical_ncells_th "Number of cells in theta direction"
+{
+  0:* :: ""
+} 10
+
+INT spherical_ncells_ph "Number of cells in phi direction"
+{
+  0:* :: ""
+} 10
+
+REAL spherical_rmin "rmin"
+{
+  0:* :: ""
+} +1.8
+
+REAL spherical_rmax "rmax"
+{
+  0:* :: ""
+} +11.8
