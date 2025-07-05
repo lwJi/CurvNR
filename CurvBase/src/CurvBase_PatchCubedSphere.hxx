@@ -73,7 +73,8 @@ CCTK_HOST CCTK_DEVICE inline Coord cubedsphere_g2l(const Coord &g,
   return {xi, eta, rho};
 }
 
-CCTK_HOST CCTK_DEVICE inline bool cubedsphere_valid(const Coord &l) {
+CCTK_HOST CCTK_DEVICE inline bool cubedsphere_valid(const Coord &l,
+                                                    const void *m) {
   return (l[0] >= -1 && l[0] <= 1) && (l[1] >= -1 && l[1] <= 1) &&
          (l[2] >= 0 && l[2] <= 1);
 }

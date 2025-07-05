@@ -28,9 +28,10 @@ CCTK_HOST CCTK_DEVICE inline Coord sph_g2l(const Coord &g, const void *m) {
           std::acos(z / r)};                      // phi
 }
 
-CCTK_HOST CCTK_DEVICE inline bool sph_valid(const Coord &l) {
-  return (l[0] >= 0 && l[0] <= 1) && (l[1] >= 0 && l[1] <= 2 * M_PI) &&
-         (l[2] >= 0 && l[2] <= M_PI);
+CCTK_HOST CCTK_DEVICE inline bool sph_valid(const Coord &l, const void *m) {
+  const auto *p = static_cast<const SphericalMeta *>(m);
+  return (l[0] >= p->r_min && l[0] <= p->r_max) &&
+         (l[1] >= 0 && l[1] <= 2 * M_PI) && (l[2] >= 0 && l[2] <= M_PI);
 }
 
 } // namespace CurvBase

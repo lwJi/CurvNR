@@ -16,7 +16,7 @@ namespace CurvBase {
 struct PatchMap {
   CCTK_HOST CCTK_DEVICE Coord (*l2g)(const Coord &, const void *) = nullptr;
   CCTK_HOST CCTK_DEVICE Coord (*g2l)(const Coord &, const void *) = nullptr;
-  CCTK_HOST CCTK_DEVICE bool (*is_valid)(const Coord &) = nullptr;
+  CCTK_HOST CCTK_DEVICE bool (*is_valid)(const Coord &, const void *) = nullptr;
 };
 
 struct FaceInfo {

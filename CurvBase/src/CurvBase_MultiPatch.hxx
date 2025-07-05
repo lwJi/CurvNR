@@ -34,7 +34,7 @@ public:
   CCTK_HOST CCTK_DEVICE Coord g2l(const Coord &g, std::size_t &id_out) const {
     for (std::size_t i = 0; i < count_; ++i) {
       const Coord loc = patches_[i].map.g2l(g, patches_[i].meta_ptr());
-      if (patches_[i].map.is_valid(loc)) {
+      if (patches_[i].map.is_valid(loc, patches_[i].meta_ptr())) {
         id_out = i;
         return loc;
       }
