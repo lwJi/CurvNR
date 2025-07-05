@@ -1,6 +1,8 @@
 #ifndef CURVBASE_MULTIPATCH_HXX
 #define CURVBASE_MULTIPATCH_HXX
 
+#include <AMReX_Gpu.H>
+
 #include <variant>
 
 #include "CurvBase_Patch.hxx"
@@ -93,11 +95,13 @@ struct ActiveMultiPatch {
   MP7 &get_mp7() { return std::get<MP7>(mp); }
 };
 
-// Singleton access (thread-safe since C++11)
-inline ActiveMultiPatch &active_mp() {
-  static ActiveMultiPatch holder;
-  return holder;
-}
+//------------------------------------------------------------------------------
+// Live in unified memory
+//------------------------------------------------------------------------------
+
+AMREX_GPU_MANAGED ActiveMultiPatch g_active_mp;
+
+inline ActiveMultiPatch &active_mp() { return g_active_mp; }
 
 } // namespace CurvBase
 
