@@ -24,13 +24,13 @@ extern "C" int CurvBase_MultiPatch_Setup() {
     {
       auto &mp7 = tmp.get_mp7();
       const CCTK_REAL r0 = cubedsphere_rmin, r1 = cubedsphere_rmax;
+      mp7.add_patch(make_cart_patch()); // core
       mp7.add_patch(make_wedge_patch(Face::PX, r0, r1));
       mp7.add_patch(make_wedge_patch(Face::NX, r0, r1));
       mp7.add_patch(make_wedge_patch(Face::PY, r0, r1));
       mp7.add_patch(make_wedge_patch(Face::NY, r0, r1));
       mp7.add_patch(make_wedge_patch(Face::PZ, r0, r1));
       mp7.add_patch(make_wedge_patch(Face::NZ, r0, r1));
-      mp7.add_patch(make_cart_patch()); // core
     }
   } else {
     CCTK_VERROR("Unknown multi-patch system \"%s\"", patch_system);
