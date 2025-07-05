@@ -114,7 +114,7 @@ extern "C" void CurvBase_MultiPatch_GlobalToLocal(
   for (int n = 0; n < npoints; ++n) {
     const std::array<CCTK_REAL, dim> x{globalsx[n], globalsy[n], globalsz[n]};
     std::size_t patch_id = std::size_t(-1);
-    const auto l = mp.g2l(x, patch);
+    const auto l = mp.g2l(x, patch_id);
     patches[n] = static_cast<CCTK_INT>(patch_id);
     localsx[n] = l[0];
     localsy[n] = l[1];

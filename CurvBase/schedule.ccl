@@ -19,9 +19,9 @@ if (!CCTK_EQUALS(patch_system, "none")) {
     WRITES: vertex_dJacobians(everywhere)
   } "Set coordinate grid functions"
 
-  SCHEDULE MultiPatch_Check_Parameters AT paramcheck
-  {
-    LANG: C
-    OPTIONS: meta
-  } "Check parameters"
+  #SCHEDULE MultiPatch_Check_Parameters AT paramcheck
+  #{
+  #  LANG: C
+  #  OPTIONS: meta
+  #} "Check parameters"
 }
