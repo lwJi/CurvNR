@@ -1,6 +1,8 @@
 #ifndef CURVBASE_MULTIPATCH_HXX
 #define CURVBASE_MULTIPATCH_HXX
 
+#include <variant>
+
 #include "CurvBase_Patch.hxx"
 
 namespace CurvBase {
