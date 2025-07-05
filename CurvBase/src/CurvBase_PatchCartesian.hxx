@@ -1,6 +1,8 @@
 #ifndef CURVBASE_PATCHCARTESIAN_HXX
 #define CURVBASE_PATCHCARTESIAN_HXX
 
+#include "CurvBase.hxx"
+
 namespace CurvBase {
 
 struct CartesianMeta {};

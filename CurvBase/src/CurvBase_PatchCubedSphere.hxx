@@ -1,6 +1,8 @@
 #ifndef CURVBASE_PATCHCUBEDSPHERE_HXX
 #define CURVBASE_PATCHCUBEDSPHERE_HXX
 
+#include "CurvBase.hxx"
+
 namespace CurvBase {
 
 enum class Face { PX, NX, PY, NY, PZ, NZ };

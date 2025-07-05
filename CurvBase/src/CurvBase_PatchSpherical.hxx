@@ -1,6 +1,8 @@
 #ifndef CURVBASE_PATCHSPHERICAL_HXX
 #define CURVBASE_PATCHSPHERICAL_HXX
 
+#include "CurvBase.hxx"
+
 namespace CurvBase {
 
 struct SphericalMeta {
