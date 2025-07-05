@@ -25,7 +25,7 @@ struct Patch {
   // local -> global
   CCTK_HOST CCTK_DEVICE Coord l2g(Coord const &l) const noexcept {
     return std::visit(
-        [&](auto const &m) {
+        [&](auto const &m) noexcept {
           if constexpr (std::is_same_v<decltype(m), CartesianMeta const &>)
             return cart_l2g(l, &m);
           else if constexpr (std::is_same_v<decltype(m), SphericalMeta const &>)
@@ -39,7 +39,7 @@ struct Patch {
   // global -> local
   CCTK_HOST CCTK_DEVICE Coord g2l(Coord const &g) const noexcept {
     return std::visit(
-        [&](auto const &m) {
+        [&](auto const &m) noexcept {
           if constexpr (std::is_same_v<decltype(m), CartesianMeta const &>)
             return cart_g2l(g, &m);
           else if constexpr (std::is_same_v<decltype(m), SphericalMeta const &>)
@@ -53,7 +53,7 @@ struct Patch {
   // validity
   CCTK_HOST CCTK_DEVICE bool is_valid(Coord const &l) const noexcept {
     return std::visit(
-        [&](auto const &m) {
+        [&](auto const &m) noexcept {
           if constexpr (std::is_same_v<decltype(m), CartesianMeta const &>)
             return cart_valid(l, &m);
           else if constexpr (std::is_same_v<decltype(m), SphericalMeta const &>)
