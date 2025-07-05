@@ -29,14 +29,13 @@ public:
   }
 
   CCTK_HOST CCTK_DEVICE Coord l2g(std::size_t id, const Coord &l) const {
-    return (id < count_) ? patches_[id].map.l2g(l, patches_[id].meta_ptr())
-                         : Coord{0, 0, 0};
+    return (id < count_) ? patches_[id].l2g(l) : Coord{0, 0, 0};
   }
 
   CCTK_HOST CCTK_DEVICE Coord g2l(const Coord &g, std::size_t &id_out) const {
     for (std::size_t i = 0; i < count_; ++i) {
-      const Coord loc = patches_[i].map.g2l(g, patches_[i].meta_ptr());
-      if (patches_[i].map.is_valid(loc, patches_[i].meta_ptr())) {
+      const Coord loc = patches_[i].g2l(g);
+      if (patches_[i].is_valid(loc)) {
         id_out = i;
         return loc;
       }

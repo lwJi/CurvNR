@@ -13,11 +13,6 @@ namespace CurvBase {
 //------------------------------------------------------------------------------
 // Patch
 //------------------------------------------------------------------------------
-struct PatchMap {
-  CCTK_HOST CCTK_DEVICE Coord (*l2g)(const Coord &, const void *) = nullptr;
-  CCTK_HOST CCTK_DEVICE Coord (*g2l)(const Coord &, const void *) = nullptr;
-  CCTK_HOST CCTK_DEVICE bool (*is_valid)(const Coord &, const void *) = nullptr;
-};
 
 struct FaceInfo {
   bool is_outer_boundary{true};
@@ -27,12 +22,47 @@ struct Patch {
   // metadata container
   std::variant<CartesianMeta, SphericalMeta, CubedSphereMeta> meta{};
 
-  // helper: return pointer to the **concrete** meta inside the variant
-  const void *meta_ptr() const noexcept {
-    return std::visit([](auto const &m) -> const void * { return &m; }, meta);
+  // local -> global
+  CCTK_HOST CCTK_DEVICE Coord l2g(Coord const &l) const {
+    return std::visit(
+        [&](auto const &m) {
+          if constexpr (std::is_same_v<decltype(m), CartesianMeta const &>)
+            return cart_l2g(l, &m);
+          else if constexpr (std::is_same_v<decltype(m), SphericalMeta const &>)
+            return sph_l2g(l, &m);
+          else
+            return cubedsphere_l2g(l, &m);
+        },
+        meta);
   }
 
-  PatchMap map{};
+  // global -> local
+  CCTK_HOST CCTK_DEVICE Coord g2l(Coord const &g) const {
+    return std::visit(
+        [&](auto const &m) {
+          if constexpr (std::is_same_v<decltype(m), CartesianMeta const &>)
+            return cart_g2l(g, &m);
+          else if constexpr (std::is_same_v<decltype(m), SphericalMeta const &>)
+            return sph_g2l(g, &m);
+          else
+            return cubedsphere_g2l(g, &m);
+        },
+        meta);
+  }
+
+  // validity
+  CCTK_HOST CCTK_DEVICE bool is_valid(Coord const &l) const {
+    return std::visit(
+        [&](auto const &m) {
+          if constexpr (std::is_same_v<decltype(m), CartesianMeta const &>)
+            return cart_valid(l, &m);
+          else if constexpr (std::is_same_v<decltype(m), SphericalMeta const &>)
+            return sph_valid(l, &m);
+          else
+            return cubedsphere_valid(l, &m);
+        },
+        meta);
+  }
 
   std::array<CCTK_INT, dim> ncells{}; // cells per dimension
   std::array<CCTK_REAL, dim> xmin{};  // lower physical bounds
@@ -48,7 +78,6 @@ struct Patch {
 //------------------------------------------------------------------------------
 inline Patch make_cart_patch() {
   Patch p;
-  p.map = {&cart_l2g, &cart_g2l, &cart_valid};
   p.meta = CartesianMeta{}; // active alt set
   p.is_cartesian = true;
   return p;
@@ -56,7 +85,6 @@ inline Patch make_cart_patch() {
 
 inline Patch make_sph_patch(CCTK_REAL r0, CCTK_REAL r1) {
   Patch p;
-  p.map = {&sph_l2g, &sph_g2l, &sph_valid};
   p.meta = SphericalMeta{r0, r1};
   p.is_cartesian = false;
   return p;
@@ -64,7 +92,6 @@ inline Patch make_sph_patch(CCTK_REAL r0, CCTK_REAL r1) {
 
 inline Patch make_wedge_patch(Face f, CCTK_REAL r0, CCTK_REAL r1) {
   Patch p;
-  p.map = {&cubedsphere_l2g, &cubedsphere_g2l, &cubedsphere_valid};
   p.meta = CubedSphereMeta{f, r0, r1};
   p.is_cartesian = false;
   return p;
