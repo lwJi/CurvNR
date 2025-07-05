@@ -1,3 +1,12 @@
+#include <cctk.h>
+#include <cctk_Arguments.h>
+#include <cctk_Parameters.h>
+#include <loop_device.hxx>
+
+#include "CurvBase_MultiPatch.hxx"
+
+namespace CurvBase {
+using namespace Loop;
 
 extern "C" void CurvBase_MultiPatch_Setup() {
   DECLARE_CCTK_PARAMETERS;
@@ -117,3 +126,5 @@ extern "C" void CurvBase_MultiPatch_GlobalToLocal(
     localsz[n] = l[2];
   }
 }
+
+} // namespace CurvBase
