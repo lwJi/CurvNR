@@ -76,23 +76,23 @@ template <std::size_t MaxP> struct ActiveMultiPatch {
   // helpers that *build* the patch set on the host
   void select_cartesian() {
     mp = {};
-    mp.add_patch(make_cart_patch());
+    mp.add_patch(make_patch<CartesianMeta>());
   }
 
   void select_spherical(const CCTK_REAL r0, const CCTK_REAL r1) {
     mp = {};
-    mp.add_patch(make_sph_patch(r0, r1));
+    mp.add_patch(make_patch<SphericalMeta>(r0, r1));
   }
 
   void select_cubedsphere(const CCTK_REAL r0, const CCTK_REAL r1) {
     mp = {};
-    mp.add_patch(make_cart_patch()); // core
-    mp.add_patch(make_wedge_patch(Face::PX, r0, r1));
-    mp.add_patch(make_wedge_patch(Face::NX, r0, r1));
-    mp.add_patch(make_wedge_patch(Face::PY, r0, r1));
-    mp.add_patch(make_wedge_patch(Face::NY, r0, r1));
-    mp.add_patch(make_wedge_patch(Face::PZ, r0, r1));
-    mp.add_patch(make_wedge_patch(Face::NZ, r0, r1));
+    mp.add_patch(make_patch<CartesianMeta>()); // core
+    mp.add_patch(make_patch<CubedSphereMeta>(Face::PX, r0, r1));
+    mp.add_patch(make_patch<CubedSphereMeta>(Face::NX, r0, r1));
+    mp.add_patch(make_patch<CubedSphereMeta>(Face::PY, r0, r1));
+    mp.add_patch(make_patch<CubedSphereMeta>(Face::NY, r0, r1));
+    mp.add_patch(make_patch<CubedSphereMeta>(Face::PZ, r0, r1));
+    mp.add_patch(make_patch<CubedSphereMeta>(Face::NZ, r0, r1));
   }
 };
 

@@ -7,6 +7,7 @@ namespace CurvBase {
 
 struct SphericalMeta {
   double r_min, r_max; // inner / outer radius
+  SphericalMeta(double r0, double r1) noexcept : r_min{r0}, r_max{r1} {}
 };
 
 CCTK_HOST CCTK_DEVICE inline Coord sph_l2g(const Coord &l, const void *m) {

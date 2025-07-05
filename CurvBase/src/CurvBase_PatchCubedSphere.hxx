@@ -10,6 +10,8 @@ enum class Face { PX, NX, PY, NY, PZ, NZ };
 struct CubedSphereMeta {
   Face face;               // which cube face
   double r_inner, r_outer; // radial extent of the wedge
+  CubedSphereMeta(Face f, double r0, double r1) noexcept
+      : face{f}, r_inner{r0}, r_outer{r1} {}
 };
 
 CCTK_HOST CCTK_DEVICE inline Coord cubedsphere_l2g(const Coord &l,

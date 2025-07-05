@@ -76,24 +76,10 @@ struct Patch {
 //------------------------------------------------------------------------------
 // Helpers that create individual Patch objects
 //------------------------------------------------------------------------------
-inline Patch make_cart_patch() noexcept {
-  Patch p;
-  p.meta = CartesianMeta{}; // active alt set
-  p.is_cartesian = true;
-  return p;
-}
 
-inline Patch make_sph_patch(CCTK_REAL r0, CCTK_REAL r1) noexcept {
+template <typename Meta, typename... Args> Patch make_patch(Args &&...args) {
   Patch p;
-  p.meta = SphericalMeta{r0, r1};
-  p.is_cartesian = false;
-  return p;
-}
-
-inline Patch make_wedge_patch(Face f, CCTK_REAL r0, CCTK_REAL r1) noexcept {
-  Patch p;
-  p.meta = CubedSphereMeta{f, r0, r1};
-  p.is_cartesian = false;
+  p.meta.emplace<Meta>(std::forward<Args>(args)...);
   return p;
 }
 
