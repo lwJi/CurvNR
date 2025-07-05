@@ -23,7 +23,7 @@ struct Patch {
   std::variant<CartesianMeta, SphericalMeta, CubedSphereMeta> meta{};
 
   // local -> global
-  CCTK_HOST CCTK_DEVICE Coord l2g(Coord const &l) const {
+  CCTK_HOST CCTK_DEVICE Coord l2g(Coord const &l) const noexcept {
     return std::visit(
         [&](auto const &m) {
           if constexpr (std::is_same_v<decltype(m), CartesianMeta const &>)
@@ -37,7 +37,7 @@ struct Patch {
   }
 
   // global -> local
-  CCTK_HOST CCTK_DEVICE Coord g2l(Coord const &g) const {
+  CCTK_HOST CCTK_DEVICE Coord g2l(Coord const &g) const noexcept {
     return std::visit(
         [&](auto const &m) {
           if constexpr (std::is_same_v<decltype(m), CartesianMeta const &>)
@@ -51,7 +51,7 @@ struct Patch {
   }
 
   // validity
-  CCTK_HOST CCTK_DEVICE bool is_valid(Coord const &l) const {
+  CCTK_HOST CCTK_DEVICE bool is_valid(Coord const &l) const noexcept {
     return std::visit(
         [&](auto const &m) {
           if constexpr (std::is_same_v<decltype(m), CartesianMeta const &>)
@@ -76,21 +76,21 @@ struct Patch {
 //------------------------------------------------------------------------------
 // Helpers that create individual Patch objects
 //------------------------------------------------------------------------------
-inline Patch make_cart_patch() {
+inline Patch make_cart_patch() noexcept {
   Patch p;
   p.meta = CartesianMeta{}; // active alt set
   p.is_cartesian = true;
   return p;
 }
 
-inline Patch make_sph_patch(CCTK_REAL r0, CCTK_REAL r1) {
+inline Patch make_sph_patch(CCTK_REAL r0, CCTK_REAL r1) noexcept {
   Patch p;
   p.meta = SphericalMeta{r0, r1};
   p.is_cartesian = false;
   return p;
 }
 
-inline Patch make_wedge_patch(Face f, CCTK_REAL r0, CCTK_REAL r1) {
+inline Patch make_wedge_patch(Face f, CCTK_REAL r0, CCTK_REAL r1) noexcept {
   Patch p;
   p.meta = CubedSphereMeta{f, r0, r1};
   p.is_cartesian = false;
