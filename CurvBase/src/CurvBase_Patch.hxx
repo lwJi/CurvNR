@@ -27,6 +27,7 @@ struct Patch {
   Index ncells{}; // cells per dimension
   Coord xmin{};   // lower physical bounds
   Coord xmax{};   // upper physical bounds
+  Coord dx{};
 
   std::array<std::array<FaceInfo, dim>, 2> faces{};
 
@@ -43,6 +44,7 @@ struct Patch {
     for (std::size_t d = 0; d < dim; ++d) {
       assert(ncells[d] > 0 && "ncells must be positive");
       assert(xmax[d] > xmin[d] && "xmax must exceed xmin");
+      dx[d] = (xmax[d] - xmin[d]) / static_cast<CCTK_REAL>(ncells[d]);
     }
   }
 
