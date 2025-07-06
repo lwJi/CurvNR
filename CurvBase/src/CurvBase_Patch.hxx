@@ -32,11 +32,11 @@ struct Patch {
 
   // Single constructor – guarantees full initialisation
 
-  Patch() = default;
+  CCTK_HOST Patch() = default;
 
   template <class MetaT, class... MetaArgs>
-  constexpr Patch(MetaT meta_in, Index nc, Coord lo, Coord hi,
-                  MetaArgs &&...rest) noexcept
+  CCTK_HOST constexpr Patch(MetaT meta_in, Index nc, Coord lo, Coord hi,
+                            MetaArgs &&...rest) noexcept
       : meta(std::in_place_type<MetaT>, std::forward<MetaT>(meta_in),
              std::forward<MetaArgs>(rest)...),
         ncells{nc}, xmin{lo}, xmax{hi} {
