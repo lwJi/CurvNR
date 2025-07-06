@@ -23,8 +23,12 @@ extern "C" int CurvBase_MultiPatch_Setup() {
     Coord xmin{spherical_rmin, 0, 0};
     Coord xmax{spherical_rmax, M_PI, 2.0 * M_PI};
     tmp.select_spherical(ncells, xmin, xmax);
-    //} else if (CCTK_EQUALS(patch_system, "CubedSphere")) {
-    //  tmp.select_cubedsphere(cubedsphere_rmin, cubedsphere_rmax);
+  } else if (CCTK_EQUALS(patch_system, "CubedSphere")) {
+    Index ncells{cartesian_ncells_i, cartesian_ncells_j, cartesian_ncells_k};
+    Coord xmin{-1.0, -1.0, -1.0};
+    Coord xmax{1.0, 1.0, 1.0};
+    tmp.select_cubedsphere(ncells, xmin, xmax, cubedsphere_rmin,
+                           cubedsphere_rmax);
   } else {
     CCTK_VERROR("Unknown multi-patch system \"%s\"", patch_system);
   }
