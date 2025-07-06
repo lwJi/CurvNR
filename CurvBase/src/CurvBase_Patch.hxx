@@ -74,13 +74,13 @@ struct Patch {
    * @param nc The number of cells per dimension.
    * @param lo The lower bounds in local coordinates.
    * @param hi The upper bounds in local coordinates.
-   * @param rest Additional arguments for the metadata constructor.
+   * @param meta_args Additional arguments for the metadata constructor.
    */
   template <class MetaT, class... MetaArgs>
   CCTK_HOST constexpr Patch(MetaT meta_in, Index nc, Coord lo, Coord hi,
-                            MetaArgs &&...rest) noexcept
+                            MetaArgs &&...meta_args) noexcept
       : meta(std::in_place_type<MetaT>, std::move(meta_in),
-             std::forward<MetaArgs>(rest)...),
+             std::forward<MetaArgs>(meta_args)...),
         ncells{nc}, xmin{lo}, xmax{hi} {
     for (std::size_t d = 0; d < dim; ++d) {
       assert(ncells[d] > 0 && "ncells must be positive");
