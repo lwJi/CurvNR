@@ -8,8 +8,6 @@
 
 namespace CurvBase {
 
-constexpr CCTK_REAL twopi = 2.0 * M_PI;
-
 struct SphericalMeta {};
 
 [[nodiscard]] CCTK_HOST CCTK_DEVICE inline Coord

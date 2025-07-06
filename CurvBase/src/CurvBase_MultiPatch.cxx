@@ -21,7 +21,7 @@ extern "C" int CurvBase_MultiPatch_Setup() {
   } else if (CCTK_EQUALS(patch_system, "Spherical")) {
     Index ncells{spherical_ncells_r, spherical_ncells_th, spherical_ncells_ph};
     Coord xmin{spherical_rmin, 0, 0};
-    Coord xmax{spherical_rmax, M_PI, 2.0 * M_PI};
+    Coord xmax{spherical_rmax, onepi, twopi};
     tmp.select_spherical(ncells, xmin, xmax);
   } else if (CCTK_EQUALS(patch_system, "CubedSphere")) {
     Index ncells{cartesian_ncells_i, cartesian_ncells_j, cartesian_ncells_k};
