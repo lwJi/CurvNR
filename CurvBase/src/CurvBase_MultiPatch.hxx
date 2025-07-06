@@ -79,10 +79,9 @@ template <std::size_t MaxP> struct ActiveMultiPatch {
     mp.add_patch(make_patch<CartesianMeta>(ncells, xmin, xmax));
   }
 
-  void select_spherical(Index ncells, Coord xmin, Coord xmax,
-                        const CCTK_REAL r0, const CCTK_REAL r1) {
+  void select_spherical(Index ncells, Coord xmin, Coord xmax) {
     mp = {};
-    mp.add_patch(make_patch<SphericalMeta>(ncells, xmin, xmax, r0, r1));
+    mp.add_patch(make_patch<SphericalMeta>(ncells, xmin, xmax));
   }
 
   void select_cubedsphere(Index ncells, Coord xmin, Coord xmax,
