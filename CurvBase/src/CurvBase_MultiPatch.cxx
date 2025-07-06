@@ -57,8 +57,8 @@ extern "C" CCTK_INT CurvBase_MultiPatch_GetPatchSpecification(
   const Patch *patch = mp.get_patch(static_cast<std::size_t>(ipatch));
   assert(patch != nullptr);
 
-  if (is_cartesian) {
-    *is_cartesian = patch->is_cartesian ? 1 : 0;
+  if (is_cartesian != nullptr) {
+    *is_cartesian = std::holds_alternative<CartesianMeta>(patch->meta) ? 1 : 0;
   }
 
   for (int d = 0; d < dim; ++d) {
