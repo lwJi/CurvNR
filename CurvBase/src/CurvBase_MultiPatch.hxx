@@ -3,7 +3,6 @@
 
 #include <AMReX_Gpu.H>
 
-#include <optional>
 #include <variant>
 
 #include "CurvBase_Patch.hxx"
@@ -34,16 +33,15 @@ public:
     return (id < count_) ? patches_[id].l2g(l) : Coord{0, 0, 0};
   }
 
-  CCTK_HOST
-  CCTK_DEVICE std::optional<std::pair<Coord, std::size_t>>
+  CCTK_HOST CCTK_DEVICE std::pair<Coord, std::size_t>
   g2l(const Coord &g) const noexcept {
     for (std::size_t i = 0; i < count_; ++i) {
       const Coord loc = patches_[i].g2l(g);
       if (patches_[i].is_valid(loc)) {
-        return std::make_optional(std::make_pair(loc, i));
+        return {loc, i};
       }
     }
-    return std::nullopt;
+    return {Coord{}, -1};
   }
 
   CCTK_HOST CCTK_DEVICE std::size_t size() const noexcept { return count_; }
@@ -66,7 +64,7 @@ template <std::size_t MaxP> struct ActiveMultiPatch {
     return mp.l2g(id, l);
   }
 
-  CCTK_HOST CCTK_DEVICE std::optional<std::pair<Coord, std::size_t>>
+  CCTK_HOST CCTK_DEVICE std::pair<Coord, std::size_t>
   g2l(Coord const &g) const noexcept {
     return mp.g2l(g);
   }
