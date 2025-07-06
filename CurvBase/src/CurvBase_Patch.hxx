@@ -19,8 +19,34 @@ struct FaceInfo {
 };
 
 struct Patch {
-  // metadata container
+
+  // Geometry (POD so it can live in GPU global memory)
+
   std::variant<CartesianMeta, SphericalMeta, CubedSphereMeta> meta{};
+
+  Index ncells{}; // cells per dimension
+  Coord xmin{};   // lower physical bounds
+  Coord xmax{};   // upper physical bounds
+
+  std::array<std::array<FaceInfo, dim>, 2> faces{};
+
+  // Single constructor – guarantees full initialisation
+
+  Patch() = default;
+
+  template <class MetaT, class... MetaArgs>
+  constexpr Patch(MetaT meta_in, Index nc, Coord lo, Coord hi,
+                  MetaArgs &&...rest) noexcept
+      : meta(std::in_place_type<MetaT>, std::forward<MetaT>(meta_in),
+             std::forward<MetaArgs>(rest)...),
+        ncells{nc}, xmin{lo}, xmax{hi} {
+    for (std::size_t d = 0; d < dim; ++d) {
+      assert(ncells[d] > 0 && "ncells must be positive");
+      assert(xmax[d] > xmin[d] && "xmax must exceed xmin");
+    }
+  }
+
+  // Coordinate transfromation
 
   // local -> global
   [[nodiscard]] CCTK_HOST CCTK_DEVICE Coord l2g(Coord const &l) const noexcept {
@@ -64,22 +90,18 @@ struct Patch {
         },
         meta);
   }
-
-  std::array<CCTK_INT, dim> ncells{}; // cells per dimension
-  std::array<CCTK_REAL, dim> xmin{};  // lower physical bounds
-  std::array<CCTK_REAL, dim> xmax{};  // upper physical bounds
-
-  std::array<std::array<FaceInfo, dim>, 2> faces{};
 };
 
 //------------------------------------------------------------------------------
 // Helpers that create individual Patch objects
 //------------------------------------------------------------------------------
 
-template <typename Meta, typename... Args> Patch make_patch(Args &&...args) {
-  Patch p;
-  p.meta.emplace<Meta>(std::forward<Args>(args)...);
-  return p;
+template <class MetaT, class... MetaArgs>
+[[nodiscard]] constexpr Patch make_patch(Index ncells, Coord xmin, Coord xmax,
+                                         MetaArgs &&...meta_args) {
+  static_assert(std::is_constructible_v<MetaT, MetaArgs...>,
+                "Meta cannot be constructed from supplied args");
+  return Patch{MetaT(std::forward<MetaArgs>(meta_args)...), ncells, xmin, xmax};
 }
 
 } // namespace CurvBase

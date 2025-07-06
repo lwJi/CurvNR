@@ -74,25 +74,33 @@ template <std::size_t MaxP> struct ActiveMultiPatch {
   CCTK_HOST CCTK_DEVICE std::size_t size() const noexcept { return mp.size(); }
 
   // helpers that *build* the patch set on the host
-  void select_cartesian() {
+  void select_cartesian(Index ncells, Coord xmin, Coord xmax) {
     mp = {};
-    mp.add_patch(make_patch<CartesianMeta>());
+    mp.add_patch(make_patch<CartesianMeta>(ncells, xmin, xmax));
   }
 
-  void select_spherical(const CCTK_REAL r0, const CCTK_REAL r1) {
+  void select_spherical(Index ncells, Coord xmin, Coord xmax,
+                        const CCTK_REAL r0, const CCTK_REAL r1) {
     mp = {};
-    mp.add_patch(make_patch<SphericalMeta>(r0, r1));
+    mp.add_patch(make_patch<SphericalMeta>(ncells, xmin, xmax, r0, r1));
   }
 
-  void select_cubedsphere(const CCTK_REAL r0, const CCTK_REAL r1) {
+  void select_cubedsphere(Index ncells, Coord xmin, Coord xmax,
+                          const CCTK_REAL r0, const CCTK_REAL r1) {
     mp = {};
-    mp.add_patch(make_patch<CartesianMeta>()); // core
-    mp.add_patch(make_patch<CubedSphereMeta>(Wedge::PX, r0, r1));
-    mp.add_patch(make_patch<CubedSphereMeta>(Wedge::NX, r0, r1));
-    mp.add_patch(make_patch<CubedSphereMeta>(Wedge::PY, r0, r1));
-    mp.add_patch(make_patch<CubedSphereMeta>(Wedge::NY, r0, r1));
-    mp.add_patch(make_patch<CubedSphereMeta>(Wedge::PZ, r0, r1));
-    mp.add_patch(make_patch<CubedSphereMeta>(Wedge::NZ, r0, r1));
+    mp.add_patch(make_patch<CartesianMeta>(ncells, xmin, xmax)); // core
+    mp.add_patch(
+        make_patch<CubedSphereMeta>(ncells, xmin, xmax, Wedge::PX, r0, r1));
+    mp.add_patch(
+        make_patch<CubedSphereMeta>(ncells, xmin, xmax, Wedge::NX, r0, r1));
+    mp.add_patch(
+        make_patch<CubedSphereMeta>(ncells, xmin, xmax, Wedge::PY, r0, r1));
+    mp.add_patch(
+        make_patch<CubedSphereMeta>(ncells, xmin, xmax, Wedge::NY, r0, r1));
+    mp.add_patch(
+        make_patch<CubedSphereMeta>(ncells, xmin, xmax, Wedge::PZ, r0, r1));
+    mp.add_patch(
+        make_patch<CubedSphereMeta>(ncells, xmin, xmax, Wedge::NZ, r0, r1));
   }
 };
 

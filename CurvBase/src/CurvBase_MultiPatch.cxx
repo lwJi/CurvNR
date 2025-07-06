@@ -14,11 +14,17 @@ extern "C" int CurvBase_MultiPatch_Setup() {
   AMP tmp;
 
   if (CCTK_EQUALS(patch_system, "Cartesian")) {
-    tmp.select_cartesian();
+    Index ncells{cartesian_ncells_i, cartesian_ncells_j, cartesian_ncells_k};
+    Coord xmin{cartesian_xmin, cartesian_ymin, cartesian_zmin};
+    Coord xmax{cartesian_xmax, cartesian_ymax, cartesian_zmax};
+    tmp.select_cartesian(ncells, xmin, xmax);
   } else if (CCTK_EQUALS(patch_system, "Spherical")) {
-    tmp.select_spherical(spherical_rmin, spherical_rmax);
-  } else if (CCTK_EQUALS(patch_system, "CubedSphere")) {
-    tmp.select_cubedsphere(cubedsphere_rmin, cubedsphere_rmax);
+    Index ncells{spherical_ncells_r, spherical_ncells_th, spherical_ncells_ph};
+    Coord xmin{spherical_rmin, 0, 0};
+    Coord xmax{spherical_rmax, M_PI, 2.0 * M_PI};
+    tmp.select_spherical(ncells, xmin, xmax, spherical_rmin, spherical_rmax);
+    //} else if (CCTK_EQUALS(patch_system, "CubedSphere")) {
+    //  tmp.select_cubedsphere(cubedsphere_rmin, cubedsphere_rmax);
   } else {
     CCTK_VERROR("Unknown multi-patch system \"%s\"", patch_system);
   }

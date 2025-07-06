@@ -22,8 +22,8 @@ struct SphericalMeta {
 sph_l2g(const Coord &l, const void *m) noexcept {
   const auto *p = static_cast<const SphericalMeta *>(m);
   const CCTK_REAL rho = l[0];                         // [0,1]
-  const CCTK_REAL theta = l[1];                       // [0,2π]
-  const CCTK_REAL phi = l[2];                         // [0,π]
+  const CCTK_REAL theta = l[1];                       // [0,π]
+  const CCTK_REAL phi = l[2];                         // [0,2π]
   const CCTK_REAL r = std::fma(rho, p->dr, p->r_min); // r = rho * dr + r_min
 
   using std::sin, std::cos;
