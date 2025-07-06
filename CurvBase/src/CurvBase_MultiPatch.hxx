@@ -1,6 +1,12 @@
 #ifndef CURVBASE_MULTIPATCH_HXX
 #define CURVBASE_MULTIPATCH_HXX
 
+/**
+ * @file
+ * @brief Defines the MultiPatch container and the global instance for the
+ * system.
+ */
+
 #include <AMReX_Gpu.H>
 
 #include <variant>
