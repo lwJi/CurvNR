@@ -5,13 +5,13 @@
 
 namespace CurvBase {
 
-enum class Face { PX, NX, PY, NY, PZ, NZ };
+enum class Wedge { PX, NX, PY, NY, PZ, NZ };
 
 struct CubedSphereMeta {
-  Face face;               // which cube face
+  Wedge wedge;             // which wedge
   double r_inner, r_outer; // radial extent of the wedge
-  CubedSphereMeta(Face f, double r0, double r1) noexcept
-      : face{f}, r_inner{r0}, r_outer{r1} {}
+  CubedSphereMeta(Wedge w, double r0, double r1) noexcept
+      : wedge{w}, r_inner{r0}, r_outer{r1} {}
 };
 
 [[nodiscard]] CCTK_HOST CCTK_DEVICE inline Coord
@@ -21,18 +21,18 @@ cubedsphere_l2g(const Coord &l, const void *m) noexcept {
   const double r = p->r_inner + rho * (p->r_outer - p->r_inner);
   const double d = std::sqrt(1.0 + xi * xi + eta * eta);
 
-  switch (p->face) {
-  case Face::PX:
+  switch (p->wedge) {
+  case Wedge::PX:
     return {r / d, r * xi / d, r * eta / d};
-  case Face::NX:
+  case Wedge::NX:
     return {-r / d, -r * xi / d, r * eta / d};
-  case Face::PY:
+  case Wedge::PY:
     return {-r * xi / d, r / d, r * eta / d};
-  case Face::NY:
+  case Wedge::NY:
     return {r * xi / d, -r / d, r * eta / d};
-  case Face::PZ:
+  case Wedge::PZ:
     return {r * xi / d, r * eta / d, r / d};
-  case Face::NZ:
+  case Wedge::NZ:
     return {r * xi / d, -r * eta / d, -r / d};
   }
   return {0, 0, 0}; // unreachable
@@ -45,28 +45,28 @@ cubedsphere_g2l(const Coord &g, const void *m) noexcept {
   const double r = std::sqrt(x * x + y * y + z * z);
 
   double xi = 0, eta = 0;
-  switch (p->face) {
-  case Face::PX:
+  switch (p->wedge) {
+  case Wedge::PX:
     xi = y / x;
     eta = z / x;
     break;
-  case Face::NX:
+  case Wedge::NX:
     xi = -y / x;
     eta = z / x;
     break;
-  case Face::PY:
+  case Wedge::PY:
     xi = -x / y;
     eta = z / y;
     break;
-  case Face::NY:
+  case Wedge::NY:
     xi = x / y;
     eta = z / y;
     break;
-  case Face::PZ:
+  case Wedge::PZ:
     xi = x / z;
     eta = y / z;
     break;
-  case Face::NZ:
+  case Wedge::NZ:
     xi = x / z;
     eta = -y / z;
     break;

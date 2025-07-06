@@ -87,12 +87,12 @@ template <std::size_t MaxP> struct ActiveMultiPatch {
   void select_cubedsphere(const CCTK_REAL r0, const CCTK_REAL r1) {
     mp = {};
     mp.add_patch(make_patch<CartesianMeta>()); // core
-    mp.add_patch(make_patch<CubedSphereMeta>(Face::PX, r0, r1));
-    mp.add_patch(make_patch<CubedSphereMeta>(Face::NX, r0, r1));
-    mp.add_patch(make_patch<CubedSphereMeta>(Face::PY, r0, r1));
-    mp.add_patch(make_patch<CubedSphereMeta>(Face::NY, r0, r1));
-    mp.add_patch(make_patch<CubedSphereMeta>(Face::PZ, r0, r1));
-    mp.add_patch(make_patch<CubedSphereMeta>(Face::NZ, r0, r1));
+    mp.add_patch(make_patch<CubedSphereMeta>(Wedge::PX, r0, r1));
+    mp.add_patch(make_patch<CubedSphereMeta>(Wedge::NX, r0, r1));
+    mp.add_patch(make_patch<CubedSphereMeta>(Wedge::PY, r0, r1));
+    mp.add_patch(make_patch<CubedSphereMeta>(Wedge::NY, r0, r1));
+    mp.add_patch(make_patch<CubedSphereMeta>(Wedge::PZ, r0, r1));
+    mp.add_patch(make_patch<CubedSphereMeta>(Wedge::NZ, r0, r1));
   }
 };
 
