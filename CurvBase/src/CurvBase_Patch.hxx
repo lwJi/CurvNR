@@ -23,7 +23,7 @@ struct Patch {
   std::variant<CartesianMeta, SphericalMeta, CubedSphereMeta> meta{};
 
   // local -> global
-  CCTK_HOST CCTK_DEVICE Coord l2g(Coord const &l) const noexcept {
+  [[nodiscard]] CCTK_HOST CCTK_DEVICE Coord l2g(Coord const &l) const noexcept {
     return std::visit(
         [&](auto const &m) noexcept {
           if constexpr (std::is_same_v<decltype(m), CartesianMeta const &>)
@@ -37,7 +37,7 @@ struct Patch {
   }
 
   // global -> local
-  CCTK_HOST CCTK_DEVICE Coord g2l(Coord const &g) const noexcept {
+  [[nodiscard]] CCTK_HOST CCTK_DEVICE Coord g2l(Coord const &g) const noexcept {
     return std::visit(
         [&](auto const &m) noexcept {
           if constexpr (std::is_same_v<decltype(m), CartesianMeta const &>)
@@ -51,7 +51,8 @@ struct Patch {
   }
 
   // validity
-  CCTK_HOST CCTK_DEVICE bool is_valid(Coord const &l) const noexcept {
+  [[nodiscard]] CCTK_HOST CCTK_DEVICE bool
+  is_valid(Coord const &l) const noexcept {
     return std::visit(
         [&](auto const &m) noexcept {
           if constexpr (std::is_same_v<decltype(m), CartesianMeta const &>)

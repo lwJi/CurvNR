@@ -10,7 +10,8 @@ struct SphericalMeta {
   SphericalMeta(double r0, double r1) noexcept : r_min{r0}, r_max{r1} {}
 };
 
-CCTK_HOST CCTK_DEVICE inline Coord sph_l2g(const Coord &l, const void *m) {
+[[nodiscard]] CCTK_HOST CCTK_DEVICE inline Coord
+sph_l2g(const Coord &l, const void *m) noexcept {
   const auto *p = static_cast<const SphericalMeta *>(m);
   const double rho = l[0];   // [0,1]
   const double theta = l[1]; // [0,2π]
@@ -20,7 +21,8 @@ CCTK_HOST CCTK_DEVICE inline Coord sph_l2g(const Coord &l, const void *m) {
           r * std::sin(phi) * std::sin(theta), r * std::cos(phi)};
 }
 
-CCTK_HOST CCTK_DEVICE inline Coord sph_g2l(const Coord &g, const void *m) {
+[[nodiscard]] CCTK_HOST CCTK_DEVICE inline Coord
+sph_g2l(const Coord &g, const void *m) noexcept {
   const auto *p = static_cast<const SphericalMeta *>(m);
   const double x = g[0], y = g[1], z = g[2];
   const double r = std::sqrt(x * x + y * y + z * z);
@@ -29,7 +31,8 @@ CCTK_HOST CCTK_DEVICE inline Coord sph_g2l(const Coord &g, const void *m) {
           std::acos(z / r)};                      // phi
 }
 
-CCTK_HOST CCTK_DEVICE inline bool sph_valid(const Coord &l, const void *m) {
+[[nodiscard]] CCTK_HOST CCTK_DEVICE inline bool
+sph_valid(const Coord &l, const void *m) noexcept {
   const auto *p = static_cast<const SphericalMeta *>(m);
   return (l[0] >= p->r_min && l[0] <= p->r_max) &&
          (l[1] >= 0 && l[1] <= 2 * M_PI) && (l[2] >= 0 && l[2] <= M_PI);

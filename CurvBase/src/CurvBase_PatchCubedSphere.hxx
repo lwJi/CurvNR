@@ -14,8 +14,8 @@ struct CubedSphereMeta {
       : face{f}, r_inner{r0}, r_outer{r1} {}
 };
 
-CCTK_HOST CCTK_DEVICE inline Coord cubedsphere_l2g(const Coord &l,
-                                                   const void *m) {
+[[nodiscard]] CCTK_HOST CCTK_DEVICE inline Coord
+cubedsphere_l2g(const Coord &l, const void *m) noexcept {
   const auto *p = static_cast<const CubedSphereMeta *>(m);
   const double xi = l[0], eta = l[1], rho = l[2];
   const double r = p->r_inner + rho * (p->r_outer - p->r_inner);
@@ -38,8 +38,8 @@ CCTK_HOST CCTK_DEVICE inline Coord cubedsphere_l2g(const Coord &l,
   return {0, 0, 0}; // unreachable
 }
 
-CCTK_HOST CCTK_DEVICE inline Coord cubedsphere_g2l(const Coord &g,
-                                                   const void *m) {
+[[nodiscard]] CCTK_HOST CCTK_DEVICE inline Coord
+cubedsphere_g2l(const Coord &g, const void *m) noexcept {
   const auto *p = static_cast<const CubedSphereMeta *>(m);
   const double x = g[0], y = g[1], z = g[2];
   const double r = std::sqrt(x * x + y * y + z * z);
@@ -75,8 +75,8 @@ CCTK_HOST CCTK_DEVICE inline Coord cubedsphere_g2l(const Coord &g,
   return {xi, eta, rho};
 }
 
-CCTK_HOST CCTK_DEVICE inline bool cubedsphere_valid(const Coord &l,
-                                                    const void *m) {
+[[nodiscard]] CCTK_HOST CCTK_DEVICE inline bool
+cubedsphere_valid(const Coord &l, const void *m) noexcept {
   return (l[0] >= -1 && l[0] <= 1) && (l[1] >= -1 && l[1] <= 1) &&
          (l[2] >= 0 && l[2] <= 1);
 }

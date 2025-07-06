@@ -7,15 +7,18 @@ namespace CurvBase {
 
 struct CartesianMeta {};
 
-CCTK_HOST CCTK_DEVICE inline Coord cart_l2g(const Coord &l, const void *) {
+[[nodiscard]] CCTK_HOST CCTK_DEVICE inline Coord
+cart_l2g(const Coord &l, const void *) noexcept {
   return l;
 }
 
-CCTK_HOST CCTK_DEVICE inline Coord cart_g2l(const Coord &g, const void *) {
+[[nodiscard]] CCTK_HOST CCTK_DEVICE inline Coord
+cart_g2l(const Coord &g, const void *) noexcept {
   return g;
 }
 
-CCTK_HOST CCTK_DEVICE inline bool cart_valid(const Coord &, const void *) {
+[[nodiscard]] CCTK_HOST CCTK_DEVICE inline bool
+cart_valid(const Coord &, const void *) noexcept {
   return true;
 }
 
