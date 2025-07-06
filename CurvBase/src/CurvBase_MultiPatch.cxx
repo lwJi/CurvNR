@@ -45,9 +45,9 @@ extern "C" void CurvBase_MultiPatch_Coordinates_Setup(CCTK_ARGUMENTS) {
   auto &mp = active_mp();
 }
 
-//------------------------------------------------------------------------------
+//==============================================================================
 // Interfaces with the CarpetX driver
-//------------------------------------------------------------------------------
+//==============================================================================
 
 extern "C" CCTK_INT
 CurvBase_MultiPatch_GetSystemSpecification(CCTK_INT *restrict const npatches) {
