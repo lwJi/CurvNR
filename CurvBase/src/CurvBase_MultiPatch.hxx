@@ -45,59 +45,25 @@ public:
   }
 
   CCTK_HOST CCTK_DEVICE std::size_t size() const noexcept { return count_; }
-};
 
-//------------------------------------------------------------------------------
-// Runtime-selectable patch system
-//------------------------------------------------------------------------------
-
-template <std::size_t MaxP> struct ActiveMultiPatch {
-  MultiPatch<MaxP> mp; // just one concrete object
-
-  // thin wrappers forward to mp
-  CCTK_HOST CCTK_DEVICE const Patch *get_patch(std::size_t id) const noexcept {
-    return mp.get_patch(id);
+  // HOST-ONLY BUILDERS (never called from device)
+  CCTK_HOST void select_cartesian(Index ncells, Coord xmin, Coord xmax) {
+    *this = {};
+    add_patch(make_patch<CartesianMeta>(ncells, xmin, xmax));
   }
 
-  CCTK_HOST CCTK_DEVICE Coord l2g(std::size_t id,
-                                  Coord const &l) const noexcept {
-    return mp.l2g(id, l);
+  CCTK_HOST void select_spherical(Index ncells, Coord xmin, Coord xmax) {
+    *this = {};
+    add_patch(make_patch<SphericalMeta>(ncells, xmin, xmax));
   }
 
-  CCTK_HOST CCTK_DEVICE std::pair<Coord, std::size_t>
-  g2l(Coord const &g) const noexcept {
-    return mp.g2l(g);
-  }
-
-  CCTK_HOST CCTK_DEVICE std::size_t size() const noexcept { return mp.size(); }
-
-  // helpers that *build* the patch set on the host
-  void select_cartesian(Index ncells, Coord xmin, Coord xmax) {
-    mp = {};
-    mp.add_patch(make_patch<CartesianMeta>(ncells, xmin, xmax));
-  }
-
-  void select_spherical(Index ncells, Coord xmin, Coord xmax) {
-    mp = {};
-    mp.add_patch(make_patch<SphericalMeta>(ncells, xmin, xmax));
-  }
-
-  void select_cubedsphere(Index ncells, Coord xmin, Coord xmax,
-                          const CCTK_REAL r0, const CCTK_REAL r1) {
-    mp = {};
-    mp.add_patch(make_patch<CartesianMeta>(ncells, xmin, xmax)); // core
-    mp.add_patch(
-        make_patch<CubedSphereMeta>(ncells, xmin, xmax, Wedge::PX, r0, r1));
-    mp.add_patch(
-        make_patch<CubedSphereMeta>(ncells, xmin, xmax, Wedge::NX, r0, r1));
-    mp.add_patch(
-        make_patch<CubedSphereMeta>(ncells, xmin, xmax, Wedge::PY, r0, r1));
-    mp.add_patch(
-        make_patch<CubedSphereMeta>(ncells, xmin, xmax, Wedge::NY, r0, r1));
-    mp.add_patch(
-        make_patch<CubedSphereMeta>(ncells, xmin, xmax, Wedge::PZ, r0, r1));
-    mp.add_patch(
-        make_patch<CubedSphereMeta>(ncells, xmin, xmax, Wedge::NZ, r0, r1));
+  CCTK_HOST void select_cubedsphere(Index ncells, Coord xmin, Coord xmax,
+                                    CCTK_REAL r0, CCTK_REAL r1) {
+    *this = {};
+    add_patch(make_patch<CartesianMeta>(ncells, xmin, xmax)); // core
+    for (auto w :
+         {Wedge::PX, Wedge::NX, Wedge::PY, Wedge::NY, Wedge::PZ, Wedge::NZ})
+      add_patch(make_patch<CubedSphereMeta>(ncells, xmin, xmax, w, r0, r1));
   }
 };
 
@@ -105,7 +71,7 @@ template <std::size_t MaxP> struct ActiveMultiPatch {
 // Live in unified memory
 //------------------------------------------------------------------------------
 
-using AMP = ActiveMultiPatch<10>; // maximum 10 patches
+using AMP = MultiPatch<10>; // maximum 10 patches
 
 AMREX_GPU_MANAGED AMP g_active_mp;
 
