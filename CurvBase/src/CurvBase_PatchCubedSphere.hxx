@@ -20,7 +20,7 @@ cubedsphere_l2g(const Coord &l, const void *m) noexcept {
   const auto *p = static_cast<const CubedSphereMeta *>(m);
   const CCTK_REAL xi = l[0], eta = l[1], rho = l[2];
   const CCTK_REAL r = std::fma(rho, (p->r_outer - p->r_inner), p->r_inner);
-  const CCTK_REAL d = std::sqrt(1.0 + xi * xi + eta * eta);
+  const CCTK_REAL d = std::sqrt(CCTK_REAL{1} + xi * xi + eta * eta);
 
   switch (p->wedge) {
   case Wedge::PX:
@@ -37,6 +37,17 @@ cubedsphere_l2g(const Coord &l, const void *m) noexcept {
     return {r * xi / d, -r * eta / d, -r / d};
   }
   return {0, 0, 0}; // unreachable
+
+  // Replace six-way switch with a tiny look-up + sign matrix – no
+  // divergence.
+  // constexpr int perm[6][3] = {{0, 1, 2}, {0, 1, 2}, {1, 0, 2},
+  //                             {1, 0, 2}, {0, 1, 2}, {0, 1, 2}};
+  // constexpr int sgn[6][3] = {{+1, +1, +1}, {-1, -1, +1}, {-1, +1, +1},
+  //                            {+1, -1, +1}, {+1, +1, +1}, {+1, -1, -1}};
+  // const int f = static_cast<int>(p->wedge);
+  // const Coord v{r / d, r * xi / d, r * eta / d};
+  // return {sgn[f][0] * v[perm[f][0]], sgn[f][1] * v[perm[f][1]],
+  //         sgn[f][2] * v[perm[f][2]]};
 }
 
 [[nodiscard]] CCTK_HOST CCTK_DEVICE inline Coord
