@@ -104,8 +104,8 @@ public:
            "Exceeded MaxP patches");
     for (const auto w :
          {Wedge::PX, Wedge::NX, Wedge::PY, Wedge::NY, Wedge::PZ, Wedge::NZ}) {
-      assert(add_patch(
-                 make_patch<CubedSphereMeta>(ncells, xmin, xmax, w, r0, r1)) &&
+      assert(add_patch(make_patch<CubedSphereWedgeMeta>(ncells, xmin, xmax, w,
+                                                        r0, r1)) &&
              "Exceeded MaxP patches");
     }
   }

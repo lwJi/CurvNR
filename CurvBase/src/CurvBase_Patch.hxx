@@ -11,7 +11,7 @@
 #include <variant>
 
 #include "CurvBase_PatchCartesian.hxx"
-#include "CurvBase_PatchCubedSphere.hxx"
+#include "CurvBase_PatchCubedSphereWedge.hxx"
 #include "CurvBase_PatchSpherical.hxx"
 
 namespace CurvBase {
@@ -31,8 +31,8 @@ struct L2GVisitor {
     return sph_l2g(l, &m);
   }
   CCTK_HOST CCTK_DEVICE Coord
-  operator()(const CubedSphereMeta &m) const noexcept {
-    return cubedsphere_l2g(l, &m);
+  operator()(const CubedSphereWedgeMeta &m) const noexcept {
+    return cubedspherewedge_l2g(l, &m);
   }
 };
 
@@ -47,8 +47,8 @@ struct G2LVisitor {
     return sph_g2l(g, &m);
   }
   CCTK_HOST CCTK_DEVICE Coord
-  operator()(const CubedSphereMeta &m) const noexcept {
-    return cubedsphere_g2l(g, &m);
+  operator()(const CubedSphereWedgeMeta &m) const noexcept {
+    return cubedspherewedge_g2l(g, &m);
   }
 };
 
@@ -61,8 +61,8 @@ struct IsValidVisitor {
     return sph_valid(l, &m);
   }
   CCTK_HOST CCTK_DEVICE bool
-  operator()(const CubedSphereMeta &m) const noexcept {
-    return cubedsphere_valid(l, &m);
+  operator()(const CubedSphereWedgeMeta &m) const noexcept {
+    return cubedspherewedge_valid(l, &m);
   }
 };
 
@@ -83,7 +83,7 @@ struct FaceInfo {
  */
 struct Patch {
 
-  std::variant<CartesianMeta, SphericalMeta, CubedSphereMeta> meta{};
+  std::variant<CartesianMeta, SphericalMeta, CubedSphereWedgeMeta> meta{};
   Index ncells{};
   Coord xmin{}, xmax{}, dx{};
   std::array<std::array<FaceInfo, dim>, 2> faces{};
