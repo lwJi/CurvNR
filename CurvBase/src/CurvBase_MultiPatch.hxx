@@ -118,6 +118,8 @@ using AMP = MultiPatch<MAX_PATCHES>;
 
 AMREX_GPU_MANAGED AMP g_active_mp;
 
+// CCTK_DEVICE AMP *d_mp_ptr = &g_active_mp; // used on device only
+
 inline AMP &active_mp() { return g_active_mp; }
 
 } // namespace CurvBase
