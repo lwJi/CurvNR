@@ -24,7 +24,6 @@ namespace CurvBase {
  * @brief Holds information about a single face of a patch.
  */
 struct FaceInfo {
-  /// @brief True if this face is an outer boundary of the entire domain.
   bool is_outer_boundary{true};
 };
 
@@ -41,41 +40,17 @@ struct FaceInfo {
  */
 struct Patch {
 
-  // --- Member Data -----------------------------------------------------------
-  // This data is structured to be GPU-friendly.
-
-  /// @brief The coordinate system metadata, determining the mapping for this
-  /// patch.
   std::variant<CartesianMeta, SphericalMeta, CubedSphereMeta> meta{};
 
-  /// @brief The number of grid cells in each logical dimension (i, j, k).
   Index ncells{};
-  /// @brief The lower bounds of the patch in its own local coordinates.
   Coord xmin{};
-  /// @brief The upper bounds of the patch in its own local coordinates.
   Coord xmax{};
-  /// @brief The pre-calculated cell spacing in each local dimension.
   Coord dx{};
 
-  /// @brief Information for each of the 6 faces (2 per dimension: low, high).
   std::array<std::array<FaceInfo, dim>, 2> faces{};
 
-  // --- Construction ----------------------------------------------------------
-
-  /// @brief Default constructor for array initialization.
   CCTK_HOST Patch() = default;
 
-  /**
-   * @brief Constructs a fully initialized Patch on the host.
-   *
-   * @tparam MetaT The type of the coordinate metadata (e.g., CartesianMeta).
-   * @tparam MetaArgs Argument types for the metadata constructor.
-   * @param meta_in An instance of the metadata.
-   * @param nc The number of cells per dimension.
-   * @param lo The lower bounds in local coordinates.
-   * @param hi The upper bounds in local coordinates.
-   * @param meta_args Additional arguments for the metadata constructor.
-   */
   template <class MetaT, class... MetaArgs>
   CCTK_HOST constexpr Patch(MetaT meta_in, Index nc, Coord lo, Coord hi,
                             MetaArgs &&...meta_args) noexcept
@@ -89,15 +64,6 @@ struct Patch {
     }
   }
 
-  //--- Coordinate Transformations ---------------------------------------------
-  // The following methods use std::visit on the `meta` variant to dispatch
-  // to the correct, statically-typed transformation function.
-
-  /**
-   * @brief Transforms local coordinates within this patch to the global frame.
-   * @param l A point in the local coordinate system of this patch.
-   * @return The corresponding point in the global Cartesian frame.
-   */
   [[nodiscard]] CCTK_HOST CCTK_DEVICE Coord l2g(Coord const &l) const noexcept {
     return std::visit(
         [&](auto const &m) noexcept {
@@ -111,11 +77,6 @@ struct Patch {
         meta);
   }
 
-  /**
-   * @brief Transforms global coordinates into the local frame of this patch.
-   * @param g A point in the global Cartesian frame.
-   * @return The corresponding point in this patch's local coordinate system.
-   */
   [[nodiscard]] CCTK_HOST CCTK_DEVICE Coord g2l(Coord const &g) const noexcept {
     return std::visit(
         [&](auto const &m) noexcept {
@@ -129,15 +90,6 @@ struct Patch {
         meta);
   }
 
-  /**
-   * @brief Checks if a local coordinate point is within the valid domain.
-   *
-   * For example, a cubed-sphere patch is only valid for local coordinates
-   * within [-1, 1] for the tangential dimensions.
-   *
-   * @param l A point in the local coordinate system of this patch.
-   * @return True if the point is within the patch's valid logical domain.
-   */
   [[nodiscard]] CCTK_HOST CCTK_DEVICE bool
   is_valid(Coord const &l) const noexcept {
     return std::visit(
