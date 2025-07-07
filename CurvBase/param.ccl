@@ -93,3 +93,15 @@ REAL spherical_rmax "rmax"
 {
   0:* :: ""
 } +11.8
+
+BOOLEAN spherical_cutout_r "Cutout at r-dir" STEERABLE=always
+{
+} "no"
+
+BOOLEAN spherical_cutout_th "Cutout at theta-dir" STEERABLE=always
+{
+} "no"
+
+BOOLEAN spherical_cutout_ph "Cutout at phi-dir" STEERABLE=always
+{
+} "no"

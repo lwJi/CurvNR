@@ -92,10 +92,17 @@ public:
            "Exceeded MaxP patches");
   }
 
-  CCTK_HOST void select_spherical(Index ncells, Coord xmin, Coord xmax) {
+  CCTK_HOST void select_spherical(Index ncells, Coord xmin, Coord xmax,
+                                  std::array<bool, dim> cutouts) {
     clear();
-    const PatchFaces faces = {{{inner_face, inner_face, inner_face},
-                               {outer_face, inner_face, inner_face}}};
+    FaceInfo rmin_face = (cutouts[0]) ? outer_face : inner_face;
+    FaceInfo rmax_face = outer_face;
+    FaceInfo thmin_face = (cutouts[1]) ? outer_face : inner_face;
+    FaceInfo thmax_face = (cutouts[1]) ? outer_face : inner_face;
+    FaceInfo phmin_face = (cutouts[2]) ? outer_face : inner_face;
+    FaceInfo phmax_face = (cutouts[2]) ? outer_face : inner_face;
+    const PatchFaces faces = {{{rmin_face, thmin_face, phmin_face},
+                               {rmax_face, thmax_face, phmax_face}}};
     assert(add_patch(make_patch<SphericalMeta>(ncells, xmin, xmax, faces)) &&
            "Exceeded MaxP patches");
   }

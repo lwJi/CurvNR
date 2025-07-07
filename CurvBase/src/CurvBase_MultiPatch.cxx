@@ -21,7 +21,10 @@ extern "C" int CurvBase_MultiPatch_Setup() {
     Index ncells{spherical_ncells_r, spherical_ncells_th, spherical_ncells_ph};
     Coord xmin{spherical_rmin, 0, 0};
     Coord xmax{spherical_rmax, onepi, twopi};
-    tmp.select_spherical(ncells, xmin, xmax);
+    std::array<bool, dim> cutouts{spherical_cutout_r != 0,
+                                  spherical_cutout_th != 0,
+                                  spherical_cutout_ph != 0};
+    tmp.select_spherical(ncells, xmin, xmax, cutouts);
   } else if (CCTK_EQUALS(patch_system, "CubedSphere")) {
     Index ncells{cartesian_ncells_i, cartesian_ncells_j, cartesian_ncells_k};
     Coord xmin{-1.0, -1.0, -1.0};
