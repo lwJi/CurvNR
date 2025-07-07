@@ -20,51 +20,9 @@ namespace CurvBase {
 // Patch Definition
 //==============================================================================
 
-struct L2GVisitor {
-  const Coord &l;
-  CCTK_HOST CCTK_DEVICE Coord
-  operator()(const CartesianMeta &m) const noexcept {
-    return cart_l2g(l, &m);
-  }
-  CCTK_HOST CCTK_DEVICE Coord
-  operator()(const SphericalMeta &m) const noexcept {
-    return sph_l2g(l, &m);
-  }
-  CCTK_HOST CCTK_DEVICE Coord
-  operator()(const CubedSphereWedgeMeta &m) const noexcept {
-    return cubedspherewedge_l2g(l, &m);
-  }
-};
-
-struct G2LVisitor {
-  const Coord &g;
-  CCTK_HOST CCTK_DEVICE Coord
-  operator()(const CartesianMeta &m) const noexcept {
-    return cart_g2l(g, &m);
-  }
-  CCTK_HOST CCTK_DEVICE Coord
-  operator()(const SphericalMeta &m) const noexcept {
-    return sph_g2l(g, &m);
-  }
-  CCTK_HOST CCTK_DEVICE Coord
-  operator()(const CubedSphereWedgeMeta &m) const noexcept {
-    return cubedspherewedge_g2l(g, &m);
-  }
-};
-
-struct IsValidVisitor {
-  const Coord &l;
-  CCTK_HOST CCTK_DEVICE bool operator()(const CartesianMeta &m) const noexcept {
-    return cart_valid(l, &m);
-  }
-  CCTK_HOST CCTK_DEVICE bool operator()(const SphericalMeta &m) const noexcept {
-    return sph_valid(l, &m);
-  }
-  CCTK_HOST CCTK_DEVICE bool
-  operator()(const CubedSphereWedgeMeta &m) const noexcept {
-    return cubedspherewedge_valid(l, &m);
-  }
-};
+namespace detail {
+template <class T> struct always_false : std::false_type {};
+} // namespace detail
 
 /**
  * @brief Represents a single computational grid in a larger multipatch system.
@@ -99,16 +57,61 @@ struct Patch {
   }
 
   [[nodiscard]] CCTK_HOST CCTK_DEVICE Coord l2g(const Coord &l) const noexcept {
-    return std::visit(L2GVisitor{l}, meta);
+    return std::visit(
+        [&l](const auto &m) constexpr noexcept -> Coord {
+          using MetaT = std::decay_t<decltype(m)>;
+          if constexpr (std::is_same_v<MetaT, CartesianMeta>) {
+            return cart_l2g(l, &m);
+          } else if constexpr (std::is_same_v<MetaT, SphericalMeta>) {
+            return sph_l2g(l, &m);
+          } else if constexpr (std::is_same_v<MetaT, CubedSphereWedgeMeta>) {
+            return cubedspherewedge_l2g(l, &m);
+          } else {
+            static_assert(detail::always_false<MetaT>::value,
+                          "Unhandled meta type");
+            return {};
+          }
+        },
+        meta);
   }
 
   [[nodiscard]] CCTK_HOST CCTK_DEVICE Coord g2l(const Coord &g) const noexcept {
-    return std::visit(G2LVisitor{g}, meta);
+    return std::visit(
+        [&g](const auto &m) constexpr noexcept -> Coord {
+          using MetaT = std::decay_t<decltype(m)>;
+          if constexpr (std::is_same_v<MetaT, CartesianMeta>) {
+            return cart_g2l(g, &m);
+          } else if constexpr (std::is_same_v<MetaT, SphericalMeta>) {
+            return sph_g2l(g, &m);
+          } else if constexpr (std::is_same_v<MetaT, CubedSphereWedgeMeta>) {
+            return cubedspherewedge_g2l(g, &m);
+          } else {
+            static_assert(detail::always_false<MetaT>::value,
+                          "Unhandled meta type");
+            return {};
+          }
+        },
+        meta);
   }
 
   [[nodiscard]] CCTK_HOST CCTK_DEVICE bool
   is_valid(const Coord &l) const noexcept {
-    return std::visit(IsValidVisitor{l}, meta);
+    return std::visit(
+        [&l](const auto &m) constexpr noexcept -> bool {
+          using MetaT = std::decay_t<decltype(m)>;
+          if constexpr (std::is_same_v<MetaT, CartesianMeta>) {
+            return cart_valid(l, &m);
+          } else if constexpr (std::is_same_v<MetaT, SphericalMeta>) {
+            return sph_valid(l, &m);
+          } else if constexpr (std::is_same_v<MetaT, CubedSphereWedgeMeta>) {
+            return cubedspherewedge_valid(l, &m);
+          } else {
+            static_assert(detail::always_false<MetaT>::value,
+                          "Unhandled meta type");
+            return {};
+          }
+        },
+        meta);
   }
 };
 
