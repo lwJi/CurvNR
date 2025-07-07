@@ -20,9 +20,52 @@ namespace CurvBase {
 // Patch Definition
 //==============================================================================
 
-/**
- * @brief Holds information about a single face of a patch.
- */
+struct L2GVisitor {
+  const Coord &l;
+  CCTK_HOST CCTK_DEVICE Coord
+  operator()(const CartesianMeta &m) const noexcept {
+    return cart_l2g(l, &m);
+  }
+  CCTK_HOST CCTK_DEVICE Coord
+  operator()(const SphericalMeta &m) const noexcept {
+    return sph_l2g(l, &m);
+  }
+  CCTK_HOST CCTK_DEVICE Coord
+  operator()(const CubedSphereMeta &m) const noexcept {
+    return cubedsphere_l2g(l, &m);
+  }
+};
+
+struct G2LVisitor {
+  const Coord &g;
+  CCTK_HOST CCTK_DEVICE Coord
+  operator()(const CartesianMeta &m) const noexcept {
+    return cart_g2l(g, &m);
+  }
+  CCTK_HOST CCTK_DEVICE Coord
+  operator()(const SphericalMeta &m) const noexcept {
+    return sph_g2l(g, &m);
+  }
+  CCTK_HOST CCTK_DEVICE Coord
+  operator()(const CubedSphereMeta &m) const noexcept {
+    return cubedsphere_g2l(g, &m);
+  }
+};
+
+struct IsValidVisitor {
+  const Coord &l;
+  CCTK_HOST CCTK_DEVICE bool operator()(const CartesianMeta &m) const noexcept {
+    return cart_valid(l, &m);
+  }
+  CCTK_HOST CCTK_DEVICE bool operator()(const SphericalMeta &m) const noexcept {
+    return sph_valid(l, &m);
+  }
+  CCTK_HOST CCTK_DEVICE bool
+  operator()(const CubedSphereMeta &m) const noexcept {
+    return cubedsphere_valid(l, &m);
+  }
+};
+
 struct FaceInfo {
   bool is_outer_boundary{true};
 };
@@ -64,44 +107,17 @@ struct Patch {
     }
   }
 
-  [[nodiscard]] CCTK_HOST CCTK_DEVICE Coord l2g(Coord const &l) const noexcept {
-    return std::visit(
-        [&](auto const &m) noexcept {
-          if constexpr (std::is_same_v<decltype(m), CartesianMeta const &>)
-            return cart_l2g(l, &m);
-          else if constexpr (std::is_same_v<decltype(m), SphericalMeta const &>)
-            return sph_l2g(l, &m);
-          else
-            return cubedsphere_l2g(l, &m);
-        },
-        meta);
+  [[nodiscard]] CCTK_HOST CCTK_DEVICE Coord l2g(const Coord &l) const noexcept {
+    return std::visit(L2GVisitor{l}, meta);
   }
 
-  [[nodiscard]] CCTK_HOST CCTK_DEVICE Coord g2l(Coord const &g) const noexcept {
-    return std::visit(
-        [&](auto const &m) noexcept {
-          if constexpr (std::is_same_v<decltype(m), CartesianMeta const &>)
-            return cart_g2l(g, &m);
-          else if constexpr (std::is_same_v<decltype(m), SphericalMeta const &>)
-            return sph_g2l(g, &m);
-          else
-            return cubedsphere_g2l(g, &m);
-        },
-        meta);
+  [[nodiscard]] CCTK_HOST CCTK_DEVICE Coord g2l(const Coord &g) const noexcept {
+    return std::visit(G2LVisitor{g}, meta);
   }
 
   [[nodiscard]] CCTK_HOST CCTK_DEVICE bool
-  is_valid(Coord const &l) const noexcept {
-    return std::visit(
-        [&](auto const &m) noexcept {
-          if constexpr (std::is_same_v<decltype(m), CartesianMeta const &>)
-            return cart_valid(l, &m);
-          else if constexpr (std::is_same_v<decltype(m), SphericalMeta const &>)
-            return sph_valid(l, &m);
-          else
-            return cubedsphere_valid(l, &m);
-        },
-        meta);
+  is_valid(const Coord &l) const noexcept {
+    return std::visit(IsValidVisitor{l}, meta);
   }
 };
 
