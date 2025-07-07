@@ -66,6 +66,12 @@ public:
   [[nodiscard]] CCTK_HOST CCTK_DEVICE std::pair<Coord, std::size_t>
   g2l(const Coord &g) const noexcept {
     for (std::size_t i = 0; i < count_; ++i) {
+      // TODO: Includes AABB check to quickly discard non-overlapping patches.
+      // const auto &p = patches_[i];
+      // if (g[0] < p.g_xmin[0] || g[0] > p.g_xmax[0] || g[1] < p.g_xmin[1] ||
+      //     g[1] > p.g_xmax[1] || g[2] < p.g_xmin[2] || g[2] > p.g_xmax[2]) {
+      //   continue;
+      // }
       const Coord loc = patches_[i].g2l(g);
       if (patches_[i].is_valid(loc)) {
         return {loc, i};
