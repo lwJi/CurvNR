@@ -33,18 +33,48 @@ constexpr void gaussian(const T A, const T W, const T t, const T x, const T y,
   }
 }
 
+template <typename T>
+constexpr void sinewave(const T A, const T freq, const T t, const T x,
+                        const T y, const T z, const T kx, const T ky,
+                        const T kz, T &u, T &rho) {
+  using std::sin, std::cos;
+
+  const T dot = kx * x + ky * y + kz * z;
+  const T omega = 2.0 * M_PI * freq;
+
+  u = A * sin(2.0 * M_PI * dot - omega * t);
+  rho = 0.0; // TODO: fix this
+}
+
 extern "C" void TestSpherical_Initial(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTSX_TestSpherical_Initial;
   DECLARE_CCTK_PARAMETERS;
 
-  grid.loop_int_device<1, 1, 1>(
-      grid.nghostzones,
-      [=] CCTK_DEVICE(const Loop::PointDesc &p) CCTK_ATTRIBUTE_ALWAYS_INLINE {
-        CCTK_REAL t = 6.8;
-        CCTK_REAL rho;
-        gaussian(amplitude, gaussian_width, t, ccoordx(p.I), ccoordy(p.I),
-                 ccoordz(p.I), u(p.I), rho);
-      });
+  if (CCTK_EQUALS(initial_condition, "Sine Wave")) {
+    grid.loop_int_device<1, 1, 1>(
+        grid.nghostzones,
+        [=] CCTK_DEVICE(const Loop::PointDesc &p) CCTK_ATTRIBUTE_ALWAYS_INLINE {
+          const CCTK_REAL t = 0.0;
+          const CCTK_REAL kx = 0.1;
+          const CCTK_REAL ky = 0.1;
+          const CCTK_REAL kz = 0.1;
+          const CCTK_REAL freq = 1.0;
+          CCTK_REAL rho;
+          sinewave(amplitude, freq, t, ccoordx(p.I), ccoordy(p.I), ccoordz(p.I),
+                   kx, ky, kz, u(p.I), rho);
+        });
+  } else if (CCTK_EQUALS(initial_condition, "Gaussian")) {
+    grid.loop_int_device<1, 1, 1>(
+        grid.nghostzones,
+        [=] CCTK_DEVICE(const Loop::PointDesc &p) CCTK_ATTRIBUTE_ALWAYS_INLINE {
+          CCTK_REAL t = 6.8;
+          CCTK_REAL rho;
+          gaussian(amplitude, gaussian_width, t, ccoordx(p.I), ccoordy(p.I),
+                   ccoordz(p.I), u(p.I), rho);
+        });
+  } else {
+    CCTK_ERROR("Unknown initial condition");
+  }
 }
 
 } // namespace TestSpherical
