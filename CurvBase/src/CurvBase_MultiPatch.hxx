@@ -34,7 +34,10 @@ template <std::size_t MaxP> class MultiPatch {
   Patch patches_[MaxP]{};
   std::size_t count_{0};
 
-  static constexpr Coord invalid_coord = {0.0, 0.0, 0.0};
+  static constexpr Coord invalid_coord = {
+      std::numeric_limits<CCTK_REAL>::quiet_NaN(),
+      std::numeric_limits<CCTK_REAL>::quiet_NaN(),
+      std::numeric_limits<CCTK_REAL>::quiet_NaN()};
   static constexpr std::size_t invalid_patch_id = static_cast<std::size_t>(-1);
 
 public:
