@@ -34,20 +34,31 @@ template <std::size_t MaxP> class MultiPatch {
   Patch patches_[MaxP]{};
   std::size_t count_{0};
 
+  static constexpr Coord invalid_coord = {0.0, 0.0, 0.0};
+  static constexpr std::size_t invalid_patch = static_cast<std::size_t>(-1);
+
 public:
   CCTK_HOST MultiPatch() = default;
 
-  CCTK_HOST std::size_t add_patch(const Patch &p) {
-    return (count_ < MaxP) ? (patches_[count_] = p, count_++) : MaxP;
+  CCTK_HOST bool add_patch(const Patch &p) {
+    if (count_ >= MaxP)
+      return false;
+    patches_[count_++] = p;
+    return true;
   }
 
-  CCTK_HOST CCTK_DEVICE const Patch *get_patch(std::size_t id) const noexcept {
+  [[nodiscard]] CCTK_HOST CCTK_DEVICE const Patch *
+  get_patch(std::size_t id) const noexcept {
     return (id < count_) ? &patches_[id] : nullptr;
+  }
+
+  [[nodiscard]] CCTK_HOST CCTK_DEVICE std::size_t size() const noexcept {
+    return count_;
   }
 
   [[nodiscard]] CCTK_HOST CCTK_DEVICE Coord l2g(std::size_t id,
                                                 const Coord &l) const noexcept {
-    return (id < count_) ? patches_[id].l2g(l) : Coord{0, 0, 0};
+    return (id < count_) ? patches_[id].l2g(l) : invalid_coord;
   }
 
   [[nodiscard]] CCTK_HOST CCTK_DEVICE std::pair<Coord, std::size_t>
@@ -58,30 +69,29 @@ public:
         return {loc, i};
       }
     }
-    return {Coord{}, static_cast<std::size_t>(-1)};
+    return {invalid_coord, invalid_patch};
   }
 
-  CCTK_HOST CCTK_DEVICE std::size_t size() const noexcept { return count_; }
-
-  //---- Host-Side Factory Methods ----
+  // --- Host-Side Factory Methods ---
 
   CCTK_HOST void select_cartesian(Index ncells, Coord xmin, Coord xmax) {
-    *this = {};
+    count_ = 0;
     add_patch(make_patch<CartesianMeta>(ncells, xmin, xmax));
   }
 
   CCTK_HOST void select_spherical(Index ncells, Coord xmin, Coord xmax) {
-    *this = {};
+    count_ = 0;
     add_patch(make_patch<SphericalMeta>(ncells, xmin, xmax));
   }
 
   CCTK_HOST void select_cubedsphere(Index ncells, Coord xmin, Coord xmax,
                                     CCTK_REAL r0, CCTK_REAL r1) {
-    *this = {};
+    count_ = 0;
     add_patch(make_patch<CartesianMeta>(ncells, xmin, xmax));
     for (auto w :
-         {Wedge::PX, Wedge::NX, Wedge::PY, Wedge::NY, Wedge::PZ, Wedge::NZ})
+         {Wedge::PX, Wedge::NX, Wedge::PY, Wedge::NY, Wedge::PZ, Wedge::NZ}) {
       add_patch(make_patch<CubedSphereMeta>(ncells, xmin, xmax, w, r0, r1));
+    }
   }
 };
 
