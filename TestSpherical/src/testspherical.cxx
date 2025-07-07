@@ -1,4 +1,3 @@
-#include <CurvBase_MultiPatch.hxx>
 #include <loop_device.hxx>
 
 #include <cctk.h>
@@ -10,7 +9,6 @@
 #include <cmath>
 
 namespace TestSpherical {
-using namespace CurvBase;
 using namespace Loop;
 
 // u(t,r) = (f(t-r) - f(t+r)) / r
@@ -39,17 +37,12 @@ extern "C" void TestSpherical_Initial(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTSX_TestSpherical_Initial;
   DECLARE_CCTK_PARAMETERS;
 
-  auto &mp = active_mp();
-
   grid.loop_int_device<1, 1, 1>(
       grid.nghostzones,
       [=] CCTK_DEVICE(const Loop::PointDesc &p) CCTK_ATTRIBUTE_ALWAYS_INLINE {
         CCTK_REAL rho;
-        const Coord l = {p.x, p.y, p.z};
-        const Coord g = mp.l2g(p.patch, l);
-
-        gaussian(amplitude, gaussian_width, cctk_time, g[0], g[1], g[2], u(p.I),
-                 rho);
+        gaussian(amplitude, gaussian_width, cctk_time, ccoordx(p.I),
+                 ccoordy(p.I), ccoordz(p.I), u(p.I), rho);
       });
 }
 
