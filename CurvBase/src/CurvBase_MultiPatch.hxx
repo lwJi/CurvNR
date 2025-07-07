@@ -45,12 +45,12 @@ public:
     return (id < count_) ? &patches_[id] : nullptr;
   }
 
-  CCTK_HOST CCTK_DEVICE Coord l2g(std::size_t id,
-                                  const Coord &l) const noexcept {
+  [[nodiscard]] CCTK_HOST CCTK_DEVICE Coord l2g(std::size_t id,
+                                                const Coord &l) const noexcept {
     return (id < count_) ? patches_[id].l2g(l) : Coord{0, 0, 0};
   }
 
-  CCTK_HOST CCTK_DEVICE std::pair<Coord, std::size_t>
+  [[nodiscard]] CCTK_HOST CCTK_DEVICE std::pair<Coord, std::size_t>
   g2l(const Coord &g) const noexcept {
     for (std::size_t i = 0; i < count_; ++i) {
       const Coord loc = patches_[i].g2l(g);
