@@ -5,7 +5,6 @@ IMPLEMENTS: TestSpherical
 INHERITS: CoordinatesX CurvBase
 
 USES INCLUDE HEADER: loop_device.hxx
-USES INCLUDE HEADER: CurvBase_MultiPatch.hxx
 
 
 CCTK_REAL ustate TYPE=gf CENTERING={ccc} TAGS='checkpoint="yes"'
