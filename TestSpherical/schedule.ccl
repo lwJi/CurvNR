@@ -1,0 +1,10 @@
+# Schedule definitions for thorn TestSpherical
+
+STORAGE: ustate
+
+SCHEDULE TestSpherical_Initial AT initial
+{
+  LANG: C
+  WRITES: ustate(interior)
+  SYNC: ustate
+} "Initialize scalar wave state"

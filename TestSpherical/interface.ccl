@@ -1,0 +1,13 @@
+# Interface definition for thorn TestSpherical
+
+IMPLEMENTS: TestSpherical
+
+INHERITS: CoordinatesX CurvBase
+
+USES INCLUDE HEADER: loop_device.hxx
+
+
+CCTK_REAL ustate TYPE=gf CENTERING={ccc} TAGS='checkpoint="yes"'
+{
+  u
+} "Scalar wave state vector"
