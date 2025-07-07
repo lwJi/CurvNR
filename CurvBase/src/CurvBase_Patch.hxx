@@ -84,22 +84,16 @@ struct FaceInfo {
 struct Patch {
 
   std::variant<CartesianMeta, SphericalMeta, CubedSphereMeta> meta{};
-
   Index ncells{};
-  Coord xmin{};
-  Coord xmax{};
-  Coord dx{};
-
+  Coord xmin{}, xmax{}, dx{};
   std::array<std::array<FaceInfo, dim>, 2> faces{};
 
   CCTK_HOST Patch() = default;
 
-  template <class MetaT, class... MetaArgs>
-  CCTK_HOST constexpr Patch(MetaT meta_in, Index nc, Coord lo, Coord hi,
-                            MetaArgs &&...meta_args) noexcept
-      : meta(std::in_place_type<MetaT>, std::move(meta_in),
-             std::forward<MetaArgs>(meta_args)...),
-        ncells{nc}, xmin{lo}, xmax{hi} {
+  template <class MetaT>
+  CCTK_HOST constexpr Patch(MetaT meta_in, Index nc, Coord lo,
+                            Coord hi) noexcept
+      : meta(std::move(meta_in)), ncells{nc}, xmin{lo}, xmax{hi} {
     for (std::size_t d = 0; d < dim; ++d) {
       assert(ncells[d] > 0 && "ncells must be positive");
       assert(xmax[d] > xmin[d] && "xmax must exceed xmin");
@@ -136,11 +130,12 @@ struct Patch {
  * @return A fully constructed Patch object.
  */
 template <class MetaT, class... MetaArgs>
-[[nodiscard]] constexpr Patch make_patch(Index ncells, Coord xmin, Coord xmax,
-                                         MetaArgs &&...meta_args) {
+[[nodiscard]] CCTK_HOST constexpr auto
+make_patch(Index ncells, Coord xmin, Coord xmax,
+           MetaArgs &&...meta_args) noexcept {
   static_assert(std::is_constructible_v<MetaT, MetaArgs...>,
-                "Meta cannot be constructed from supplied args");
-  return Patch{MetaT(std::forward<MetaArgs>(meta_args)...), ncells, xmin, xmax};
+                "MetaT cannot be constructed from supplied args");
+  return Patch(MetaT(std::forward<MetaArgs>(meta_args)...), ncells, xmin, xmax);
 }
 
 } // namespace CurvBase
