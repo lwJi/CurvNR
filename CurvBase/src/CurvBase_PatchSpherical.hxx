@@ -11,38 +11,42 @@ namespace CurvBase {
 struct SphericalMeta {};
 
 [[nodiscard]] CCTK_HOST CCTK_DEVICE inline Coord
-sph_l2g(const Coord &l, const void *m) noexcept {
-  const CCTK_REAL r = l[0];
-  const CCTK_REAL theta = l[1]; // Polar angle [0, π]
-  const CCTK_REAL phi = l[2];   // Azimuthal angle [0, 2π]
+sph_l2g(const Coord &l, const void *) noexcept {
+  const CCTK_REAL r = l[0], theta = l[1], phi = l[2];
 
-  using std::sin, std::cos;
-  const CCTK_REAL sinth = sin(theta);
-  return {r * sinth * cos(phi), r * sinth * sin(phi), r * cos(theta)};
+  // On GPUs, calling a `sincos` intrinsic to compute sine and cosine
+  // simultaneously is often faster than separate calls.
+  // Example: sincos(theta, &sin_theta, &cos_theta);
+  const CCTK_REAL sinth = std::sin(theta);
+  const CCTK_REAL costh = std::cos(theta);
+  const CCTK_REAL sinph = std::sin(phi);
+  const CCTK_REAL cosph = std::cos(phi);
+
+  return {r * sinth * cosph, r * sinth * sinph, r * costh};
 }
 
 [[nodiscard]] CCTK_HOST CCTK_DEVICE inline Coord
-sph_g2l(const Coord &g, const void *m) noexcept {
+sph_g2l(const Coord &g, const void *) noexcept {
   const CCTK_REAL x = g[0], y = g[1], z = g[2];
-  const CCTK_REAL r = std::sqrt(x * x + y * y + z * z);
-  if (r == 0.0)
-    return {0, 0, 0}; // Handle origin singularity
+  const CCTK_REAL r_sq = std::fma(x, x, std::fma(y, y, z * z));
+  const CCTK_REAL r = std::sqrt(r_sq);
 
-  // atan2(y, x) returns (-π, π]; wrap to [0, 2π) for consistency
-  using std::atan2, std::acos;
-  CCTK_REAL phi = atan2(y, x); // Azimuthal
+  if (r == 0.0)
+    return {0, 0, 0};
+
+  // atan2 handles signs correctly and is more stable than atan(y/x)
+  CCTK_REAL phi = std::atan2(y, x);
   if (phi < 0.0)
     phi += twopi;
 
-  // Clamp argument to acos to avoid NaNs from floating point noise
-  const CCTK_REAL costheta = z / r;
-  const CCTK_REAL theta = acos(std::clamp(costheta, -1.0, 1.0)); // Polar
+  // Clamp argument to acos to prevent NaNs from floating-point error
+  const CCTK_REAL theta = std::acos(std::clamp(z / r, -1.0, 1.0));
 
   return {r, theta, phi};
 }
 
 [[nodiscard]] CCTK_HOST CCTK_DEVICE inline bool
-sph_valid(const Coord &l, const void *m) noexcept {
+sph_valid(const Coord &, const void *) noexcept {
   return true;
 }
 
