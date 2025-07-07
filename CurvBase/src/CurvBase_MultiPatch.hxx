@@ -40,6 +40,8 @@ template <std::size_t MaxP> class MultiPatch {
 public:
   CCTK_HOST MultiPatch() = default;
 
+  CCTK_HOST void clear() noexcept { count_ = 0; }
+
   CCTK_HOST bool add_patch(const Patch &p) {
     if (count_ >= MaxP)
       return false;
@@ -75,22 +77,28 @@ public:
   // --- Host-Side Factory Methods ---
 
   CCTK_HOST void select_cartesian(Index ncells, Coord xmin, Coord xmax) {
-    count_ = 0;
-    add_patch(make_patch<CartesianMeta>(ncells, xmin, xmax));
+    clear();
+    assert(add_patch(make_patch<CartesianMeta>(ncells, xmin, xmax)) &&
+           "Exceeded MaxP patches");
   }
 
   CCTK_HOST void select_spherical(Index ncells, Coord xmin, Coord xmax) {
-    count_ = 0;
-    add_patch(make_patch<SphericalMeta>(ncells, xmin, xmax));
+    clear();
+    assert(add_patch(make_patch<SphericalMeta>(ncells, xmin, xmax)) &&
+           "Exceeded MaxP patches");
   }
 
   CCTK_HOST void select_cubedsphere(Index ncells, Coord xmin, Coord xmax,
                                     CCTK_REAL r0, CCTK_REAL r1) {
-    count_ = 0;
-    add_patch(make_patch<CartesianMeta>(ncells, xmin, xmax));
-    for (auto w :
+    clear();
+    static_assert(MaxP >= 7, "MaxP must be at least 7 for CubedSphere");
+    assert(add_patch(make_patch<CartesianMeta>(ncells, xmin, xmax)) &&
+           "Exceeded MaxP patches");
+    for (const auto w :
          {Wedge::PX, Wedge::NX, Wedge::PY, Wedge::NY, Wedge::PZ, Wedge::NZ}) {
-      add_patch(make_patch<CubedSphereMeta>(ncells, xmin, xmax, w, r0, r1));
+      assert(add_patch(
+                 make_patch<CubedSphereMeta>(ncells, xmin, xmax, w, r0, r1)) &&
+             "Exceeded MaxP patches");
     }
   }
 };
@@ -99,7 +107,8 @@ public:
 // Global Multipatch Instance
 //==============================================================================
 
-using AMP = MultiPatch<10>;
+constexpr std::size_t MAX_PATCHES = 10;
+using AMP = MultiPatch<MAX_PATCHES>;
 
 AMREX_GPU_MANAGED AMP g_active_mp;
 
