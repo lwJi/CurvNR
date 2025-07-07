@@ -40,7 +40,7 @@ extern "C" void TestSpherical_Initial(CCTK_ARGUMENTS) {
   grid.loop_int_device<1, 1, 1>(
       grid.nghostzones,
       [=] CCTK_DEVICE(const Loop::PointDesc &p) CCTK_ATTRIBUTE_ALWAYS_INLINE {
-        CCTK_REAL t = 1.0;
+        CCTK_REAL t = 10.0;
         CCTK_REAL rho;
         gaussian(amplitude, gaussian_width, t, p.x, p.y, p.z, u(p.I), rho);
       });
