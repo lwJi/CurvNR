@@ -40,7 +40,8 @@ sph_g2l(const Coord &g, const void *) noexcept {
     phi += twopi;
 
   // Clamp argument to acos to prevent NaNs from floating-point error
-  const CCTK_REAL theta = std::acos(std::clamp(z / r, -1.0, 1.0));
+  const CCTK_REAL safe_arg = std::clamp(z / r, -1.0, 1.0);
+  const CCTK_REAL theta = std::acos(safe_arg);
 
   return {r, theta, phi};
 }
