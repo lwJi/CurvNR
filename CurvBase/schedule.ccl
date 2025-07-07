@@ -14,9 +14,9 @@ if (!CCTK_EQUALS(patch_system, "none")) {
     LANG: C
     WRITES: CoordinatesX::vertex_coords(everywhere)
     WRITES: CoordinatesX::cell_coords(everywhere)
-    WRITES: CoordinatesX::cell_volume(everywhere)
-    WRITES: vertex_Jacobians(everywhere)
-    WRITES: vertex_dJacobians(everywhere)
+    #WRITES: CoordinatesX::cell_volume(everywhere)
+    #WRITES: vertex_Jacobians(everywhere)
+    #WRITES: vertex_dJacobians(everywhere)
   } "Set coordinate grid functions"
 
   #SCHEDULE MultiPatch_Check_Parameters AT paramcheck

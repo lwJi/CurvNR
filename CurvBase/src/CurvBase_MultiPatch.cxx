@@ -39,10 +39,33 @@ extern "C" int CurvBase_MultiPatch_Setup() {
 }
 
 extern "C" void CurvBase_MultiPatch_Coordinates_Setup(CCTK_ARGUMENTS) {
+  DECLARE_CCTK_ARGUMENTSX_CurvBase_MultiPatch_Coordinates_Setup;
   DECLARE_CCTK_PARAMETERS;
 
   // access active multipatch system
   auto &mp = active_mp();
+
+  grid.loop_all_device<0, 0, 0>(grid.nghostzones,
+                                [=] ARITH_DEVICE(const Loop::PointDesc &p)
+                                    ARITH_INLINE {
+                                      const Coord l = {p.x, p.y, p.z};
+                                      const Coord g = mp.l2g(p.patch, l);
+
+                                      vcoordx(p.I) = g[0];
+                                      vcoordy(p.I) = g[1];
+                                      vcoordz(p.I) = g[2];
+                                    });
+
+  grid.loop_all_device<1, 1, 1>(grid.nghostzones,
+                                [=] ARITH_DEVICE(const Loop::PointDesc &p)
+                                    ARITH_INLINE {
+                                      const Coord l = {p.x, p.y, p.z};
+                                      const Coord g = mp.l2g(p.patch, l);
+
+                                      ccoordx(p.I) = g[0];
+                                      ccoordy(p.I) = g[1];
+                                      ccoordz(p.I) = g[2];
+                                    });
 }
 
 //==============================================================================
