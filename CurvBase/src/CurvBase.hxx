@@ -3,6 +3,8 @@
 
 #include <array>
 
+#include <loop_device.hxx>
+
 namespace CurvBase {
 using namespace Loop;
 
