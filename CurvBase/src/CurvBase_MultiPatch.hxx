@@ -86,13 +86,17 @@ public:
 
   CCTK_HOST void select_cartesian(Index ncells, Coord xmin, Coord xmax) {
     clear();
-    assert(add_patch(make_patch<CartesianMeta>(ncells, xmin, xmax)) &&
+    const PatchFaces faces = {{{outer_face, outer_face, outer_face},
+                               {outer_face, outer_face, outer_face}}};
+    assert(add_patch(make_patch<CartesianMeta>(ncells, xmin, xmax, faces)) &&
            "Exceeded MaxP patches");
   }
 
   CCTK_HOST void select_spherical(Index ncells, Coord xmin, Coord xmax) {
     clear();
-    assert(add_patch(make_patch<SphericalMeta>(ncells, xmin, xmax)) &&
+    const PatchFaces faces = {{{inner_face, inner_face, inner_face},
+                               {outer_face, inner_face, inner_face}}};
+    assert(add_patch(make_patch<SphericalMeta>(ncells, xmin, xmax, faces)) &&
            "Exceeded MaxP patches");
   }
 
@@ -100,12 +104,19 @@ public:
                                     CCTK_REAL r0, CCTK_REAL r1) {
     clear();
     static_assert(MaxP >= 7, "MaxP must be at least 7 for CubedSphere");
-    assert(add_patch(make_patch<CartesianMeta>(ncells, xmin, xmax)) &&
-           "Exceeded MaxP patches");
+    const PatchFaces central_faces = {{{inner_face, inner_face, inner_face},
+                                       {inner_face, inner_face, inner_face}}};
+    const PatchFaces wedge_faces = {{{inner_face, inner_face, inner_face},
+                                     {inner_face, inner_face, outer_face}}};
+
+    assert(add_patch(
+               make_patch<CartesianMeta>(ncells, xmin, xmax, central_faces)) &&
+           "Exceeded MaxP");
+
     for (const auto w :
          {Wedge::PX, Wedge::NX, Wedge::PY, Wedge::NY, Wedge::PZ, Wedge::NZ}) {
-      assert(add_patch(make_patch<CubedSphereWedgeMeta>(ncells, xmin, xmax, w,
-                                                        r0, r1)) &&
+      assert(add_patch(make_patch<CubedSphereWedgeMeta>(
+                 ncells, xmin, xmax, wedge_faces, w, r0, r1)) &&
              "Exceeded MaxP patches");
     }
   }
