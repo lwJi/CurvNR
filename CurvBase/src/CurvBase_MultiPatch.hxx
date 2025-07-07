@@ -63,6 +63,8 @@ public:
 
   CCTK_HOST CCTK_DEVICE std::size_t size() const noexcept { return count_; }
 
+  //---- Host-Side Factory Methods ----
+
   CCTK_HOST void select_cartesian(Index ncells, Coord xmin, Coord xmax) {
     *this = {};
     add_patch(make_patch<CartesianMeta>(ncells, xmin, xmax));
