@@ -98,6 +98,8 @@ SetMainPrint[
   pr["using namespace Loop;"];
   pr[];
 
+  (* Jacobian from Cartesian to Spherical in terms of Cartesian Coordinates *)
+
   pr["template <typename T>"];
   pr["CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE inline constexpr std::array<T, 9>"];
   pr["calc_jacSinC_inC(const std::array<T, 3> &xC) noexcept {"];
@@ -112,6 +114,8 @@ SetMainPrint[
   pr["  };"];
   pr["}"];
   pr[];
+
+  (* Jacobian from Cartesian to Spherical in terms of Spherical Coordinates *)
 
   pr["template <typename T>"];
   pr["CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE inline constexpr std::array<T, 9>"];
@@ -132,18 +136,19 @@ SetMainPrint[
   pr["}"];
   pr[];
 
-  (*
+  (* Jacobian derivatives from Cartesian to Spherical in terms of Cartesian Coordinates *)
+
   pr["template <typename T>"];
   pr["CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE inline std::array<std::array<T, 9>, 3>"];
-  pr["calc_djacSinC(const std::array<T, 3> &xC) {"];
+  pr["calc_djacSinC_inC(const std::array<T, 3> &xC) {"];
   pr["  const T &x = xC[0], &y = xC[1], &z = xC[2];"];
   pr["  return {"];
   Do[
     pr["    {"];
     Do[
       If[ii != 3 || jj != 3,
-        pr["      " <> ToString[CForm[PDcart[{kk, -cart}][JacSinC[{ii, sph}, {jj, -cart}]] // ToValues]] <> ","],
-        pr["      " <> ToString[CForm[PDcart[{kk, -cart}][JacSinC[{ii, sph}, {jj, -cart}]] // ToValues]]]
+        pr["      " <> ToString[CForm[Refine[(PDcart[{kk, -cart}][JacSinC[{ii, sph}, {jj, -cart}]] // Simplify) /. CartToCRules, {r > 0, rh > 0}] /. CartToCRules]] <> ","],
+        pr["      " <> ToString[CForm[Refine[(PDcart[{kk, -cart}][JacSinC[{ii, sph}, {jj, -cart}]] // Simplify) /. CartToCRules, {r > 0, rh > 0}] /. CartToCRules]]]
       ],
     {ii, 1, 3}, {jj, 1, 3}];
     If[kk != 3,
@@ -154,7 +159,30 @@ SetMainPrint[
   pr["  };"];
   pr["}"];
   pr[];
-  *)
+
+  (* Jacobian derivatives from Cartesian to Spherical in terms of Spherical Coordinates *)
+
+  pr["template <typename T>"];
+  pr["CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE inline std::array<std::array<T, 9>, 3>"];
+  pr["calc_djacSinC_inS(const std::array<T, 3> &xS) {"];
+  pr["  const T &x = xS[0], &y = xS[1], &z = xS[2];"];
+  pr["  return {"];
+  Do[
+    pr["    {"];
+    Do[
+      If[ii != 3 || jj != 3,
+        pr["      " <> ToString[CForm[(PDcart[{kk, -cart}][JacSinC[{ii, sph}, {jj, -cart}]] /. Cart2SphRules // FullSimplify) /. SphToCRules /. SphToCRules]] <> ","],
+        pr["      " <> ToString[CForm[(PDcart[{kk, -cart}][JacSinC[{ii, sph}, {jj, -cart}]] /. Cart2SphRules // FullSimplify) /. SphToCRules /. SphToCRules]]]
+      ],
+    {ii, 1, 3}, {jj, 1, 3}];
+    If[kk != 3,
+      pr["    },"],
+      pr["    }"]
+    ],
+  {kk, 1, 3}];
+  pr["  };"];
+  pr["}"];
+  pr[];
 
   pr["} // namespace CurvBase"];
 ];
