@@ -102,7 +102,7 @@ SetMainPrint[
   (* Jacobian from Cartesian to Spherical in terms of Cartesian Coordinates *)
 
   pr["template <typename T>"];
-  pr["CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE inline constexpr "
+  pr["CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr "
      <> "std::array<T, 9>"];
   pr["calc_jacSinC_inC(const std::array<T, 3> &xC) noexcept {"];
   pr["  const T &x = xC[0], &y = xC[1], &z = xC[2];"];
@@ -129,7 +129,7 @@ SetMainPrint[
   (* Jacobian from Cartesian to Spherical in terms of Spherical Coordinates *)
 
   pr["template <typename T>"];
-  pr["CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE inline constexpr "
+  pr["CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr "
      <>"std::array<T, 9>"];
   pr["calc_jacSinC_inS(const std::array<T, 3> &xS) noexcept {"];
   pr["  const T &r = xS[0], &th = xS[1], &ph = xS[2];"];
@@ -158,7 +158,7 @@ SetMainPrint[
    * Coordinates *)
 
   pr["template <typename T>"];
-  pr["CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE inline constexpr "
+  pr["CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr "
      <> "std::array<std::array<T, 9>, 3>"];
   pr["calc_djacSinC_inC(const std::array<T, 3> &xC) {"];
   pr["  const T &x = xC[0], &y = xC[1], &z = xC[2];"];
@@ -192,7 +192,7 @@ SetMainPrint[
    * Coordinates *)
 
   pr["template <typename T>"];
-  pr["CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE inline constexpr "
+  pr["CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr "
      <> "std::array<std::array<T, 9>, 3>"];
   pr["calc_djacSinC_inS(const std::array<T, 3> &xS) {"];
   pr["  const T &x = xS[0], &y = xS[1], &z = xS[2];"];
