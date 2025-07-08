@@ -110,14 +110,17 @@ SetMainPrint[
      <> "std::array<T, 9>"];
   pr["calc_jacSinC_inC(const std::array<T, 3> &xC) noexcept {"];
   pr["  const T x = xC[0], y = xC[1], z = xC[2];"];
+  pr[];
   pr["  const T r2 = x*x + y*y + z*z;"];
-  pr["  const T rh2 = x*x + y*y;"];
   pr["  const T r = sqrt(r2);"];
+  pr["  const T rh2 = x*x + y*y;"];
   pr["  const T rh = sqrt(rh2);"];
+  pr[];
   pr["  const T rInv = T{1}/r;"];
-  pr["  const T rInv2 = T{1}/r2;"];
+  pr["  const T rInv2 = rInv*rInv;"];
   pr["  const T rhInv = T{1}/rh;"];
-  pr["  const T rhInv2 = T{1}/rh2;"];
+  pr["  const T rhInv2 = rhInv*rhInv;"];
+  pr[];
   pr["  return {"];
   Do[
     If[ii != 3 || jj != 3,
@@ -145,12 +148,15 @@ SetMainPrint[
      <>"std::array<T, 9>"];
   pr["calc_jacSinC_inS(const std::array<T, 3> &xS) noexcept {"];
   pr["  const T r = xS[0], th = xS[1], ph = xS[2];"];
+  pr[];
   pr["  const T st = std::sin(th)"];
   pr["  const T ct = std::cos(th)"];
   pr["  const T sp = std::sin(ph)"];
   pr["  const T cp = std::cos(ph)"];
+  pr[];
   pr["  const T rInv = T{1}/r;"];
   pr["  const T stInv = T{1}/st;"];
+  pr[];
   pr["  return {"];
   Do[
     If[ii != 3 || jj != 3,
@@ -176,6 +182,20 @@ SetMainPrint[
      <> "std::array<std::array<T, 9>, 3>"];
   pr["calc_djacSinC_inC(const std::array<T, 3> &xC) {"];
   pr["  const T x = xC[0], y = xC[1], z = xC[2];"];
+  pr[];
+  pr["  const T r2 = x*x + y*y + z*z;"];
+  pr["  const T r = sqrt(r2);"];
+  pr["  const T rh2 = x*x + y*y;"];
+  pr["  const T rh = sqrt(rh2);"];
+  pr[];
+  pr["  const T rInv = T{1}/r;"];
+  pr["  const T rInv2 = rInv*rInv;"];
+  pr["  const T rInv3 = rInv2*rInv;"];
+  pr["  const T rInv4 = rInv2*rInv2;"];
+  pr["  const T rhInv = T{1}/rh;"];
+  pr["  const T rhInv2 = rhInv*rhInv;"];
+  pr["  const T rhInv3 = rhInv2*rhInv;"];
+  pr[];
   pr["  return {"];
   Do[
     pr["    {"];
