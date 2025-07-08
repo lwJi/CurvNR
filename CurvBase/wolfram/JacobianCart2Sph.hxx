@@ -53,7 +53,7 @@ calc_jacSinC_inS(const std::array<T, 3> &xS) noexcept {
 }
 
 template <typename T>
-CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE inline std::array<std::array<T, 9>, 3>
+CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE inline constexpr std::array<std::array<T, 9>, 3>
 calc_djacSinC_inC(const std::array<T, 3> &xC) {
   const T &x = xC[0], &y = xC[1], &z = xC[2];
   return {
@@ -94,7 +94,7 @@ calc_djacSinC_inC(const std::array<T, 3> &xC) {
 }
 
 template <typename T>
-CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE inline std::array<std::array<T, 9>, 3>
+CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE inline constexpr std::array<std::array<T, 9>, 3>
 calc_djacSinC_inS(const std::array<T, 3> &xS) {
   const T &x = xS[0], &y = xS[1], &z = xS[2];
   return {

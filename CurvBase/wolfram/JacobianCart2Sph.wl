@@ -71,12 +71,13 @@ CartToCRules = {
 };
 SphToCRules = {
     r[] -> r,
-    Sin[\[Theta][]] -> st, Cos[\[Theta][]] -> ct, Sin[\[Phi][]] -> sp, Cos[\[Phi][]] -> cp, Csc[\[Theta][]] -> stInv,
+    Sin[\[Theta][]] -> st, Cos[\[Theta][]] -> ct, Csc[\[Theta][]] -> stInv,
+    Sin[\[Phi][]] -> sp, Cos[\[Phi][]] -> cp,
     r^(n_Integer?Negative) :> Symbol["rInv" <> ToString[-n]],
     rh^(n_Integer?Negative) :> Symbol["rhInv" <> ToString[-n]],
     (* for dJac only *)
-    Sin[2 \[Theta][]] -> s2t, Cos[2 \[Theta][]] -> c2t, Sin[2 \[Phi][]] -> s2p, Cos[2 \[Phi][]] -> c2p,
-    Cot[\[Theta][]] -> cott
+    Sin[2 \[Theta][]] -> s2t, Cos[2 \[Theta][]] -> c2t, Cot[\[Theta][]] -> cott,
+    Sin[2 \[Phi][]] -> s2p, Cos[2 \[Phi][]] -> c2p
 };
 
 (******************)
@@ -101,14 +102,24 @@ SetMainPrint[
   (* Jacobian from Cartesian to Spherical in terms of Cartesian Coordinates *)
 
   pr["template <typename T>"];
-  pr["CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE inline constexpr std::array<T, 9>"];
+  pr["CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE inline constexpr "
+     <> "std::array<T, 9>"];
   pr["calc_jacSinC_inC(const std::array<T, 3> &xC) noexcept {"];
   pr["  const T &x = xC[0], &y = xC[1], &z = xC[2];"];
   pr["  return {"];
   Do[
     If[ii != 3 || jj != 3,
-      pr["    " <> ToString[CForm[Refine[JacSinC[{ii, sph}, {jj, -cart}] /. CartToCRules, {r > 0, rh > 0}] /. CartToCRules]] <> ","],
-      pr["    " <> ToString[CForm[Refine[JacSinC[{ii, sph}, {jj, -cart}] /. CartToCRules, {r > 0, rh > 0}] /. CartToCRules]]]
+      pr["    "
+         <> ToString[CForm[
+              Refine[
+                JacSinC[{ii, sph}, {jj, -cart}] /. CartToCRules,
+              {r > 0, rh > 0}] /. CartToCRules]]
+         <> ","],
+      pr["    "
+         <> ToString[CForm[
+              Refine[
+                JacSinC[{ii, sph}, {jj, -cart}] /. CartToCRules,
+              {r > 0, rh > 0}] /. CartToCRules]]]
     ],
   {ii, 1, 3}, {jj, 1, 3}];
   pr["  };"];
@@ -118,7 +129,8 @@ SetMainPrint[
   (* Jacobian from Cartesian to Spherical in terms of Spherical Coordinates *)
 
   pr["template <typename T>"];
-  pr["CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE inline constexpr std::array<T, 9>"];
+  pr["CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE inline constexpr "
+     <>"std::array<T, 9>"];
   pr["calc_jacSinC_inS(const std::array<T, 3> &xS) noexcept {"];
   pr["  const T &r = xS[0], &th = xS[1], &ph = xS[2];"];
   pr["  const T st = std::sin(th)"];
@@ -128,18 +140,26 @@ SetMainPrint[
   pr["  return {"];
   Do[
     If[ii != 3 || jj != 3,
-      pr["    " <> ToString[CForm[(JacSinC[{ii, sph}, {jj, -cart}] /. Cart2SphRules // FullSimplify) /. SphToCRules /. SphToCRules]] <> ","],
-      pr["    " <> ToString[CForm[(JacSinC[{ii, sph}, {jj, -cart}] /. Cart2SphRules // FullSimplify) /. SphToCRules /. SphToCRules]]]
+      pr["    "
+         <> ToString[CForm[
+              (JacSinC[{ii, sph}, {jj, -cart}] /. Cart2SphRules // FullSimplify)
+                /. SphToCRules /. SphToCRules]] <> ","],
+      pr["    "
+         <> ToString[CForm[
+              (JacSinC[{ii, sph}, {jj, -cart}] /. Cart2SphRules // FullSimplify)
+               /. SphToCRules /. SphToCRules]]]
     ],
   {ii, 1, 3}, {jj, 1, 3}];
   pr["  };"];
   pr["}"];
   pr[];
 
-  (* Jacobian derivatives from Cartesian to Spherical in terms of Cartesian Coordinates *)
+  (* Jacobian derivatives from Cartesian to Spherical in terms of Cartesian
+   * Coordinates *)
 
   pr["template <typename T>"];
-  pr["CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE inline std::array<std::array<T, 9>, 3>"];
+  pr["CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE inline constexpr "
+     <> "std::array<std::array<T, 9>, 3>"];
   pr["calc_djacSinC_inC(const std::array<T, 3> &xC) {"];
   pr["  const T &x = xC[0], &y = xC[1], &z = xC[2];"];
   pr["  return {"];
@@ -147,8 +167,16 @@ SetMainPrint[
     pr["    {"];
     Do[
       If[ii != 3 || jj != 3,
-        pr["      " <> ToString[CForm[Refine[(PDcart[{kk, -cart}][JacSinC[{ii, sph}, {jj, -cart}]] // Simplify) /. CartToCRules, {r > 0, rh > 0}] /. CartToCRules]] <> ","],
-        pr["      " <> ToString[CForm[Refine[(PDcart[{kk, -cart}][JacSinC[{ii, sph}, {jj, -cart}]] // Simplify) /. CartToCRules, {r > 0, rh > 0}] /. CartToCRules]]]
+        pr["      "
+           <> ToString[CForm[
+                Refine[(PDcart[{kk, -cart}][JacSinC[{ii, sph}, {jj, -cart}]]
+                  // Simplify) /. CartToCRules,
+                {r > 0, rh > 0}] /. CartToCRules]] <> ","],
+        pr["      "
+           <> ToString[CForm[
+                Refine[(PDcart[{kk, -cart}][JacSinC[{ii, sph}, {jj, -cart}]]
+                  // Simplify) /. CartToCRules,
+                {r > 0, rh > 0}] /. CartToCRules]]]
       ],
     {ii, 1, 3}, {jj, 1, 3}];
     If[kk != 3,
@@ -160,10 +188,12 @@ SetMainPrint[
   pr["}"];
   pr[];
 
-  (* Jacobian derivatives from Cartesian to Spherical in terms of Spherical Coordinates *)
+  (* Jacobian derivatives from Cartesian to Spherical in terms of Spherical
+   * Coordinates *)
 
   pr["template <typename T>"];
-  pr["CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE inline std::array<std::array<T, 9>, 3>"];
+  pr["CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE inline constexpr "
+     <> "std::array<std::array<T, 9>, 3>"];
   pr["calc_djacSinC_inS(const std::array<T, 3> &xS) {"];
   pr["  const T &x = xS[0], &y = xS[1], &z = xS[2];"];
   pr["  return {"];
@@ -171,8 +201,16 @@ SetMainPrint[
     pr["    {"];
     Do[
       If[ii != 3 || jj != 3,
-        pr["      " <> ToString[CForm[(PDcart[{kk, -cart}][JacSinC[{ii, sph}, {jj, -cart}]] /. Cart2SphRules // FullSimplify) /. SphToCRules /. SphToCRules]] <> ","],
-        pr["      " <> ToString[CForm[(PDcart[{kk, -cart}][JacSinC[{ii, sph}, {jj, -cart}]] /. Cart2SphRules // FullSimplify) /. SphToCRules /. SphToCRules]]]
+        pr["      "
+           <> ToString[CForm[
+                (PDcart[{kk, -cart}][JacSinC[{ii, sph}, {jj, -cart}]]
+                  /. Cart2SphRules // FullSimplify)
+                /. SphToCRules /. SphToCRules]] <> ","],
+        pr["      "
+           <> ToString[CForm[
+                (PDcart[{kk, -cart}][JacSinC[{ii, sph}, {jj, -cart}]]
+                  /. Cart2SphRules // FullSimplify)
+                /. SphToCRules /. SphToCRules]]]
       ],
     {ii, 1, 3}, {jj, 1, 3}];
     If[kk != 3,
