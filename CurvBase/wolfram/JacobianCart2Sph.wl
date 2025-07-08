@@ -66,15 +66,19 @@ CartToCRules = {
     x[]^2 + y[]^2 + z[]^2 -> r^2,
     x[]^2 + y[]^2 -> rh^2,
     x[] -> x, y[] -> y, z[] -> z,
-    r^(n_Integer?Negative) :> Symbol["rInv" <> ToString[-n]],
-    rh^(n_Integer?Negative) :> Symbol["rhInv" <> ToString[-n]]
+    r^(n_Integer?Negative) :> If[-n > 1, Symbol["rInv" <> ToString[-n]],
+                                         Symbol["rInv"]],
+    rh^(n_Integer?Negative) :> If[-n > 1, Symbol["rhInv" <> ToString[-n]],
+                                          Symbol["rhInv"]]
 };
 SphToCRules = {
     r[] -> r,
     Sin[\[Theta][]] -> st, Cos[\[Theta][]] -> ct, Csc[\[Theta][]] -> stInv,
     Sin[\[Phi][]] -> sp, Cos[\[Phi][]] -> cp,
-    r^(n_Integer?Negative) :> Symbol["rInv" <> ToString[-n]],
-    rh^(n_Integer?Negative) :> Symbol["rhInv" <> ToString[-n]],
+    r^(n_Integer?Negative) :> If[-n > 1, Symbol["rInv" <> ToString[-n]],
+                                         Symbol["rInv"]],
+    rh^(n_Integer?Negative) :> If[-n > 1, Symbol["rhInv" <> ToString[-n]],
+                                          Symbol["rhInv"]],
     (* for dJac only *)
     Sin[2 \[Theta][]] -> s2t, Cos[2 \[Theta][]] -> c2t, Cot[\[Theta][]] -> cott,
     Sin[2 \[Phi][]] -> s2p, Cos[2 \[Phi][]] -> c2p
@@ -106,6 +110,14 @@ SetMainPrint[
      <> "std::array<T, 9>"];
   pr["calc_jacSinC_inC(const std::array<T, 3> &xC) noexcept {"];
   pr["  const T x = xC[0], y = xC[1], z = xC[2];"];
+  pr["  const T r2 = x*x + y*y + z*z;"];
+  pr["  const T rh2 = x*x + y*y;"];
+  pr["  const T r = sqrt(r2);"];
+  pr["  const T rh = sqrt(rh2);"];
+  pr["  const T rInv = T{1}/r;"];
+  pr["  const T rInv2 = T{1}/r2;"];
+  pr["  const T rhInv = T{1}/rh;"];
+  pr["  const T rhInv2 = T{1}/rh2;"];
   pr["  return {"];
   Do[
     If[ii != 3 || jj != 3,
@@ -137,6 +149,8 @@ SetMainPrint[
   pr["  const T ct = std::cos(th)"];
   pr["  const T sp = std::sin(ph)"];
   pr["  const T cp = std::cos(ph)"];
+  pr["  const T rInv = T{1}/r;"];
+  pr["  const T stInv = T{1}/st;"];
   pr["  return {"];
   Do[
     If[ii != 3 || jj != 3,
@@ -196,6 +210,12 @@ SetMainPrint[
      <> "std::array<std::array<T, 9>, 3>"];
   pr["calc_djacSinC_inS(const std::array<T, 3> &xS) {"];
   pr["  const T r = xS[0], th = xS[1], ph = xS[2];"];
+  pr["  const T st = std::sin(th)"];
+  pr["  const T ct = std::cos(th)"];
+  pr["  const T sp = std::sin(ph)"];
+  pr["  const T cp = std::cos(ph)"];
+  pr["  const T rInv = T{1}/r;"];
+  pr["  const T stInv = T{1}/st;"];
   pr["  return {"];
   Do[
     pr["    {"];
