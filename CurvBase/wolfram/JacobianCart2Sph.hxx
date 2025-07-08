@@ -15,60 +15,40 @@ namespace CurvBase {
 using namespace Loop;
 
 template <typename T>
-CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE inline std::array<T, 9>
-calc_jacSinC(const std::array<T, 3> &xC) {
+CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE inline constexpr std::array<T, 9>
+calc_jacSinC_inC(const std::array<T, 3> &xC) noexcept {
   const T &x = xC[0], &y = xC[1], &z = xC[2];
   return {
-    x/Sqrt(Power(x,2) + Power(y,2) + Power(z,2)),
-    y/Sqrt(Power(x,2) + Power(y,2) + Power(z,2)),
-    z/Sqrt(Power(x,2) + Power(y,2) + Power(z,2)),
-    (x*z)/(Sqrt(Power(x,2) + Power(y,2))*(Power(x,2) + Power(y,2) + Power(z,2))),
-    (y*z)/(Sqrt(Power(x,2) + Power(y,2))*(Power(x,2) + Power(y,2) + Power(z,2))),
-    -(Sqrt(Power(x,2) + Power(y,2))/(Power(x,2) + Power(y,2) + Power(z,2))),
-    -(y/(Power(x,2) + Power(y,2))),
-    x/(Power(x,2) + Power(y,2)),
+    rInv1*x,
+    rInv1*y,
+    rInv1*z,
+    rhInv1*rInv2*x*z,
+    rhInv1*rInv2*y*z,
+    -(rh*rInv2),
+    -(rhInv2*y),
+    rhInv2*x,
     0
   };
 }
 
 template <typename T>
-CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE inline std::arrya<std::array<T, 9>, 3>
-calc_djacSinC(const std::array<T, 3> &xC) {
-  const T &x = xC[0], &y = xC[1], &z = xC[2];
+CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE inline constexpr std::array<T, 9>
+calc_jacSinC_inS(const std::array<T, 3> &xS) noexcept {
+  const T &r = xS[0], &th = xS[1], &ph = xS[2];
+  const T st = std::sin(th)
+  const T ct = std::cos(th)
+  const T sp = std::sin(ph)
+  const T cp = std::cos(ph)
   return {
-    {
-      -(Power(x,2)/Power(Power(x,2) + Power(y,2) + Power(z,2),1.5)) + 1/Sqrt(Power(x,2) + Power(y,2) + Power(z,2)),
-      -((x*y)/Power(Power(x,2) + Power(y,2) + Power(z,2),1.5)),
-      -((x*z)/Power(Power(x,2) + Power(y,2) + Power(z,2),1.5)),
-      z/(Sqrt(Power(x,2) + Power(y,2))*(Power(x,2) + Power(y,2) + Power(z,2))) + x*((-2*x*z)/(Sqrt(Power(x,2) + Power(y,2))*Power(Power(x,2) + Power(y,2) + Power(z,2),2)) - (x*z)/(Power(Power(x,2) + Power(y,2),1.5)*(Power(x,2) + Power(y,2) + Power(z,2)))),
-      y*((-2*x*z)/(Sqrt(Power(x,2) + Power(y,2))*Power(Power(x,2) + Power(y,2) + Power(z,2),2)) - (x*z)/(Power(Power(x,2) + Power(y,2),1.5)*(Power(x,2) + Power(y,2) + Power(z,2)))),
-      (2*x*Sqrt(Power(x,2) + Power(y,2)))/Power(Power(x,2) + Power(y,2) + Power(z,2),2) - x/(Sqrt(Power(x,2) + Power(y,2))*(Power(x,2) + Power(y,2) + Power(z,2))),
-      (2*x*y)/Power(Power(x,2) + Power(y,2),2),
-      (-2*Power(x,2))/Power(Power(x,2) + Power(y,2),2) + 1/(Power(x,2) + Power(y,2)),
-      0
-    },
-    {
-      -((x*y)/Power(Power(x,2) + Power(y,2) + Power(z,2),1.5)),
-      -(Power(y,2)/Power(Power(x,2) + Power(y,2) + Power(z,2),1.5)) + 1/Sqrt(Power(x,2) + Power(y,2) + Power(z,2)),
-      -((y*z)/Power(Power(x,2) + Power(y,2) + Power(z,2),1.5)),
-      x*((-2*y*z)/(Sqrt(Power(x,2) + Power(y,2))*Power(Power(x,2) + Power(y,2) + Power(z,2),2)) - (y*z)/(Power(Power(x,2) + Power(y,2),1.5)*(Power(x,2) + Power(y,2) + Power(z,2)))),
-      z/(Sqrt(Power(x,2) + Power(y,2))*(Power(x,2) + Power(y,2) + Power(z,2))) + y*((-2*y*z)/(Sqrt(Power(x,2) + Power(y,2))*Power(Power(x,2) + Power(y,2) + Power(z,2),2)) - (y*z)/(Power(Power(x,2) + Power(y,2),1.5)*(Power(x,2) + Power(y,2) + Power(z,2)))),
-      (2*y*Sqrt(Power(x,2) + Power(y,2)))/Power(Power(x,2) + Power(y,2) + Power(z,2),2) - y/(Sqrt(Power(x,2) + Power(y,2))*(Power(x,2) + Power(y,2) + Power(z,2))),
-      (2*Power(y,2))/Power(Power(x,2) + Power(y,2),2) - 1/(Power(x,2) + Power(y,2)),
-      (-2*x*y)/Power(Power(x,2) + Power(y,2),2),
-      0
-    },
-    {
-      -((x*z)/Power(Power(x,2) + Power(y,2) + Power(z,2),1.5)),
-      -((y*z)/Power(Power(x,2) + Power(y,2) + Power(z,2),1.5)),
-      -(Power(z,2)/Power(Power(x,2) + Power(y,2) + Power(z,2),1.5)) + 1/Sqrt(Power(x,2) + Power(y,2) + Power(z,2)),
-      (x*((-2*Power(z,2))/Power(Power(x,2) + Power(y,2) + Power(z,2),2) + 1/(Power(x,2) + Power(y,2) + Power(z,2))))/Sqrt(Power(x,2) + Power(y,2)),
-      (y*((-2*Power(z,2))/Power(Power(x,2) + Power(y,2) + Power(z,2),2) + 1/(Power(x,2) + Power(y,2) + Power(z,2))))/Sqrt(Power(x,2) + Power(y,2)),
-      (2*Sqrt(Power(x,2) + Power(y,2))*z)/Power(Power(x,2) + Power(y,2) + Power(z,2),2),
-      0,
-      0,
-      0
-    }
+    cp*st,
+    sp*st,
+    ct,
+    cp*ct*rInv1,
+    ct*rInv1*sp,
+    -(rInv1*st),
+    -(rInv1*sp*stInv),
+    cp*rInv1*stInv,
+    0
   };
 }
 

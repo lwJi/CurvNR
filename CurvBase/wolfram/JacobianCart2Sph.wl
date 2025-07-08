@@ -44,6 +44,11 @@ CartInSph = r[] {
   Cos[\[Theta][]]
 };
 
+(* Coordinate Transformation Rules *)
+
+Cart2SphRules = Thread[{x[], y[], z[]} -> CartInSph];
+Sph2CartRules = Thread[{r[], \[Theta][], \[Phi][]} -> SphInCart];
+
 (* Define Tensors using Components *)
 
 JacSphInCartMat = Simplify@Outer[D, SphInCart, {x[], y[], z[]}];
@@ -56,10 +61,23 @@ JacSinC = CTensor[JacSphInCartMat, {sph, -cart}];
 
 SetBasisChange[JacSinC, cart]
 
-(* Set Components for Coordinates *)
-ComponentValue[x[], x];
-ComponentValue[y[], y];
-ComponentValue[z[], z];
+(* WriteToC Rules *)
+CartToCRules = {
+    x[]^2 + y[]^2 + z[]^2 -> r^2,
+    x[]^2 + y[]^2 -> rh^2,
+    x[] -> x, y[] -> y, z[] -> z,
+    r^(n_Integer?Negative) :> Symbol["rInv" <> ToString[-n]],
+    rh^(n_Integer?Negative) :> Symbol["rhInv" <> ToString[-n]]
+};
+SphToCRules = {
+    r[] -> r,
+    Sin[\[Theta][]] -> st, Cos[\[Theta][]] -> ct, Sin[\[Phi][]] -> sp, Cos[\[Phi][]] -> cp, Csc[\[Theta][]] -> stInv,
+    r^(n_Integer?Negative) :> Symbol["rInv" <> ToString[-n]],
+    rh^(n_Integer?Negative) :> Symbol["rhInv" <> ToString[-n]],
+    (* for dJac only *)
+    Sin[2 \[Theta][]] -> s2t, Cos[2 \[Theta][]] -> c2t, Sin[2 \[Phi][]] -> s2p, Cos[2 \[Phi][]] -> c2p,
+    Cot[\[Theta][]] -> cott
+};
 
 (******************)
 (* Print to Files *)
@@ -87,8 +105,8 @@ SetMainPrint[
   pr["  return {"];
   Do[
     If[ii != 3 || jj != 3,
-      pr["    " <> ToString[CForm[JacSinC[{ii, sph}, {jj, -cart}] // ToValues]] <> ","],
-      pr["    " <> ToString[CForm[JacSinC[{ii, sph}, {jj, -cart}] // ToValues]]]
+      pr["    " <> ToString[CForm[Refine[JacSinC[{ii, sph}, {jj, -cart}] /. CartToCRules, {r > 0, rh > 0}] /. CartToCRules]] <> ","],
+      pr["    " <> ToString[CForm[Refine[JacSinC[{ii, sph}, {jj, -cart}] /. CartToCRules, {r > 0, rh > 0}] /. CartToCRules]]]
     ],
   {ii, 1, 3}, {jj, 1, 3}];
   pr["  };"];
@@ -99,15 +117,15 @@ SetMainPrint[
   pr["CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE inline constexpr std::array<T, 9>"];
   pr["calc_jacSinC_inS(const std::array<T, 3> &xS) noexcept {"];
   pr["  const T &r = xS[0], &th = xS[1], &ph = xS[2];"];
-  pr["  const T sth = std::sin(th)"];
-  pr["  const T cth = std::cos(th)"];
-  pr["  const T sph = std::sin(ph)"];
-  pr["  const T cph = std::cos(ph)"];
+  pr["  const T st = std::sin(th)"];
+  pr["  const T ct = std::cos(th)"];
+  pr["  const T sp = std::sin(ph)"];
+  pr["  const T cp = std::cos(ph)"];
   pr["  return {"];
   Do[
     If[ii != 3 || jj != 3,
-      pr["    " <> ToString[CForm[JacSinC[{ii, sph}, {jj, -cart}] // ToValues]] <> ","],
-      pr["    " <> ToString[CForm[JacSinC[{ii, sph}, {jj, -cart}] // ToValues]]]
+      pr["    " <> ToString[CForm[(JacSinC[{ii, sph}, {jj, -cart}] /. Cart2SphRules // FullSimplify) /. SphToCRules /. SphToCRules]] <> ","],
+      pr["    " <> ToString[CForm[(JacSinC[{ii, sph}, {jj, -cart}] /. Cart2SphRules // FullSimplify) /. SphToCRules /. SphToCRules]]]
     ],
   {ii, 1, 3}, {jj, 1, 3}];
   pr["  };"];
