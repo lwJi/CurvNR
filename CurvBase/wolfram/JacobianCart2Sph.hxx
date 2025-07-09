@@ -14,7 +14,7 @@ using namespace Loop;
 
 template <typename T>
 CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr std::array<T, 9>
-calc_jacSinC_inC(const std::array<T, 3> &xC) noexcept {
+jac_cart2sph_cart(const std::array<T, 3> &xC) noexcept {
   const T x = xC[0], y = xC[1], z = xC[2];
 
   const T x2 = x*x;
@@ -46,7 +46,7 @@ calc_jacSinC_inC(const std::array<T, 3> &xC) noexcept {
 
 template <typename T>
 CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr std::array<T, 9>
-calc_jacSinC_inS(const std::array<T, 3> &xS) noexcept {
+jac_cart2sph_sph(const std::array<T, 3> &xS) noexcept {
   const T r = xS[0], th = xS[1], ph = xS[2];
 
   const T st = std::sin(th);
@@ -72,7 +72,7 @@ calc_jacSinC_inS(const std::array<T, 3> &xS) noexcept {
 
 template <typename T>
 CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr std::array<std::array<T, 9>, 3>
-calc_djacSinC_inC(const std::array<T, 3> &xC) {
+djac_cart2sph_cart(const std::array<T, 3> &xC) {
   const T x = xC[0], y = xC[1], z = xC[2];
 
   const T x2 = x*x;
@@ -134,7 +134,7 @@ calc_djacSinC_inC(const std::array<T, 3> &xC) {
 
 template <typename T>
 CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr std::array<std::array<T, 9>, 3>
-calc_djacSinC_inS(const std::array<T, 3> &xS) {
+djac_cart2sph_sph(const std::array<T, 3> &xS) {
   const T r = xS[0], th = xS[1], ph = xS[2];
 
   const T st = std::sin(th);
