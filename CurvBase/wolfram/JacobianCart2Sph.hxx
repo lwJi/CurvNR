@@ -17,9 +17,13 @@ CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr std::array<T, 9>
 calc_jacSinC_inC(const std::array<T, 3> &xC) noexcept {
   const T x = xC[0], y = xC[1], z = xC[2];
 
-  const T r2 = x*x + y*y + z*z;
+  const T x2 = x*x;
+  const T y2 = y*y;
+  const T z2 = z*z;
+
+  const T r2 = x2 + y2 + z2;
   const T r = sqrt(r2);
-  const T rh2 = x*x + y*y;
+  const T rh2 = x2 + y2;
   const T rh = sqrt(rh2);
 
   const T rInv = T{1}/r;
@@ -132,13 +136,15 @@ template <typename T>
 CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr std::array<std::array<T, 9>, 3>
 calc_djacSinC_inS(const std::array<T, 3> &xS) {
   const T r = xS[0], th = xS[1], ph = xS[2];
+
   const T st = std::sin(th);
-  const T st2 = st*st;
   const T ct = std::cos(th);
-  const T ct2 = ct*ct;
   const T sp = std::sin(ph);
-  const T sp2 = sp*sp;
   const T cp = std::cos(ph);
+
+  const T st2 = st*st;
+  const T ct2 = ct*ct;
+  const T sp2 = sp*sp;
   const T cp2 = cp*cp;
 
   const T s2t = T{2}*ct*st;
