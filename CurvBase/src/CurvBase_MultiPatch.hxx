@@ -85,6 +85,15 @@ public:
     return {invalid_coord, invalid_patch_id};
   }
 
+  [[nodiscard]] CCTK_HOST CCTK_DEVICE Jac_t
+  jac_g2l_l(std::size_t id, const Coord &l) const noexcept {
+    return patches_[id].jac_g2l_l(l);
+  }
+
+  [[nodiscard]] CCTK_HOST CCTK_DEVICE dJac_t
+  djac_g2l_l(std::size_t id, const Coord &l) const noexcept {
+    return patches_[id].djac_g2l_l(l);
+  }
   // --- Host-Side Factory Methods ---
 
   CCTK_HOST void select_cartesian(Index ncells, Coord xmin, Coord xmax) {
