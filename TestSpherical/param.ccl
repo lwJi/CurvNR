@@ -15,3 +15,18 @@ CCTK_REAL gaussian_width "width of Gaussian"
 {
   (0:* :: ""
 } 1.0
+
+CCTK_REAL gaussian_shift_x "shift of center in x-dir"
+{
+  (0:* :: ""
+} 0.0
+
+CCTK_REAL gaussian_shift_y "shift of center in y-dir"
+{
+  (0:* :: ""
+} 0.0
+
+CCTK_REAL gaussian_shift_z "shift of center in z-dir"
+{
+  (0:* :: ""
+} 0.0

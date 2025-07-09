@@ -65,8 +65,11 @@ extern "C" void TestSpherical_Initial(CCTK_ARGUMENTS) {
     grid.loop_int_device<1, 1, 1>(
         grid.nghostzones,
         [=] CCTK_DEVICE(const Loop::PointDesc &p) CCTK_ATTRIBUTE_ALWAYS_INLINE {
-          gaussian(amplitude, gaussian_width, cctk_time, ccoordx(p.I),
-                   ccoordy(p.I), ccoordz(p.I), u(p.I), rho(p.I));
+          const CCTK_REAL x = ccoordx(p.I) - gaussian_shift_x;
+          const CCTK_REAL y = ccoordy(p.I) - gaussian_shift_y;
+          const CCTK_REAL z = ccoordz(p.I) - gaussian_shift_z;
+          gaussian(amplitude, gaussian_width, cctk_time, x, y, z, u(p.I),
+                   rho(p.I));
         });
   } else {
     CCTK_ERROR("Unknown initial condition");
@@ -102,8 +105,9 @@ extern "C" void TestSpherical_RHS(CCTK_ARGUMENTS) {
                        ddu[2] / (r2 * sinth2);
 
         if (std::isnan(rho_rhs(p.I))) {
-          printf("iter = %i, xyz = %16.8e, %16.8e, %16.8e,   ijk = %i, %i, %i,\n",
-                 cctk_iteration, p.x, p.y, p.z, p.i, p.j, p.k);
+          printf(
+              "iter = %i, xyz = %16.8e, %16.8e, %16.8e,   ijk = %i, %i, %i,\n",
+              cctk_iteration, p.x, p.y, p.z, p.i, p.j, p.k);
         }
       });
 }
