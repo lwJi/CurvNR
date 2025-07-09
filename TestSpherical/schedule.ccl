@@ -1,11 +1,25 @@
 # Schedule definitions for thorn TestSpherical
 
-STORAGE: ustate
+STORAGE: state rhs
 
 SCHEDULE TestSpherical_Initial AT initial
 {
   LANG: C
   READS: CoordinatesX::cell_coords(everywhere)
-  WRITES: ustate(interior)
-  SYNC: ustate
+  WRITES: state(interior)
+  SYNC: state
 } "Initialize scalar wave state"
+
+SCHEDULE TestSpherical_RHS AT ODESolvers_RHS
+{
+  LANG: C
+  READS: state(everywhere)
+  WRITES: rhs(interior)
+} "Calculate scalar wave RHS"
+
+SCHEDULE TestSpherical_Sync IN ODESolvers_PostStep
+{
+  LANG: C
+  OPTIONS: global
+  SYNC: state
+} "Synchronize"
