@@ -5,6 +5,7 @@
 #include <numbers>
 
 #include "CurvBase.hxx"
+#include "../wolfram/JacobianCart2Sph.hxx"
 
 namespace CurvBase {
 

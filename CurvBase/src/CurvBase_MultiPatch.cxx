@@ -3,7 +3,6 @@
 #include <cctk_Parameters.h>
 
 #include "CurvBase_MultiPatch.hxx"
-#include "../wolfram/JacobianCart2Sph.hxx"
 
 namespace CurvBase {
 using namespace Loop;
