@@ -58,16 +58,32 @@ extern "C" void CurvBase_MultiPatch_Coordinates_Setup(CCTK_ARGUMENTS) {
                                       vcoordz(p.I) = g[2];
                                     });
 
-  grid.loop_all_device<1, 1, 1>(grid.nghostzones,
-                                [=] ARITH_DEVICE(const Loop::PointDesc &p)
-                                    ARITH_INLINE {
-                                      const Coord l = {p.x, p.y, p.z};
-                                      const Coord g = mp.l2g(p.patch, l);
+  grid.loop_all_device<1, 1, 1>(
+      grid.nghostzones,
+      [=] ARITH_DEVICE(const Loop::PointDesc &p) ARITH_INLINE {
+        const Coord l = {p.x, p.y, p.z};
+        const Coord g = mp.l2g(p.patch, l);
 
-                                      ccoordx(p.I) = g[0];
-                                      ccoordy(p.I) = g[1];
-                                      ccoordz(p.I) = g[2];
-                                    });
+        ccoordx(p.I) = g[0];
+        ccoordy(p.I) = g[1];
+        ccoordz(p.I) = g[2];
+
+        const Jac_t jac = mp.jac_g2l_l(p.patch, l);
+        const dJac_t djac = mp.djac_g2l_l(p.patch, l);
+
+        // e^r_x = dr^i/dx^j
+        cJ1x(p.I) = jac[0];
+        cJ1y(p.I) = jac[1];
+        cJ1z(p.I) = jac[2];
+        cJ2x(p.I) = jac[3];
+        cJ2y(p.I) = jac[4];
+        cJ2z(p.I) = jac[5];
+        cJ3x(p.I) = jac[6];
+        cJ3y(p.I) = jac[7];
+        cJ3z(p.I) = jac[8];
+
+        // d(e^r_x) = dr^i/dx^jdx^k
+      });
 }
 
 //==============================================================================
