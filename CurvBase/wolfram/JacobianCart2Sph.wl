@@ -112,7 +112,7 @@ SetMainPrint[
   pr["template <typename T>"];
   pr["CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr "
      <> "std::array<T, 9>"];
-  pr["calc_jacSinC_inC(const std::array<T, 3> &xC) noexcept {"];
+  pr["jac_cart2sph_cart(const std::array<T, 3> &xC) noexcept {"];
   pr["  const T x = xC[0], y = xC[1], z = xC[2];"];
   pr[];
   pr["  const T x2 = x*x;"];
@@ -154,7 +154,7 @@ SetMainPrint[
   pr["template <typename T>"];
   pr["CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr "
      <>"std::array<T, 9>"];
-  pr["calc_jacSinC_inS(const std::array<T, 3> &xS) noexcept {"];
+  pr["jac_cart2sph_sph(const std::array<T, 3> &xS) noexcept {"];
   pr["  const T r = xS[0], th = xS[1], ph = xS[2];"];
   pr[];
   pr["  const T st = std::sin(th);"];
@@ -188,7 +188,7 @@ SetMainPrint[
   pr["template <typename T>"];
   pr["CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr "
      <> "std::array<std::array<T, 9>, 3>"];
-  pr["calc_djacSinC_inC(const std::array<T, 3> &xC) {"];
+  pr["djac_cart2sph_cart(const std::array<T, 3> &xC) {"];
   pr["  const T x = xC[0], y = xC[1], z = xC[2];"];
   pr[];
   pr["  const T x2 = x*x;"];
@@ -243,7 +243,7 @@ SetMainPrint[
   pr["template <typename T>"];
   pr["CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr "
      <> "std::array<std::array<T, 9>, 3>"];
-  pr["calc_djacSinC_inS(const std::array<T, 3> &xS) {"];
+  pr["djac_cart2sph_sph(const std::array<T, 3> &xS) {"];
   pr["  const T r = xS[0], th = xS[1], ph = xS[2];"];
   pr[];
   pr["  const T st = std::sin(th);"];
