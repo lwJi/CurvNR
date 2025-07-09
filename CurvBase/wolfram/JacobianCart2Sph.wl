@@ -111,7 +111,7 @@ SetMainPrint[
 
   pr["template <typename T>"];
   pr["CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr "
-     <> "std::array<T, 9>"];
+     <> "std::array<std::array<T, 3>, 3>"];
   pr["jac_cart2sph_cart(const std::array<T, 3> &xC) noexcept {"];
   pr["  const T x = xC[0], y = xC[1], z = xC[2];"];
   pr[];
@@ -131,20 +131,24 @@ SetMainPrint[
   pr[];
   pr["  return {{"];
   Do[
-    If[ii != 3 || jj != 3,
-      pr["    "
-         <> ToString[CForm[
-              Refine[
-                JacSinC[{ii, sph}, {jj, -cart}] /. CartToCRules,
-              {r > 0, rh > 0}] /. PowerToCRules]]
-         <> ","],
-      pr["    "
-         <> ToString[CForm[
-              Refine[
-                JacSinC[{ii, sph}, {jj, -cart}] /. CartToCRules,
-              {r > 0, rh > 0}] /. PowerToCRules]]]
-    ],
-  {ii, 1, 3}, {jj, 1, 3}];
+    pr["    {"];
+    Do[
+      If[ii != 3,
+        pr["      "
+           <> ToString[CForm[
+                Refine[
+                  JacSinC[{kk, sph}, {ii, -cart}] /. CartToCRules,
+                {r > 0, rh > 0}] /. PowerToCRules]]
+           <> ","],
+        pr["      "
+           <> ToString[CForm[
+                Refine[
+                  JacSinC[{kk, sph}, {ii, -cart}] /. CartToCRules,
+                {r > 0, rh > 0}] /. PowerToCRules]]]
+      ],
+    {ii, 1, 3}];
+    If[kk != 3, pr["    },"], pr["    }"]],
+  {kk, 1, 3}];
   pr["  }};"];
   pr["}"];
   pr[];
@@ -153,7 +157,7 @@ SetMainPrint[
 
   pr["template <typename T>"];
   pr["CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr "
-     <>"std::array<T, 9>"];
+     <> "std::array<std::array<T, 3>, 3>"];
   pr["jac_cart2sph_sph(const std::array<T, 3> &xS) noexcept {"];
   pr["  const T r = xS[0], th = xS[1], ph = xS[2];"];
   pr[];
@@ -167,17 +171,21 @@ SetMainPrint[
   pr[];
   pr["  return {{"];
   Do[
-    If[ii != 3 || jj != 3,
-      pr["    "
-         <> ToString[CForm[
-              (JacSinC[{ii, sph}, {jj, -cart}] /. Cart2SphRules // FullSimplify)
-                /. SphToCRules /. PowerToCRules]] <> ","],
-      pr["    "
-         <> ToString[CForm[
-              (JacSinC[{ii, sph}, {jj, -cart}] /. Cart2SphRules // FullSimplify)
-                /. SphToCRules /. PowerToCRules]]]
-    ],
-  {ii, 1, 3}, {jj, 1, 3}];
+    pr["    {"];
+    Do[
+      If[ii != 3,
+        pr["      "
+           <> ToString[CForm[
+                (JacSinC[{kk, sph}, {ii, -cart}] /. Cart2SphRules // FullSimplify)
+                  /. SphToCRules /. PowerToCRules]] <> ","],
+        pr["      "
+           <> ToString[CForm[
+                (JacSinC[{kk, sph}, {ii, -cart}] /. Cart2SphRules // FullSimplify)
+                  /. SphToCRules /. PowerToCRules]]]
+      ],
+    {ii, 1, 3}];
+    If[kk != 3, pr["    },"], pr["    }"]],
+  {kk, 1, 3}];
   pr["  }};"];
   pr["}"];
   pr[];
@@ -187,7 +195,7 @@ SetMainPrint[
 
   pr["template <typename T>"];
   pr["CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr "
-     <> "std::array<std::array<T, 9>, 3>"];
+     <> "std::array<std::array<T, 6>, 3>"];
   pr["djac_cart2sph_cart(const std::array<T, 3> &xC) {"];
   pr["  const T x = xC[0], y = xC[1], z = xC[2];"];
   pr[];
@@ -218,16 +226,16 @@ SetMainPrint[
       If[ii != 3 || jj != 3,
         pr["      "
            <> ToString[CForm[
-                Refine[(PDcart[{kk, -cart}][JacSinC[{ii, sph}, {jj, -cart}]]
+                Refine[(PDcart[{jj, -cart}][JacSinC[{kk, sph}, {ii, -cart}]]
                   // Simplify) /. CartToCRules,
                 {r > 0, rh > 0}] /. CartToCRules /. PowerToCRules]] <> ","],
         pr["      "
            <> ToString[CForm[
-                Refine[(PDcart[{kk, -cart}][JacSinC[{ii, sph}, {jj, -cart}]]
+                Refine[(PDcart[{jj, -cart}][JacSinC[{kk, sph}, {ii, -cart}]]
                   // Simplify) /. CartToCRules,
                 {r > 0, rh > 0}] /. CartToCRules /. PowerToCRules]]]
       ],
-    {ii, 1, 3}, {jj, 1, 3}];
+    {ii, 1, 3}, {jj, ii, 3}];
     If[kk != 3,
       pr["    },"],
       pr["    }"]
@@ -242,7 +250,7 @@ SetMainPrint[
 
   pr["template <typename T>"];
   pr["CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr "
-     <> "std::array<std::array<T, 9>, 3>"];
+     <> "std::array<std::array<T, 6>, 3>"];
   pr["djac_cart2sph_sph(const std::array<T, 3> &xS) {"];
   pr["  const T r = xS[0], th = xS[1], ph = xS[2];"];
   pr[];
@@ -274,16 +282,16 @@ SetMainPrint[
       If[ii != 3 || jj != 3,
         pr["      "
            <> ToString[CForm[
-                (PDcart[{kk, -cart}][JacSinC[{ii, sph}, {jj, -cart}]]
+                (PDcart[{jj, -cart}][JacSinC[{kk, sph}, {ii, -cart}]]
                   /. Cart2SphRules // FullSimplify)
                 /. SphToCRules /. PowerToCRules]] <> ","],
         pr["      "
            <> ToString[CForm[
-                (PDcart[{kk, -cart}][JacSinC[{ii, sph}, {jj, -cart}]]
+                (PDcart[{jj, -cart}][JacSinC[{kk, sph}, {ii, -cart}]]
                   /. Cart2SphRules // FullSimplify)
                 /. SphToCRules /. PowerToCRules]]]
       ],
-    {ii, 1, 3}, {jj, 1, 3}];
+    {ii, 1, 3}, {jj, ii, 3}];
     If[kk != 3,
       pr["    },"],
       pr["    }"]

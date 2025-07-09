@@ -72,15 +72,15 @@ extern "C" void CurvBase_MultiPatch_Coordinates_Setup(CCTK_ARGUMENTS) {
         const dJac_t djac = mp.djac_g2l_l(p.patch, l);
 
         // e^r_x = dr^i/dx^j
-        cJ1x(p.I) = jac[0];
-        cJ1y(p.I) = jac[1];
-        cJ1z(p.I) = jac[2];
-        cJ2x(p.I) = jac[3];
-        cJ2y(p.I) = jac[4];
-        cJ2z(p.I) = jac[5];
-        cJ3x(p.I) = jac[6];
-        cJ3y(p.I) = jac[7];
-        cJ3z(p.I) = jac[8];
+        cJ1x(p.I) = jac[0][0];
+        cJ1y(p.I) = jac[0][1];
+        cJ1z(p.I) = jac[0][2];
+        cJ2x(p.I) = jac[1][0];
+        cJ2y(p.I) = jac[1][1];
+        cJ2z(p.I) = jac[1][2];
+        cJ3x(p.I) = jac[2][0];
+        cJ3y(p.I) = jac[2][1];
+        cJ3z(p.I) = jac[2][2];
 
         // d(e^r_x) = dr^i/dx^jdx^k
       });
