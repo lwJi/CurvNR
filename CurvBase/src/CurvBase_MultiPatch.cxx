@@ -83,24 +83,24 @@ extern "C" void CurvBase_MultiPatch_Coordinates_Setup(CCTK_ARGUMENTS) {
         cJ3z(p.I) = jac[2][2];
 
         // d(e^r_x) = dr^i/dx^jdx^k
-        cdJ1xx(p.I) = jac[0][0];
-        cdJ1xy(p.I) = jac[0][1];
-        cdJ1xz(p.I) = jac[0][2];
-        cdJ1yy(p.I) = jac[0][3];
-        cdJ1yz(p.I) = jac[0][4];
-        cdJ1zz(p.I) = jac[0][5];
-        cdJ2xx(p.I) = jac[1][0];
-        cdJ2xy(p.I) = jac[1][1];
-        cdJ2xz(p.I) = jac[1][2];
-        cdJ2yy(p.I) = jac[1][3];
-        cdJ2yz(p.I) = jac[1][4];
-        cdJ2zz(p.I) = jac[1][5];
-        cdJ3xx(p.I) = jac[2][0];
-        cdJ3xy(p.I) = jac[2][1];
-        cdJ3xz(p.I) = jac[2][2];
-        cdJ3yy(p.I) = jac[2][3];
-        cdJ3yz(p.I) = jac[2][4];
-        cdJ3zz(p.I) = jac[2][5];
+        cdJ1xx(p.I) = djac[0][0];
+        cdJ1xy(p.I) = djac[0][1];
+        cdJ1xz(p.I) = djac[0][2];
+        cdJ1yy(p.I) = djac[0][3];
+        cdJ1yz(p.I) = djac[0][4];
+        cdJ1zz(p.I) = djac[0][5];
+        cdJ2xx(p.I) = djac[1][0];
+        cdJ2xy(p.I) = djac[1][1];
+        cdJ2xz(p.I) = djac[1][2];
+        cdJ2yy(p.I) = djac[1][3];
+        cdJ2yz(p.I) = djac[1][4];
+        cdJ2zz(p.I) = djac[1][5];
+        cdJ3xx(p.I) = djac[2][0];
+        cdJ3xy(p.I) = djac[2][1];
+        cdJ3xz(p.I) = djac[2][2];
+        cdJ3yy(p.I) = djac[2][3];
+        cdJ3yz(p.I) = djac[2][4];
+        cdJ3zz(p.I) = djac[2][5];
       });
 }
 
