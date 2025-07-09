@@ -45,10 +45,10 @@ CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr std::array<T, 9>
 calc_jacSinC_inS(const std::array<T, 3> &xS) noexcept {
   const T r = xS[0], th = xS[1], ph = xS[2];
 
-  const T st = std::sin(th)
-  const T ct = std::cos(th)
-  const T sp = std::sin(ph)
-  const T cp = std::cos(ph)
+  const T st = std::sin(th);
+  const T ct = std::cos(th);
+  const T sp = std::sin(ph);
+  const T cp = std::cos(ph);
 
   const T rInv = T{1}/r;
   const T stInv = T{1}/st;
@@ -71,9 +71,15 @@ CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr std::array<std::arr
 calc_djacSinC_inC(const std::array<T, 3> &xC) {
   const T x = xC[0], y = xC[1], z = xC[2];
 
-  const T r2 = x*x + y*y + z*z;
+  const T x2 = x*x;
+  const T x4 = x2*x2;
+  const T y2 = y*y;
+  const T y4 = y2*y2;
+  const T z2 = z*z;
+
+  const T r2 = x2 + y2 + z2;
   const T r = sqrt(r2);
-  const T rh2 = x*x + y*y;
+  const T rh2 = x2 + y2;
   const T rh = sqrt(rh2);
 
   const T rInv = T{1}/r;
@@ -83,6 +89,7 @@ calc_djacSinC_inC(const std::array<T, 3> &xC) {
   const T rhInv = T{1}/rh;
   const T rhInv2 = rhInv*rhInv;
   const T rhInv3 = rhInv2*rhInv;
+  const T rhInv4 = rhInv2*rhInv2;
 
   return {
     {
@@ -125,12 +132,26 @@ template <typename T>
 CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr std::array<std::array<T, 9>, 3>
 calc_djacSinC_inS(const std::array<T, 3> &xS) {
   const T r = xS[0], th = xS[1], ph = xS[2];
-  const T st = std::sin(th)
-  const T ct = std::cos(th)
-  const T sp = std::sin(ph)
-  const T cp = std::cos(ph)
+  const T st = std::sin(th);
+  const T st2 = st*st;
+  const T ct = std::cos(th);
+  const T ct2 = ct*ct;
+  const T sp = std::sin(ph);
+  const T sp2 = sp*sp;
+  const T cp = std::cos(ph);
+  const T cp2 = cp*cp;
+
+  const T s2t = T{2}*ct*st;
+  const T c2t = ct2 - st2;
+  const T s2p = T{2}*cp*sp;
+  const T c2p = cp2 - sp2;
+  const T cott = ct/st;
+
   const T rInv = T{1}/r;
+  const T rInv2 = rInv*rInv;
   const T stInv = T{1}/st;
+  const T stInv2 = stInv*stInv;
+
   return {
     {
       rInv*(ct2 + sp2*st2),
