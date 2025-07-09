@@ -102,8 +102,6 @@ SetMainPrint[
   pr["#include <array>"];
   pr["#include <cmath>"];
   pr[];
-  pr["#include \"powerinline.hxx\""];
-  pr[];
 
   pr["namespace CurvBase {"];
   pr["using namespace Loop;"];
@@ -134,13 +132,13 @@ SetMainPrint[
          <> ToString[CForm[
               Refine[
                 JacSinC[{ii, sph}, {jj, -cart}] /. CartToCRules,
-              {r > 0, rh > 0}] /. CartToCRules]]
+              {r > 0, rh > 0}] /. PowerToCRules]]
          <> ","],
       pr["    "
          <> ToString[CForm[
               Refine[
                 JacSinC[{ii, sph}, {jj, -cart}] /. CartToCRules,
-              {r > 0, rh > 0}] /. CartToCRules]]]
+              {r > 0, rh > 0}] /. PowerToCRules]]]
     ],
   {ii, 1, 3}, {jj, 1, 3}];
   pr["  };"];
@@ -169,11 +167,11 @@ SetMainPrint[
       pr["    "
          <> ToString[CForm[
               (JacSinC[{ii, sph}, {jj, -cart}] /. Cart2SphRules // FullSimplify)
-                /. SphToCRules /. SphToCRules]] <> ","],
+                /. SphToCRules /. PowerToCRules]] <> ","],
       pr["    "
          <> ToString[CForm[
               (JacSinC[{ii, sph}, {jj, -cart}] /. Cart2SphRules // FullSimplify)
-               /. SphToCRules /. SphToCRules]]]
+                /. SphToCRules /. PowerToCRules]]]
     ],
   {ii, 1, 3}, {jj, 1, 3}];
   pr["  };"];
@@ -211,12 +209,12 @@ SetMainPrint[
            <> ToString[CForm[
                 Refine[(PDcart[{kk, -cart}][JacSinC[{ii, sph}, {jj, -cart}]]
                   // Simplify) /. CartToCRules,
-                {r > 0, rh > 0}] /. CartToCRules]] <> ","],
+                {r > 0, rh > 0}] /. CartToCRules /. PowerToCRules]] <> ","],
         pr["      "
            <> ToString[CForm[
                 Refine[(PDcart[{kk, -cart}][JacSinC[{ii, sph}, {jj, -cart}]]
                   // Simplify) /. CartToCRules,
-                {r > 0, rh > 0}] /. CartToCRules]]]
+                {r > 0, rh > 0}] /. CartToCRules /. PowerToCRules]]]
       ],
     {ii, 1, 3}, {jj, 1, 3}];
     If[kk != 3,
@@ -251,12 +249,12 @@ SetMainPrint[
            <> ToString[CForm[
                 (PDcart[{kk, -cart}][JacSinC[{ii, sph}, {jj, -cart}]]
                   /. Cart2SphRules // FullSimplify)
-                /. SphToCRules /. SphToCRules]] <> ","],
+                /. SphToCRules /. PowerToCRules]] <> ","],
         pr["      "
            <> ToString[CForm[
                 (PDcart[{kk, -cart}][JacSinC[{ii, sph}, {jj, -cart}]]
                   /. Cart2SphRules // FullSimplify)
-                /. SphToCRules /. SphToCRules]]]
+                /. SphToCRules /. PowerToCRules]]]
       ],
     {ii, 1, 3}, {jj, 1, 3}];
     If[kk != 3,

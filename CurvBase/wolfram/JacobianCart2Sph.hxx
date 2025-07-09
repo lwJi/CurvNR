@@ -9,8 +9,6 @@
 #include <array>
 #include <cmath>
 
-#include "powerinline.hxx"
-
 namespace CurvBase {
 using namespace Loop;
 
@@ -88,33 +86,33 @@ calc_djacSinC_inC(const std::array<T, 3> &xC) {
 
   return {
     {
-      rInv3*(Power(y,2) + Power(z,2)),
+      rInv3*(y2 + z2),
       -(rInv3*x*y),
       -(rInv3*x*z),
-      rhInv3*rInv4*z*(-2*Power(x,4) - Power(x,2)*Power(y,2) + Power(y,4) + Power(y,2)*Power(z,2)),
-      -(rhInv3*rInv4*x*y*z*(3*Power(x,2) + 3*Power(y,2) + Power(z,2))),
-      rhInv*rInv4*x*(Power(rh,2) - Power(z,2)),
+      rhInv3*rInv4*z*(-2*x4 - x2*y2 + y4 + y2*z2),
+      -(rhInv3*rInv4*x*y*z*(3*x2 + 3*y2 + z2)),
+      rhInv*rInv4*x*(rh2 - z2),
       2*rhInv4*x*y,
-      rhInv4*(-Power(x,2) + Power(y,2)),
+      rhInv4*(-x2 + y2),
       0
     },
     {
       -(rInv3*x*y),
-      rInv3*(Power(x,2) + Power(z,2)),
+      rInv3*(x2 + z2),
       -(rInv3*y*z),
-      -(rhInv3*rInv4*x*y*z*(3*Power(x,2) + 3*Power(y,2) + Power(z,2))),
-      rhInv3*rInv4*z*(Power(x,4) - 2*Power(y,4) + Power(x,2)*(-Power(y,2) + Power(z,2))),
-      rhInv*rInv4*y*(Power(rh,2) - Power(z,2)),
-      rhInv4*(-Power(x,2) + Power(y,2)),
+      -(rhInv3*rInv4*x*y*z*(3*x2 + 3*y2 + z2)),
+      rhInv3*rInv4*z*(x4 - 2*y4 + x2*(-y2 + z2)),
+      rhInv*rInv4*y*(rh2 - z2),
+      rhInv4*(-x2 + y2),
       -2*rhInv4*x*y,
       0
     },
     {
       -(rInv3*x*z),
       -(rInv3*y*z),
-      Power(rh,2)*rInv3,
-      rhInv*rInv4*x*(Power(rh,2) - Power(z,2)),
-      rhInv*rInv4*y*(Power(rh,2) - Power(z,2)),
+      rh2*rInv3,
+      rhInv*rInv4*x*(rh2 - z2),
+      rhInv*rInv4*y*(rh2 - z2),
       2*rh*rInv4*z,
       0,
       0,
@@ -135,31 +133,31 @@ calc_djacSinC_inS(const std::array<T, 3> &xS) {
   const T stInv = T{1}/st;
   return {
     {
-      rInv*(Power(ct,2) + Power(sp,2)*Power(st,2)),
-      -(cp*rInv*sp*Power(st,2)),
+      rInv*(ct2 + sp2*st2),
+      -(cp*rInv*sp*st2),
       -(cp*ct*rInv*st),
-      cott*(-c2p + c2t*Power(cp,2))*rInv2,
+      cott*(-c2p + c2t*cp2)*rInv2,
       ((-2 + c2t)*cott*rInv2*s2p)/2.,
       -(c2t*cp*rInv2),
-      rInv2*s2p*Power(stInv,2),
-      -(c2p*rInv2*Power(stInv,2)),
+      rInv2*s2p*stInv2,
+      -(c2p*rInv2*stInv2),
       0
     },
     {
-      -(cp*rInv*sp*Power(st,2)),
-      rInv*(Power(ct,2) + Power(cp,2)*Power(st,2)),
+      -(cp*rInv*sp*st2),
+      rInv*(ct2 + cp2*st2),
       -(ct*rInv*sp*st),
       ((-2 + c2t)*cott*rInv2*s2p)/2.,
-      cott*rInv2*(c2p + c2t*Power(sp,2)),
+      cott*rInv2*(c2p + c2t*sp2),
       -(c2t*rInv2*sp),
-      -(c2p*rInv2*Power(stInv,2)),
-      -(rInv2*s2p*Power(stInv,2)),
+      -(c2p*rInv2*stInv2),
+      -(rInv2*s2p*stInv2),
       0
     },
     {
       -(cp*ct*rInv*st),
       -(ct*rInv*sp*st),
-      rInv*Power(st,2),
+      rInv*st2,
       -(c2t*cp*rInv2),
       -(c2t*rInv2*sp),
       rInv2*s2t,
