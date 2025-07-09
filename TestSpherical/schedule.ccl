@@ -10,7 +10,7 @@ SCHEDULE TestSpherical_Initial AT initial
   SYNC: state
 } "Initialize scalar wave state"
 
-SCHEDULE TestSpherical_RHS AT ODESolvers_RHS
+SCHEDULE TestSpherical_RHS IN ODESolvers_RHS
 {
   LANG: C
   READS: state(everywhere)
