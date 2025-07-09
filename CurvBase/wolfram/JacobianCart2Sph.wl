@@ -62,27 +62,33 @@ JacSinC = CTensor[JacSphInCartMat, {sph, -cart}];
 SetBasisChange[JacSinC, cart]
 
 (* WriteToC Rules *)
+
 CartToCRules = {
-    x[]^2 + y[]^2 + z[]^2 -> r^2,
-    x[]^2 + y[]^2 -> rh^2,
-    x[] -> x, y[] -> y, z[] -> z,
-    r^(n_Integer?Negative) :> If[-n > 1, Symbol["rInv" <> ToString[-n]],
-                                         Symbol["rInv"]],
-    rh^(n_Integer?Negative) :> If[-n > 1, Symbol["rhInv" <> ToString[-n]],
-                                          Symbol["rhInv"]]
+  x[]^2 + y[]^2 + z[]^2 -> r^2,
+  x[]^2 + y[]^2 -> rh^2,
+  x[] -> x, y[] -> y, z[] -> z
 };
+
 SphToCRules = {
-    r[] -> r,
-    Sin[\[Theta][]] -> st, Cos[\[Theta][]] -> ct, Csc[\[Theta][]] -> stInv,
-    Sin[\[Phi][]] -> sp, Cos[\[Phi][]] -> cp,
-    r^(n_Integer?Negative) :> If[-n > 1, Symbol["rInv" <> ToString[-n]],
-                                         Symbol["rInv"]],
-    rh^(n_Integer?Negative) :> If[-n > 1, Symbol["rhInv" <> ToString[-n]],
-                                          Symbol["rhInv"]],
-    (* for dJac only *)
-    Sin[2 \[Theta][]] -> s2t, Cos[2 \[Theta][]] -> c2t, Cot[\[Theta][]] -> cott,
-    Sin[2 \[Phi][]] -> s2p, Cos[2 \[Phi][]] -> c2p
+  r[] -> r,
+  Sin[\[Theta][]] -> st, Cos[\[Theta][]] -> ct,
+  Sin[\[Phi][]] -> sp, Cos[\[Phi][]] -> cp,
+  Csc[\[Theta][]] -> st^-1,
+  Sin[2 \[Theta][]] -> s2t, Cos[2 \[Theta][]] -> c2t,
+  Sin[2 \[Phi][]] -> s2p, Cos[2 \[Phi][]] -> c2p,
+  Cot[\[Theta][]] -> cott
 };
+
+PowerToCRules = Module[{validSymbols = {r, rh, x, y, z, st, ct, sp, cp}},
+  {
+    base_Symbol^(n_Integer) /; MemberQ[validSymbols, base] :>
+      If[n > 0,
+          Symbol[SymbolName[base] <> ToString[n]],
+          If[n == -1,
+            Symbol[SymbolName[base] <> "Inv"],
+            Symbol[SymbolName[base] <> "Inv" <> ToString[-n]]]]
+  }
+];
 
 (******************)
 (* Print to Files *)
