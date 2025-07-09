@@ -20,6 +20,8 @@ constexpr FaceInfo inner_face{false};
 
 using Index = std::array<CCTK_INT, dim>;
 using Coord = std::array<CCTK_REAL, dim>;
+using Jac_t = std::array<CCTK_REAL, 9>;
+using dJac_t = std::array<std::array<CCTK_REAL, 9>, 3>;
 using PatchFaces = std::array<std::array<FaceInfo, dim>, 2>;
 
 } // namespace CurvBase

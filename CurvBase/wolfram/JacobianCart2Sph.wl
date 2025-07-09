@@ -129,7 +129,7 @@ SetMainPrint[
   pr["  const T rhInv = T{1}/rh;"];
   pr["  const T rhInv2 = rhInv*rhInv;"];
   pr[];
-  pr["  return {"];
+  pr["  return {{"];
   Do[
     If[ii != 3 || jj != 3,
       pr["    "
@@ -145,7 +145,7 @@ SetMainPrint[
               {r > 0, rh > 0}] /. PowerToCRules]]]
     ],
   {ii, 1, 3}, {jj, 1, 3}];
-  pr["  };"];
+  pr["  }};"];
   pr["}"];
   pr[];
 
@@ -165,7 +165,7 @@ SetMainPrint[
   pr["  const T rInv = T{1}/r;"];
   pr["  const T stInv = T{1}/st;"];
   pr[];
-  pr["  return {"];
+  pr["  return {{"];
   Do[
     If[ii != 3 || jj != 3,
       pr["    "
@@ -178,7 +178,7 @@ SetMainPrint[
                 /. SphToCRules /. PowerToCRules]]]
     ],
   {ii, 1, 3}, {jj, 1, 3}];
-  pr["  };"];
+  pr["  }};"];
   pr["}"];
   pr[];
 
@@ -211,7 +211,7 @@ SetMainPrint[
   pr["  const T rhInv3 = rhInv2*rhInv;"];
   pr["  const T rhInv4 = rhInv2*rhInv2;"];
   pr[];
-  pr["  return {"];
+  pr["  return {{"];
   Do[
     pr["    {"];
     Do[
@@ -233,7 +233,7 @@ SetMainPrint[
       pr["    }"]
     ],
   {kk, 1, 3}];
-  pr["  };"];
+  pr["  }};"];
   pr["}"];
   pr[];
 
@@ -267,7 +267,7 @@ SetMainPrint[
   pr["  const T stInv = T{1}/st;"];
   pr["  const T stInv2 = stInv*stInv;"];
   pr[];
-  pr["  return {"];
+  pr["  return {{"];
   Do[
     pr["    {"];
     Do[
@@ -289,7 +289,7 @@ SetMainPrint[
       pr["    }"]
     ],
   {kk, 1, 3}];
-  pr["  };"];
+  pr["  }};"];
   pr["}"];
   pr[];
 

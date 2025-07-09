@@ -3,6 +3,8 @@
 
 #include "CurvBase.hxx"
 
+#include "../wolfram/JacobianCart2CubedSphereWedge.hxx"
+
 namespace CurvBase {
 
 enum class Wedge { PX, NX, PY, NY, PZ, NZ };

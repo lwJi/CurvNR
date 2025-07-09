@@ -3,6 +3,8 @@
 
 #include "CurvBase.hxx"
 
+#include "../wolfram/JacobianCart2Cart.hxx"
+
 namespace CurvBase {
 
 struct CartesianMeta {};

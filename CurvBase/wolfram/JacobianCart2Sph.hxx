@@ -31,7 +31,7 @@ jac_cart2sph_cart(const std::array<T, 3> &xC) noexcept {
   const T rhInv = T{1}/rh;
   const T rhInv2 = rhInv*rhInv;
 
-  return {
+  return {{
     rInv*x,
     rInv*y,
     rInv*z,
@@ -41,7 +41,7 @@ jac_cart2sph_cart(const std::array<T, 3> &xC) noexcept {
     -(rhInv2*y),
     rhInv2*x,
     0
-  };
+  }};
 }
 
 template <typename T>
@@ -57,7 +57,7 @@ jac_cart2sph_sph(const std::array<T, 3> &xS) noexcept {
   const T rInv = T{1}/r;
   const T stInv = T{1}/st;
 
-  return {
+  return {{
     cp*st,
     sp*st,
     ct,
@@ -67,7 +67,7 @@ jac_cart2sph_sph(const std::array<T, 3> &xS) noexcept {
     -(rInv*sp*stInv),
     cp*rInv*stInv,
     0
-  };
+  }};
 }
 
 template <typename T>
@@ -95,7 +95,7 @@ djac_cart2sph_cart(const std::array<T, 3> &xC) {
   const T rhInv3 = rhInv2*rhInv;
   const T rhInv4 = rhInv2*rhInv2;
 
-  return {
+  return {{
     {
       rInv3*(y2 + z2),
       -(rInv3*x*y),
@@ -129,7 +129,7 @@ djac_cart2sph_cart(const std::array<T, 3> &xC) {
       0,
       0
     }
-  };
+  }};
 }
 
 template <typename T>
@@ -158,7 +158,7 @@ djac_cart2sph_sph(const std::array<T, 3> &xS) {
   const T stInv = T{1}/st;
   const T stInv2 = stInv*stInv;
 
-  return {
+  return {{
     {
       rInv*(ct2 + sp2*st2),
       -(cp*rInv*sp*st2),
@@ -192,7 +192,7 @@ djac_cart2sph_sph(const std::array<T, 3> &xS) {
       0,
       0
     }
-  };
+  }};
 }
 
 } // namespace CurvBase

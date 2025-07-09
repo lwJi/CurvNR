@@ -113,6 +113,90 @@ struct Patch {
         },
         meta);
   }
+
+  [[nodiscard]] CCTK_HOST
+      CCTK_DEVICE CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr Jac_t
+      jac_g2l_g(const Coord &g) const noexcept {
+    return std::visit(
+        [&g](const auto &m) constexpr noexcept -> Jac_t {
+          using MetaT = std::decay_t<decltype(m)>;
+          if constexpr (std::is_same_v<MetaT, CartesianMeta>) {
+            return jac_cart2cart_cart(g);
+          } else if constexpr (std::is_same_v<MetaT, SphericalMeta>) {
+            return jac_cart2sph_cart(g);
+          } else if constexpr (std::is_same_v<MetaT, CubedSphereWedgeMeta>) {
+            return jac_cart2wedge_cart(g);
+          } else {
+            static_assert(detail::always_false<MetaT>::value,
+                          "Unhandled meta type");
+            return {};
+          }
+        },
+        meta);
+  }
+
+  [[nodiscard]] CCTK_HOST
+      CCTK_DEVICE CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr Jac_t
+      jac_g2l_l(const Coord &g) const noexcept {
+    return std::visit(
+        [&g](const auto &m) constexpr noexcept -> Jac_t {
+          using MetaT = std::decay_t<decltype(m)>;
+          if constexpr (std::is_same_v<MetaT, CartesianMeta>) {
+            return jac_cart2cart_cart(g);
+          } else if constexpr (std::is_same_v<MetaT, SphericalMeta>) {
+            return jac_cart2sph_sph(g);
+          } else if constexpr (std::is_same_v<MetaT, CubedSphereWedgeMeta>) {
+            return jac_cart2wedge_wedge(g);
+          } else {
+            static_assert(detail::always_false<MetaT>::value,
+                          "Unhandled meta type");
+            return {};
+          }
+        },
+        meta);
+  }
+
+  [[nodiscard]] CCTK_HOST
+      CCTK_DEVICE CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr dJac_t
+      djac_g2l_g(const Coord &g) const noexcept {
+    return std::visit(
+        [&g](const auto &m) constexpr noexcept -> dJac_t {
+          using MetaT = std::decay_t<decltype(m)>;
+          if constexpr (std::is_same_v<MetaT, CartesianMeta>) {
+            return djac_cart2cart_cart(g);
+          } else if constexpr (std::is_same_v<MetaT, SphericalMeta>) {
+            return djac_cart2sph_cart(g);
+          } else if constexpr (std::is_same_v<MetaT, CubedSphereWedgeMeta>) {
+            return djac_cart2wedge_cart(g);
+          } else {
+            static_assert(detail::always_false<MetaT>::value,
+                          "Unhandled meta type");
+            return {};
+          }
+        },
+        meta);
+  }
+
+  [[nodiscard]] CCTK_HOST
+      CCTK_DEVICE CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr dJac_t
+      djac_g2l_l(const Coord &g) const noexcept {
+    return std::visit(
+        [&g](const auto &m) constexpr noexcept -> dJac_t {
+          using MetaT = std::decay_t<decltype(m)>;
+          if constexpr (std::is_same_v<MetaT, CartesianMeta>) {
+            return djac_cart2cart_cart(g);
+          } else if constexpr (std::is_same_v<MetaT, SphericalMeta>) {
+            return djac_cart2sph_sph(g);
+          } else if constexpr (std::is_same_v<MetaT, CubedSphereWedgeMeta>) {
+            return djac_cart2wedge_wedge(g);
+          } else {
+            static_assert(detail::always_false<MetaT>::value,
+                          "Unhandled meta type");
+            return {};
+          }
+        },
+        meta);
+  }
 };
 
 //==============================================================================
