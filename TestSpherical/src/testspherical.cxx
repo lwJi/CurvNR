@@ -100,6 +100,11 @@ extern "C" void TestSpherical_RHS(CCTK_ARGUMENTS) {
         u_rhs(p.I) = rho(p.I);
         rho_rhs(p.I) = ddu[0] + 2 * du[0] / r + (cotth * du[1] + ddu[1]) / r2 +
                        ddu[2] / (r2 * sinth2);
+
+        if (std::isnan(rho_rhs(p.I))) {
+          printf("iter = %i, xyz = %16.8e, %16.8e, %16.8e,   ijk = %i, %i, %i,\n",
+                 cctk_iteration, p.x, p.y, p.z, p.i, p.j, p.k);
+        }
       });
 }
 
