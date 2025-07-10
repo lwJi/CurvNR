@@ -9,16 +9,16 @@ ActiveThorns = "
 
 $pi = 3.1415926535897932385
 
-$rmin = 1.8
+$rmin = 0.0
 $rmax = 11.8
 
 Cactus::presync_mode = "mixed-error"
 Cactus::terminate = "time"
-Cactus::cctk_final_time = 5.0
+Cactus::cctk_final_time = 8.0
 #Cactus::cctk_itlast = 512
 
-CarpetX::verbose = yes
-CarpetX::poison_undefined_values = yes
+CarpetX::verbose = no
+CarpetX::poison_undefined_values = no
 
 CarpetX::boundary_x = "neumann"
 CarpetX::boundary_y = "neumann"
@@ -37,27 +37,24 @@ CarpetX::max_tile_size_z = 10000000
 
 CarpetX::max_num_levels = 1
 CarpetX::ghost_size = 2
-CarpetX::dtfac = 0.1
+CarpetX::dtfac = 0.005
 
 ODESolvers::method = "RK4"
 
 CurvBase::patch_system = "Spherical"
 
-CurvBase::spherical_cutout_r = "yes"
-CurvBase::spherical_ncells_r  = 32
+CurvBase::spherical_cutout_r = no
+CurvBase::spherical_ncells_r  = 64
 CurvBase::spherical_ncells_th = 32
-CurvBase::spherical_ncells_ph = 32
+CurvBase::spherical_ncells_ph = 64
 CurvBase::spherical_rmin = $rmin
 CurvBase::spherical_rmax = $rmax
 
 TestSpherical::initial_condition = "Gaussian"
 TestSpherical::amplitude = 1.0
 TestSpherical::gaussian_width = 1.0
-TestSpherical::gaussian_shift_x = 3.5
-TestSpherical::gaussian_shift_z = 3.5
+TestSpherical::gaussian_shift_x = 2.0
 
-IO::out_dir = $parfile
-IO::out_every = 16
 IO::out_xline_y = $pi/2
 IO::out_xline_z = $pi
 IO::out_yline_x = ($rmax - $rmin)/2
@@ -65,10 +62,15 @@ IO::out_yline_z = $pi
 IO::out_zline_x = ($rmax - $rmin)/2
 IO::out_zline_y = $pi/2
 
+IO::out_dir = $parfile
+IO::out_every = 256
+
 CarpetX::out_silo_vars = "
+  CoordinatesX::cell_coords
   TestSpherical::state
 "
 
 CarpetX::out_tsv_vars = "
+  CoordinatesX::cell_coords
   TestSpherical::state
 "
