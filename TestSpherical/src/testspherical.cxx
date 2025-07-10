@@ -1,4 +1,8 @@
+#include <curvderivs.hxx>
 #include <loop_device.hxx>
+#include <stx_derivsGF3D5.hxx>
+#include <stx_powerinline.hxx>
+#include <stx_utils.hxx>
 
 #include <cctk.h>
 #include <cctk_Arguments.h>
@@ -10,6 +14,8 @@
 
 namespace TestSpherical {
 using namespace Loop;
+using namespace CurvDerivs;
+using namespace STXUtils;
 
 // u(t,r) = (f(t-r) - f(t+r)) / r
 // f(v) = A exp(-1/2 (r/W)^2)
@@ -77,8 +83,68 @@ extern "C" void TestSpherical_Initial(CCTK_ARGUMENTS) {
 }
 
 extern "C" void TestSpherical_RHS(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTSX_TestSpherical_RHS;
+  DECLARE_CCTK_ARGUMENTS_TestSpherical_RHS;
   DECLARE_CCTK_PARAMETERS;
+
+#if 1
+
+  constexpr int deriv_order = 4;
+
+  for (int d = 0; d < 3; ++d)
+    if (cctk_nghostzones[d] < deriv_order / 2)
+      CCTK_VERROR("Need at least %d ghost zones", deriv_order / 2);
+
+  const array<CCTK_REAL, 3> invDxyz{1. / CCTK_DELTA_SPACE(0),
+                                    1. / CCTK_DELTA_SPACE(1),
+                                    1. / CCTK_DELTA_SPACE(2)};
+
+  const GF3D2layout layout2(cctkGH, {1, 1, 1});
+
+  const array<const CCTK_REAL *, 9> gf_Jac{cJ1x, cJ1y, cJ1z, cJ2x, cJ2y,
+                                           cJ2z, cJ3x, cJ3y, cJ3z};
+  const array<const CCTK_REAL *, 18> gf_dJac{
+      cdJ1xx, cdJ1xy, cdJ1xz, cdJ1yy, cdJ1yz, cdJ1zz, cdJ2xx, cdJ2xy, cdJ2xz,
+      cdJ2yy, cdJ2yz, cdJ2zz, cdJ3xx, cdJ3xy, cdJ3xz, cdJ3yy, cdJ3yz, cdJ3zz};
+
+  // allocate temporary GF3D5 gfs
+  const int ntmps = 18;
+  int itmp = 0;
+  const GF3D5layout layout5 = STXUtils::get_GF3D5layout<1, 1, 1>(cctkGH);
+  STXUtils::GF3D5Factory<CCTK_REAL> fct(layout5, ntmps, itmp);
+  const auto tl_duSph = fct.make_vec_gf();
+  const auto tl_dduSph = fct.make_smat_gf();
+  const auto tl_duCart = fct.make_vec_gf();
+  const auto tl_dduCart = fct.make_smat_gf();
+  if (itmp != ntmps)
+    CCTK_VERROR("Wrong number of temporary variables: ntmps=%d itmp=%d", ntmps,
+                itmp);
+  itmp = -1;
+
+  const Loop::GridDescBaseDevice grid(cctkGH);
+
+  // Derivatives of Spherical Coordinate
+  calc_derivs2nd<1, 1, 1>(grid, layout5, tl_duSph, tl_dduSph, layout2, u,
+                          invDxyz, deriv_order);
+
+  // Transformation from Spherical to Cartesian Coordinate
+  calc_trans<1, 1, 1>(grid, layout5, tl_duCart, tl_dduCart, tl_duSph, tl_dduSph,
+                      layout2, gf_Jac, gf_dJac);
+
+  const auto dduCart11 = tl_dduCart[0].ptr;
+  const auto dduCart22 = tl_dduCart[3].ptr;
+  const auto dduCart33 = tl_dduCart[5].ptr;
+
+  grid.loop_int_device<1, 1, 1>(
+      grid.nghostzones,
+      [=] CCTK_DEVICE(const Loop::PointDesc &p) CCTK_ATTRIBUTE_ALWAYS_INLINE {
+        const int ijk = layout2.linear(p.i, p.j, p.k);
+        const int ijk5 = layout5.linear(p.i, p.j, p.k);
+
+        u_rhs[ijk] = rho[ijk];
+        rho_rhs[ijk] = dduCart11[ijk5] + dduCart22[ijk5] + dduCart33[ijk];
+      });
+
+#else
 
   grid.loop_int_device<1, 1, 1>(
       grid.nghostzones,
@@ -111,6 +177,8 @@ extern "C" void TestSpherical_RHS(CCTK_ARGUMENTS) {
           assert(0);
         }
       });
+
+#endif
 }
 
 extern "C" void TestSpherical_Sync(CCTK_ARGUMENTS) {

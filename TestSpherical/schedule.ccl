@@ -14,6 +14,8 @@ SCHEDULE TestSpherical_RHS IN ODESolvers_RHS
 {
   LANG: C
   READS: state(everywhere)
+  READS: CurvBase::cell_Jacobians(interior)
+  READS: CurvBase::cell_dJacobians(interior)
   WRITES: rhs(interior)
 } "Calculate scalar wave RHS"
 

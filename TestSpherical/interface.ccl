@@ -5,6 +5,10 @@ IMPLEMENTS: TestSpherical
 INHERITS: CoordinatesX CurvBase
 
 USES INCLUDE HEADER: loop_device.hxx
+USES INCLUDE HEADER: curvderivs.hxx
+USES INCLUDE HEADER: stx_utils.hxx
+USES INCLUDE HEADER: stx_derivsGF3D5.hxx
+USES INCLUDE HEADER: stx_powerinline.hxx
 
 
 CCTK_REAL state TYPE=gf CENTERING={ccc} TAGS='rhs="rhs" checkpoint="yes"'
