@@ -108,6 +108,7 @@ extern "C" void TestSpherical_RHS(CCTK_ARGUMENTS) {
           printf(
               "iter = %i, xyz = %16.8e, %16.8e, %16.8e,   ijk = %i, %i, %i,\n",
               cctk_iteration, p.x, p.y, p.z, p.i, p.j, p.k);
+          assert(0);
         }
       });
 }
