@@ -1,0 +1,14 @@
+# Schedule definitions for thorn TestCurvBase
+
+STORAGE: error_cell_Jacobians
+STORAGE: error_cell_dJacobians
+
+SCHEDULE TestCurvBase_CalcJacobianErrors AT initial
+{
+  LANG: C
+  READS: CoordinatesX::cell_coords(everywhere)
+  READS: CurvBase::cell_Jacobians(everywhere)
+  READS: CurvBase::cell_dJacobians(everywhere)
+  WRITES: error_cell_Jacobians(everywhere)
+  WRITES: error_cell_dJacobians(everywhere)
+} "Calculate errors in Jacobians"

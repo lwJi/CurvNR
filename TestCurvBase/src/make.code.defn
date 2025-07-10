@@ -1,0 +1,7 @@
+# Main make.code.defn file for thorn TestCurvBase
+
+# Source files in this directory
+SRCS = testjacobians.cxx
+
+# Subdirectories containing source files
+SUBDIRS =

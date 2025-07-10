@@ -1,0 +1,22 @@
+# Interface definition for thorn TestCurvBase
+
+IMPLEMENTS: TestCurvBase
+
+INHERITS: CoordinatesX CurvBase
+
+USES INCLUDE HEADER: loop_device.hxx
+USES INCLUDE HEADER: CurvBase_MultiPatch.hxx
+
+CCTK_REAL error_cell_Jacobians TYPE=gf CENTERING={ccc} TAGS='checkpoint="no"'
+{
+  err_cJ1x, err_cJ1y, err_cJ1z,
+  err_cJ2x, err_cJ2y, err_cJ2z,
+  err_cJ3x, err_cJ3y, err_cJ3z
+} "Errors in The cell centered Jacobian from Cartesian to Numerical Coordinates"
+
+CCTK_REAL error_cell_dJacobians TYPE=gf CENTERING={ccc} TAGS='checkpoint="no"'
+{
+  err_cdJ1xx, err_cdJ1xy, err_cdJ1xz, err_cdJ1yy, err_cdJ1yz, err_cdJ1zz,
+  err_cdJ2xx, err_cdJ2xy, err_cdJ2xz, err_cdJ2yy, err_cdJ2yz, err_cdJ2zz,
+  err_cdJ3xx, err_cdJ3xy, err_cdJ3xz, err_cdJ3yy, err_cdJ3yz, err_cdJ3zz
+} "Erros in The cell centered Jacobian derivatives from Cartesian to Numerical Coordinates"

@@ -1,0 +1,5 @@
+# Parameter definitions for thorn TestCurvBase
+
+SHARES: CurvBase
+
+USES KEYWORD patch_system
