@@ -52,7 +52,7 @@ const auto &dduI23 = tl_dduI[4].ptr;
 const auto &dduI33 = tl_dduI[5].ptr;
 
 noinline([&]() __attribute__((__flatten__, __hot__)) {
-grid.loop_int_device<0, 0, 0>(
+grid.loop_int_device<CI, CJ, CK>(
   grid.nghostzones, [=] ARITH_DEVICE(const PointDesc &p) ARITH_INLINE {
 const int ijk = layout2.linear(p.i, p.j, p.k);
 const int ijk5 = layout5.linear(p.i, p.j, p.k);

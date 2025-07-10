@@ -90,7 +90,7 @@ SetMainPrint[
 
   (* Loops *)
   pr["noinline([&]() __attribute__((__flatten__, __hot__)) {"];
-  pr["grid.loop_int_device<0, 0, 0>("];
+  pr["grid.loop_int_device<CI, CJ, CK>("];
   pr["  grid.nghostzones, [=] ARITH_DEVICE(const PointDesc &p) ARITH_INLINE {"];
   pr["const int ijk = layout2.linear(p.i, p.j, p.k);"];
   pr["const int ijk5 = layout5.linear(p.i, p.j, p.k);"];
