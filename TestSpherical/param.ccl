@@ -30,3 +30,7 @@ CCTK_REAL gaussian_shift_z "shift of center in z-dir"
 {
   *:* :: ""
 } 0.0
+
+BOOLEAN use_jacobian "use the jacobian come with the multipatch system" STEERABLE=always
+{
+} "no"

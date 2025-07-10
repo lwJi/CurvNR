@@ -86,8 +86,6 @@ extern "C" void TestSpherical_RHS(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_TestSpherical_RHS;
   DECLARE_CCTK_PARAMETERS;
 
-#if 1
-
   constexpr int deriv_order = 4;
 
   for (int d = 0; d < 3; ++d)
@@ -99,12 +97,6 @@ extern "C" void TestSpherical_RHS(CCTK_ARGUMENTS) {
                                     1. / CCTK_DELTA_SPACE(2)};
 
   const GF3D2layout layout2(cctkGH, {1, 1, 1});
-
-  const array<const CCTK_REAL *, 9> gf_Jac{cJ1x, cJ1y, cJ1z, cJ2x, cJ2y,
-                                           cJ2z, cJ3x, cJ3y, cJ3z};
-  const array<const CCTK_REAL *, 18> gf_dJac{
-      cdJ1xx, cdJ1xy, cdJ1xz, cdJ1yy, cdJ1yz, cdJ1zz, cdJ2xx, cdJ2xy, cdJ2xz,
-      cdJ2yy, cdJ2yz, cdJ2zz, cdJ3xx, cdJ3xy, cdJ3xz, cdJ3yy, cdJ3yz, cdJ3zz};
 
   // allocate temporary GF3D5 gfs
   const int ntmps = 18;
@@ -126,59 +118,74 @@ extern "C" void TestSpherical_RHS(CCTK_ARGUMENTS) {
   calc_derivs2nd<1, 1, 1>(grid, layout5, tl_duSph, tl_dduSph, layout2, u,
                           invDxyz, deriv_order);
 
-  // Transformation from Spherical to Cartesian Coordinate
-  calc_trans<1, 1, 1>(grid, layout5, tl_duCart, tl_dduCart, tl_duSph, tl_dduSph,
-                      layout2, gf_Jac, gf_dJac);
+  if (use_jacobian) {
 
-  const auto dduCart11 = tl_dduCart[0].ptr;
-  const auto dduCart22 = tl_dduCart[3].ptr;
-  const auto dduCart33 = tl_dduCart[5].ptr;
+    const array<const CCTK_REAL *, 9> gf_Jac{cJ1x, cJ1y, cJ1z, cJ2x, cJ2y,
+                                             cJ2z, cJ3x, cJ3y, cJ3z};
+    const array<const CCTK_REAL *, 18> gf_dJac{
+        cdJ1xx, cdJ1xy, cdJ1xz, cdJ1yy, cdJ1yz, cdJ1zz, cdJ2xx, cdJ2xy, cdJ2xz,
+        cdJ2yy, cdJ2yz, cdJ2zz, cdJ3xx, cdJ3xy, cdJ3xz, cdJ3yy, cdJ3yz, cdJ3zz};
 
-  grid.loop_int_device<1, 1, 1>(
-      grid.nghostzones,
-      [=] CCTK_DEVICE(const Loop::PointDesc &p) CCTK_ATTRIBUTE_ALWAYS_INLINE {
-        const int ijk = layout2.linear(p.i, p.j, p.k);
-        const int ijk5 = layout5.linear(p.i, p.j, p.k);
+    // Transformation from Spherical to Cartesian Coordinate
+    calc_trans<1, 1, 1>(grid, layout5, tl_duCart, tl_dduCart, tl_duSph,
+                        tl_dduSph, layout2, gf_Jac, gf_dJac);
 
-        u_rhs[ijk] = rho[ijk];
-        rho_rhs[ijk] = dduCart11[ijk5] + dduCart22[ijk5] + dduCart33[ijk];
-      });
+    const auto dduCart11 = tl_dduCart[0].ptr;
+    const auto dduCart22 = tl_dduCart[3].ptr;
+    const auto dduCart33 = tl_dduCart[5].ptr;
 
-#else
+    grid.loop_int_device<
+        1, 1, 1>(grid.nghostzones, [=] CCTK_DEVICE(
+                                       const Loop::PointDesc
+                                           &p) CCTK_ATTRIBUTE_ALWAYS_INLINE {
+      const int ijk = layout2.linear(p.i, p.j, p.k);
+      const int ijk5 = layout5.linear(p.i, p.j, p.k);
 
-  grid.loop_int_device<1, 1, 1>(
-      grid.nghostzones,
-      [=] CCTK_DEVICE(const Loop::PointDesc &p) CCTK_ATTRIBUTE_ALWAYS_INLINE {
-        CCTK_REAL r = p.x;
-        CCTK_REAL r2 = r * r;
-        CCTK_REAL sinth = std::sin(p.y);
-        CCTK_REAL costh = std::cos(p.y);
-        CCTK_REAL cotth = costh / sinth;
-        CCTK_REAL sinth2 = sinth * sinth;
+      u_rhs[ijk] = rho[ijk];
+      rho_rhs[ijk] = dduCart11[ijk5] + dduCart22[ijk5] + dduCart33[ijk5];
 
-        std::array<CCTK_REAL, dim> du, ddu;
-        for (int d = 0; d < dim; ++d) {
-          du[d] = ((u(p.I - 2 * p.DI[d]) - u(p.I + 2 * p.DI[d])) -
-                   8 * (u(p.I - p.DI[d]) - u(p.I + p.DI[d]))) /
-                  (12 * p.DX[d]);
-          ddu[d] = (-(u(p.I - 2 * p.DI[d]) + u(p.I + 2 * p.DI[d])) +
-                    16 * (u(p.I - p.DI[d]) + u(p.I + p.DI[d])) - 30 * u(p.I)) /
-                   (12 * pow(p.DX[d], 2));
-        }
+      if (std::isnan(rho_rhs[ijk])) {
+        printf("iter = %i, xyz = %16.8e, %16.8e, %16.8e,   ijk = %i, %i, %i,\n",
+               cctk_iteration, p.x, p.y, p.z, p.i, p.j, p.k);
+        assert(0);
+      }
+    });
 
-        u_rhs(p.I) = rho(p.I);
-        rho_rhs(p.I) = ddu[0] + 2 * du[0] / r + (cotth * du[1] + ddu[1]) / r2 +
-                       ddu[2] / (r2 * sinth2);
+  } else {
 
-        if (std::isnan(rho_rhs(p.I))) {
-          printf(
-              "iter = %i, xyz = %16.8e, %16.8e, %16.8e,   ijk = %i, %i, %i,\n",
-              cctk_iteration, p.x, p.y, p.z, p.i, p.j, p.k);
-          assert(0);
-        }
-      });
+    const auto du1 = tl_duSph[0].ptr;
+    const auto du2 = tl_duSph[1].ptr;
+    const auto du3 = tl_duSph[2].ptr;
+    const auto ddu11 = tl_dduSph[0].ptr;
+    const auto ddu22 = tl_dduSph[3].ptr;
+    const auto ddu33 = tl_dduSph[5].ptr;
 
-#endif
+    grid.loop_int_device<
+        1, 1, 1>(grid.nghostzones, [=] CCTK_DEVICE(
+                                       const Loop::PointDesc
+                                           &p) CCTK_ATTRIBUTE_ALWAYS_INLINE {
+      const int ijk = layout2.linear(p.i, p.j, p.k);
+      const int ijk5 = layout5.linear(p.i, p.j, p.k);
+
+      const auto r = p.x;
+      const auto r2 = r * r;
+      const auto sinth = std::sin(p.y);
+      const auto costh = std::cos(p.y);
+      const auto cotth = costh / sinth;
+      const auto sinth2 = sinth * sinth;
+
+      u_rhs[ijk] = rho[ijk];
+      rho_rhs[ijk] = ddu11[ijk5] + 2 * du1[ijk5] / r +
+                     (cotth * du2[ijk5] + ddu22[ijk5]) / r2 +
+                     ddu33[ijk5] / (r2 * sinth2);
+
+      if (std::isnan(rho_rhs[ijk])) {
+        printf("iter = %i, xyz = %16.8e, %16.8e, %16.8e,   ijk = %i, %i, %i,\n",
+               cctk_iteration, p.x, p.y, p.z, p.i, p.j, p.k);
+        assert(0);
+      }
+    });
+  }
 }
 
 extern "C" void TestSpherical_Sync(CCTK_ARGUMENTS) {
