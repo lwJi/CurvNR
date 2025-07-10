@@ -1,5 +1,7 @@
 # Parameter definitions for thorn CurvBase
 
+RESTRICTED:
+
 KEYWORD patch_system "Patch system"
 {
   "none" :: "disable multi-patch systems"
@@ -7,6 +9,8 @@ KEYWORD patch_system "Patch system"
   "CubedSphere" :: "1 cartesian + 6 wedges"
   "Spherical" :: ""
 } "none"
+
+PRIVATE:
 
 # Cartesian patch system
 
