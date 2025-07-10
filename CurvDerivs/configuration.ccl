@@ -1,0 +1,7 @@
+# Configuration definitions for thorn CurvDerivs
+
+REQUIRES Loop
+
+PROVIDES CurvDerivs
+{
+}

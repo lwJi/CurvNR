@@ -1,0 +1,8 @@
+# Interface definition for thorn CurvDerivs
+
+IMPLEMENTS: CurvDerivs
+
+USES INCLUDE HEADER: loop_device.hxx
+
+INCLUDES HEADER: curvderivs.hxx IN curvderivs.hxx
+
