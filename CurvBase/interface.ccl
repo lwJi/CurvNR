@@ -13,7 +13,7 @@ USES INCLUDE HEADER: tuple.hxx
 USES INCLUDE HEADER: vec.hxx
 USES INCLUDE HEADER: vect.hxx
 
-INCLUDES HEADER: CurvBase.hxx IN CurvBase.hxx
+INCLUDES HEADER: CurvBase_MultiPatch.hxx IN CurvBase_MultiPatch.hxx
 
 
 
