@@ -14,7 +14,29 @@ struct SphericalMeta {};
 
 [[nodiscard]] CCTK_HOST CCTK_DEVICE inline Coord
 sph_l2g(const Coord &l, const void *) noexcept {
-  const CCTK_REAL r = l[0], theta = l[1], phi = l[2];
+  CCTK_REAL r = l[0], theta = l[1], phi = l[2];
+
+  if (r < 0.0) {
+    r = -r;
+    theta = onepi - theta;
+    phi += onepi;
+  }
+
+  CCTK_REAL rem = std::fmod(theta, twopi);
+  if (rem < 0.0) {
+    rem += twopi;
+  }
+  if (rem > onepi) {
+    theta = twopi - rem;
+    phi += onepi;
+  } else {
+    theta = rem;
+  }
+
+  phi = std::fmod(phi, twopi);
+  if (phi < 0.0) {
+    phi += twopi;
+  }
 
   // On GPUs, calling a `sincos` intrinsic to compute sine and cosine
   // simultaneously is often faster than separate calls.
