@@ -6,5 +6,7 @@ USES INCLUDE HEADER: loop_device.hxx
 
 INCLUDES HEADER: curvtrans.hxx IN curvtrans.hxx
 
+USES INCLUDE HEADER: cx_derivs1st.hxx
+USES INCLUDE HEADER: cx_derivs2nd.hxx
 USES INCLUDE HEADER: cx_powerinline.hxx
 
