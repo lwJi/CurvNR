@@ -1,15 +1,15 @@
 #ifndef CRUVDERIVS__HXX
 #define CRUVDERIVS__HXX
 
+#include <cx_powerinline.hxx>
 #include <loop_device.hxx>
-#include <stx_powerinline.hxx>
 
 #include <array>
 #include <cmath>
 
 namespace CurvDerivs {
 using namespace Loop;
-using namespace STXUtils;
+using namespace CXUtils;
 using namespace std;
 
 template <int CI, int CJ, int CK, typename T>

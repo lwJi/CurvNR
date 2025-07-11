@@ -1,8 +1,8 @@
 #include <curvderivs.hxx>
+#include <cx_derivsGF3D5.hxx>
+#include <cx_powerinline.hxx>
+#include <cx_utils.hxx>
 #include <loop_device.hxx>
-#include <stx_derivsGF3D5.hxx>
-#include <stx_powerinline.hxx>
-#include <stx_utils.hxx>
 
 #include <cctk.h>
 #include <cctk_Arguments.h>
@@ -15,7 +15,6 @@
 namespace TestSpherical {
 using namespace Loop;
 using namespace CurvDerivs;
-using namespace STXUtils;
 
 // u(t,r) = (f(t-r) - f(t+r)) / r
 // f(v) = A exp(-1/2 (r/W)^2)
@@ -101,8 +100,8 @@ extern "C" void TestSpherical_RHS(CCTK_ARGUMENTS) {
   // allocate temporary GF3D5 gfs
   const int ntmps = 18;
   int itmp = 0;
-  const GF3D5layout layout5 = STXUtils::get_GF3D5layout<1, 1, 1>(cctkGH);
-  STXUtils::GF3D5Factory<CCTK_REAL> fct(layout5, ntmps, itmp);
+  const GF3D5layout layout5 = CXUtils::get_GF3D5layout<1, 1, 1>(cctkGH);
+  CXUtils::GF3D5Factory<CCTK_REAL> fct(layout5, ntmps, itmp);
   const auto tl_duSph = fct.make_vec_gf();
   const auto tl_dduSph = fct.make_smat_gf();
   const auto tl_duCart = fct.make_vec_gf();
