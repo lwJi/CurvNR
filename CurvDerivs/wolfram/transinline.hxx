@@ -1,9 +1,6 @@
 /* transinline.hxx */
 /* Produced with Generato */
 
-#ifndef TRANSINLINE_HXX
-#define TRANSINLINE_HXX
-
 const auto Jac11 = gf_Jac[0];
 const auto Jac12 = gf_Jac[1];
 const auto Jac13 = gf_Jac[2];
@@ -132,7 +129,5 @@ dJac133[ijk]*duI1[ijk5] + dJac233[ijk]*duI2[ijk5] +
 
 });
 });
-
-#endif // #ifndef TRANSINLINE_HXX
 
 /* transinline.hxx */

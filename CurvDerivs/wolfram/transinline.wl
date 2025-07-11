@@ -14,6 +14,8 @@ SetPVerbose[False];
 
 SetPrintDate[False];
 
+SetPrintHeaderMacro[False];
+
 SetGridPointIndex["[[ijk]]"];
 
 SetTilePointIndex["[[ijk5]]"];

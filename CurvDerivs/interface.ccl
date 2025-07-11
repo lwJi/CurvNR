@@ -5,5 +5,6 @@ IMPLEMENTS: CurvDerivs
 USES INCLUDE HEADER: loop_device.hxx
 
 INCLUDES HEADER: curvderivs.hxx IN curvderivs.hxx
+
 USES INCLUDE HEADER: cx_powerinline.hxx
 
