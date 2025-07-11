@@ -137,16 +137,16 @@ struct Patch {
 
   [[nodiscard]] CCTK_HOST
       CCTK_DEVICE CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr Jac_t
-      jac_g2l_l(const Coord &g) const noexcept {
+      jac_g2l_l(const Coord &l) const noexcept {
     return std::visit(
-        [&g](const auto &m) constexpr noexcept -> Jac_t {
+        [&l](const auto &m) constexpr noexcept -> Jac_t {
           using MetaT = std::decay_t<decltype(m)>;
           if constexpr (std::is_same_v<MetaT, CartesianMeta>) {
-            return jac_cart2cart_cart(g);
+            return jac_cart2cart_cart(l);
           } else if constexpr (std::is_same_v<MetaT, SphericalMeta>) {
-            return jac_cart2sph_sph(g);
+            return jac_cart2sph_sph(l);
           } else if constexpr (std::is_same_v<MetaT, CubedSphereWedgeMeta>) {
-            return jac_cart2wedge_wedge(g);
+            return jac_cart2wedge_wedge(l);
           } else {
             static_assert(detail::always_false<MetaT>::value,
                           "Unhandled meta type");
@@ -179,16 +179,16 @@ struct Patch {
 
   [[nodiscard]] CCTK_HOST
       CCTK_DEVICE CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr dJac_t
-      djac_g2l_l(const Coord &g) const noexcept {
+      djac_g2l_l(const Coord &l) const noexcept {
     return std::visit(
-        [&g](const auto &m) constexpr noexcept -> dJac_t {
+        [&l](const auto &m) constexpr noexcept -> dJac_t {
           using MetaT = std::decay_t<decltype(m)>;
           if constexpr (std::is_same_v<MetaT, CartesianMeta>) {
-            return djac_cart2cart_cart(g);
+            return djac_cart2cart_cart(l);
           } else if constexpr (std::is_same_v<MetaT, SphericalMeta>) {
-            return djac_cart2sph_sph(g);
+            return djac_cart2sph_sph(l);
           } else if constexpr (std::is_same_v<MetaT, CubedSphereWedgeMeta>) {
-            return djac_cart2wedge_wedge(g);
+            return djac_cart2wedge_wedge(l);
           } else {
             static_assert(detail::always_false<MetaT>::value,
                           "Unhandled meta type");
