@@ -1,5 +1,5 @@
-#ifndef CURVDERIVS_CURVDERIVS_HXX
-#define CURVDERIVS_CURVDERIVS_HXX
+#ifndef CURVDERIVS_CURVTRANS_HXX
+#define CURVDERIVS_CURVTRANS_HXX
 
 #include <cx_powerinline.hxx>
 #include <loop_device.hxx>
@@ -53,4 +53,4 @@ calc_trans(const GridDescBaseDevice &grid, const GF3D5layout &layout5,
 
 } // namespace CurvDerivs
 
-#endif // #ifndef CURVDERIVS_CURVDERIVS_HXX
+#endif // #ifndef CURVDERIVS_CURVTRANS_HXX
