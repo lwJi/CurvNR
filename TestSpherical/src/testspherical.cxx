@@ -1,4 +1,4 @@
-#include <curvderivs.hxx>
+#include <curvtrans.hxx>
 #include <cx_derivsGF3D5.hxx>
 #include <cx_powerinline.hxx>
 #include <cx_utils.hxx>
@@ -14,7 +14,7 @@
 
 namespace TestSpherical {
 using namespace Loop;
-using namespace CurvDerivs;
+using namespace std;
 
 // u(t,r) = (f(t-r) - f(t+r)) / r
 // f(v) = A exp(-1/2 (r/W)^2)
@@ -114,8 +114,8 @@ extern "C" void TestSpherical_RHS(CCTK_ARGUMENTS) {
   const Loop::GridDescBaseDevice grid(cctkGH);
 
   // Derivatives of Spherical Coordinate
-  calc_derivs2nd<1, 1, 1>(grid, layout5, tl_duSph, tl_dduSph, layout2, u,
-                          invDxyz, deriv_order);
+  CXUtils::calc_derivs2nd<1, 1, 1>(grid, layout5, tl_duSph, tl_dduSph, layout2,
+                                   u, invDxyz, deriv_order);
 
   if (use_jacobian) {
 
@@ -126,8 +126,9 @@ extern "C" void TestSpherical_RHS(CCTK_ARGUMENTS) {
         cdJ2yy, cdJ2yz, cdJ2zz, cdJ3xx, cdJ3xy, cdJ3xz, cdJ3yy, cdJ3yz, cdJ3zz};
 
     // Transformation from Spherical to Cartesian Coordinate
-    calc_trans<1, 1, 1>(grid, layout5, tl_duCart, tl_dduCart, tl_duSph,
-                        tl_dduSph, layout2, gf_Jac, gf_dJac);
+    CurvDerivs::calc_trans<1, 1, 1>(grid, layout5, tl_duCart, tl_dduCart,
+                                    tl_duSph, tl_dduSph, layout2, gf_Jac,
+                                    gf_dJac);
 
     const auto dduCart11 = tl_dduCart[0].ptr;
     const auto dduCart22 = tl_dduCart[3].ptr;
