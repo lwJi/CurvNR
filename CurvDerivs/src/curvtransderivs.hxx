@@ -20,10 +20,6 @@ calc_transderivs(const GridDescBaseDevice &grid, const GF3D5layout &layout5,
                  const T *uI, const array<const T *, 9> &gf_Jac,
                  const array<const T *, 18> &gf_dJac) {
 
-  // Derivs Lambdas
-#include <cx_derivs1st.hxx>
-#include <cx_derivs2nd.hxx>
-
 #include "../wolfram/transderivsinline.hxx"
 }
 
