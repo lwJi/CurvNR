@@ -6,6 +6,7 @@ INHERITS: CoordinatesX CurvBase
 
 USES INCLUDE HEADER: loop_device.hxx
 USES INCLUDE HEADER: curvtrans.hxx
+USES INCLUDE HEADER: curvtransderivs.hxx
 USES INCLUDE HEADER: cx_utils.hxx
 USES INCLUDE HEADER: cx_derivsGF3D5.hxx
 USES INCLUDE HEADER: cx_powerinline.hxx

@@ -34,3 +34,7 @@ CCTK_REAL gaussian_shift_z "shift of center in z-dir"
 BOOLEAN use_jacobian "use the jacobian come with the multipatch system" STEERABLE=always
 {
 } "no"
+
+BOOLEAN combine_derivs_jacobian "combine derivs and jacobian multiplication" STEERABLE=always
+{
+} "no"
