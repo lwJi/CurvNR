@@ -12,7 +12,7 @@ using namespace Loop;
 using namespace CXUtils;
 using namespace std;
 
-template <int CI, int CJ, int CK, typename T, int DORDER>
+template <int CI, int CJ, int CK, int DORDER, typename T>
 CCTK_ATTRIBUTE_NOINLINE void
 calc_transderivs(const GridDescBaseDevice &grid, const GF3D5layout &layout5,
                  const array<GF3D5<T>, 3> &tl_duO,
@@ -20,10 +20,14 @@ calc_transderivs(const GridDescBaseDevice &grid, const GF3D5layout &layout5,
                  const T *uI, const array<const T *, 9> &gf_Jac,
                  const array<const T *, 18> &gf_dJac) {
 
+  // Derivs Lambdas
+#include "../wolfram/derivs1st.hxx"
+#include "../wolfram/derivs2nd.hxx"
+
 #include "../wolfram/transderivsinline.hxx"
 }
 
-template <int CI, int CJ, int CK, typename T, int DORDER>
+template <int CI, int CJ, int CK, int DORDER, typename T>
 CCTK_ATTRIBUTE_NOINLINE void
 calc_transderivs(const GridDescBaseDevice &grid, const GF3D5layout &layout5,
                  const array<array<GF3D5<T>, 3>, 3> &tl_duO,
@@ -32,11 +36,11 @@ calc_transderivs(const GridDescBaseDevice &grid, const GF3D5layout &layout5,
                  const array<const T *, 9> &gf_Jac,
                  const array<const T *, 18> &gf_dJac) {
   for (int a = 0; a < 3; ++a)
-    calc_transderivs<CI, CJ, CK>(grid, layout5, tl_duO[a], tl_dduO[a], layout2,
-                                 uI, gf_Jac, gf_dJac);
+    calc_transderivs<CI, CJ, CK, DORDER>(grid, layout5, tl_duO[a], tl_dduO[a],
+                                         layout2, uI, gf_Jac, gf_dJac);
 }
 
-template <int CI, int CJ, int CK, typename T, int DORDER>
+template <int CI, int CJ, int CK, int DORDER, typename T>
 CCTK_ATTRIBUTE_NOINLINE void
 calc_transderivs(const GridDescBaseDevice &grid, const GF3D5layout &layout5,
                  const array<array<GF3D5<T>, 3>, 6> &tl_duO,
@@ -45,8 +49,8 @@ calc_transderivs(const GridDescBaseDevice &grid, const GF3D5layout &layout5,
                  const array<const T *, 9> &gf_Jac,
                  const array<const T *, 18> &gf_dJac) {
   for (int a = 0; a < 6; ++a)
-    calc_transderivs<CI, CJ, CK>(grid, layout5, tl_duO[a], tl_dduO[a], layout2,
-                                 uI, gf_Jac, gf_dJac);
+    calc_transderivs<CI, CJ, CK, DORDER>(grid, layout5, tl_duO[a], tl_dduO[a],
+                                         layout2, uI, gf_Jac, gf_dJac);
 }
 
 } // namespace CurvDerivs
