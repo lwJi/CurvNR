@@ -28,20 +28,19 @@ SetMainPrint[
     pr["const auto calcderivs1_" <> ToString[iDir] <> " ="];
     pr["    [=] CCTK_DEVICE(const CCTK_REAL *gf_, int i, int j, int k)"];
     pr["        CCTK_ATTRIBUTE_ALWAYS_INLINE {"];
-    pr["switch (deriv_order) {"];
     Do[
-      pr["case " <> ToString[aOrd] <> ": {"];
+      If[aOrd == 2,
+        pr["if constexpr (deriv_order == " <> ToString[aOrd] <> ") {"],
+        pr["} else if constexpr (deriv_order == " <> ToString[aOrd] <> ") {"]
+      ];
       pr["  return fd_1_o" <> ToString[aOrd] <> "<" <> ToString[iDir]
                            <> ">(layout2, gf_, i, j, k, invDxyz);"];
-      pr["  break;"];
-      pr["}"]
       ,
       {aOrd, 2, 8, 2}
     ];
-    pr["default: {"];
-    pr["  assert(0);"];
+    pr["} else {"];
+    pr["  static_assert(false, \"Unsupported derivative order\");"];
     pr["  return 0.;"];
-    pr["}"];
     pr["}"];
     pr["};"];
     pr[]
