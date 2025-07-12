@@ -4,13 +4,13 @@
 const auto calcderivs1_1 =
     [=] CCTK_DEVICE(const CCTK_REAL *gf_, int i, int j, int k)
         CCTK_ATTRIBUTE_ALWAYS_INLINE {
-if constexpr (deriv_order == 2) {
+if constexpr (DORDER == 2) {
   return fd_1_o2<1>(layout2, gf_, i, j, k, invDxyz);
-} else if constexpr (deriv_order == 4) {
+} else if constexpr (DORDER == 4) {
   return fd_1_o4<1>(layout2, gf_, i, j, k, invDxyz);
-} else if constexpr (deriv_order == 6) {
+} else if constexpr (DORDER == 6) {
   return fd_1_o6<1>(layout2, gf_, i, j, k, invDxyz);
-} else if constexpr (deriv_order == 8) {
+} else if constexpr (DORDER == 8) {
   return fd_1_o8<1>(layout2, gf_, i, j, k, invDxyz);
 } else {
   static_assert(false, "Unsupported derivative order");
@@ -21,13 +21,13 @@ if constexpr (deriv_order == 2) {
 const auto calcderivs1_2 =
     [=] CCTK_DEVICE(const CCTK_REAL *gf_, int i, int j, int k)
         CCTK_ATTRIBUTE_ALWAYS_INLINE {
-if constexpr (deriv_order == 2) {
+if constexpr (DORDER == 2) {
   return fd_1_o2<2>(layout2, gf_, i, j, k, invDxyz);
-} else if constexpr (deriv_order == 4) {
+} else if constexpr (DORDER == 4) {
   return fd_1_o4<2>(layout2, gf_, i, j, k, invDxyz);
-} else if constexpr (deriv_order == 6) {
+} else if constexpr (DORDER == 6) {
   return fd_1_o6<2>(layout2, gf_, i, j, k, invDxyz);
-} else if constexpr (deriv_order == 8) {
+} else if constexpr (DORDER == 8) {
   return fd_1_o8<2>(layout2, gf_, i, j, k, invDxyz);
 } else {
   static_assert(false, "Unsupported derivative order");
@@ -38,13 +38,13 @@ if constexpr (deriv_order == 2) {
 const auto calcderivs1_3 =
     [=] CCTK_DEVICE(const CCTK_REAL *gf_, int i, int j, int k)
         CCTK_ATTRIBUTE_ALWAYS_INLINE {
-if constexpr (deriv_order == 2) {
+if constexpr (DORDER == 2) {
   return fd_1_o2<3>(layout2, gf_, i, j, k, invDxyz);
-} else if constexpr (deriv_order == 4) {
+} else if constexpr (DORDER == 4) {
   return fd_1_o4<3>(layout2, gf_, i, j, k, invDxyz);
-} else if constexpr (deriv_order == 6) {
+} else if constexpr (DORDER == 6) {
   return fd_1_o6<3>(layout2, gf_, i, j, k, invDxyz);
-} else if constexpr (deriv_order == 8) {
+} else if constexpr (DORDER == 8) {
   return fd_1_o8<3>(layout2, gf_, i, j, k, invDxyz);
 } else {
   static_assert(false, "Unsupported derivative order");

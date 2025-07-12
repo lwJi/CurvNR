@@ -30,8 +30,8 @@ SetMainPrint[
     pr["        CCTK_ATTRIBUTE_ALWAYS_INLINE {"];
     Do[
       If[aOrd == 2,
-        pr["if constexpr (deriv_order == " <> ToString[aOrd] <> ") {"],
-        pr["} else if constexpr (deriv_order == " <> ToString[aOrd] <> ") {"]
+        pr["if constexpr (DORDER == " <> ToString[aOrd] <> ") {"],
+        pr["} else if constexpr (DORDER == " <> ToString[aOrd] <> ") {"]
       ];
       pr["  return fd_1_o" <> ToString[aOrd] <> "<" <> ToString[iDir]
                            <> ">(layout2, gf_, i, j, k, invDxyz);"];

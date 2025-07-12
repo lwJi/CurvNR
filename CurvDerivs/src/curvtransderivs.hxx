@@ -12,7 +12,7 @@ using namespace Loop;
 using namespace CXUtils;
 using namespace std;
 
-template <int CI, int CJ, int CK, typename T>
+template <int CI, int CJ, int CK, typename T, int DORDER>
 CCTK_ATTRIBUTE_NOINLINE void
 calc_transderivs(const GridDescBaseDevice &grid, const GF3D5layout &layout5,
                  const array<GF3D5<T>, 3> &tl_duO,
@@ -23,7 +23,7 @@ calc_transderivs(const GridDescBaseDevice &grid, const GF3D5layout &layout5,
 #include "../wolfram/transderivsinline.hxx"
 }
 
-template <int CI, int CJ, int CK, typename T>
+template <int CI, int CJ, int CK, typename T, int DORDER>
 CCTK_ATTRIBUTE_NOINLINE void
 calc_transderivs(const GridDescBaseDevice &grid, const GF3D5layout &layout5,
                  const array<array<GF3D5<T>, 3>, 3> &tl_duO,
@@ -36,7 +36,7 @@ calc_transderivs(const GridDescBaseDevice &grid, const GF3D5layout &layout5,
                                  uI, gf_Jac, gf_dJac);
 }
 
-template <int CI, int CJ, int CK, typename T>
+template <int CI, int CJ, int CK, typename T, int DORDER>
 CCTK_ATTRIBUTE_NOINLINE void
 calc_transderivs(const GridDescBaseDevice &grid, const GF3D5layout &layout5,
                  const array<array<GF3D5<T>, 3>, 6> &tl_duO,
