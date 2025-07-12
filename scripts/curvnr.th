@@ -172,6 +172,9 @@ CarpetX/TmunuBaseX
 CarpetXUtils/CXUtils
 
 # CurvNR thorns
+!TARGET   = $ARR
+!TYPE     = ignore
+!CHECKOUT =
 CurvNR/CurvBase
 CurvNR/CurvDerivs
 CurvNR/TestCurvBase
