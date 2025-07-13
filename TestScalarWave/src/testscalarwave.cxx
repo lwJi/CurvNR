@@ -210,7 +210,6 @@ extern "C" void TestScalarWave_RHS(CCTK_ARGUMENTS) {
     }
   }
 }
-}
 
 extern "C" void TestScalarWave_Sync(CCTK_ARGUMENTS) {
   // do nothing
