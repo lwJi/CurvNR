@@ -107,7 +107,7 @@ SetMainPrint[
   pr["CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr "
      <> "std::array<std::array<T, 3>, 3>"];
   pr["jac_cart2cyl_cart(const std::array<T, 3> &xC) noexcept {"];
-  pr["  const T x = xC[0], y = xC[1], z = xC[2];"];
+  pr["  const T x = xC[0], y = xC[1];"];
   pr[];
   pr["  const T x2 = x*x;"];
   pr["  const T y2 = y*y;"];
@@ -183,7 +183,7 @@ SetMainPrint[
   pr["CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr "
      <> "std::array<std::array<T, 6>, 3>"];
   pr["djac_cart2cyl_cart(const std::array<T, 3> &xC) {"];
-  pr["  const T x = xC[0], y = xC[1], z = xC[2];"];
+  pr["  const T x = xC[0], y = xC[1];"];
   pr[];
   pr["  const T x2 = x*x;"];
   pr["  const T y2 = y*y;"];

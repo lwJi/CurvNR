@@ -15,7 +15,7 @@ using namespace Loop;
 template <typename T>
 CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr std::array<std::array<T, 3>, 3>
 jac_cart2cyl_cart(const std::array<T, 3> &xC) noexcept {
-  const T x = xC[0], y = xC[1], z = xC[2];
+  const T x = xC[0], y = xC[1];
 
   const T x2 = x*x;
   const T y2 = y*y;
@@ -77,7 +77,7 @@ jac_cart2cyl_cyl(const std::array<T, 3> &xCyl) noexcept {
 template <typename T>
 CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr std::array<std::array<T, 6>, 3>
 djac_cart2cyl_cart(const std::array<T, 3> &xC) {
-  const T x = xC[0], y = xC[1], z = xC[2];
+  const T x = xC[0], y = xC[1];
 
   const T x2 = x*x;
   const T y2 = y*y;
