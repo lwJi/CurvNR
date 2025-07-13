@@ -9,6 +9,8 @@ using namespace Loop;
 
 AMREX_GPU_MANAGED AMP *g_active_mp = nullptr;
 
+CCTK_HOST CCTK_DEVICE AMP &active_mp() { return *g_active_mp; }
+
 extern "C" int CurvBase_MultiPatch_Setup() {
   DECLARE_CCTK_PARAMETERS;
 
