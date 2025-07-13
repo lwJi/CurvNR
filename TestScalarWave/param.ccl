@@ -1,0 +1,49 @@
+# Parameter definitions for thorn TestCylindrical
+
+KEYWORD initial_condition "Initial condition"
+{
+  "Sine Wave" :: "Sine Wave"
+  "Gaussian" :: "Gaussian"
+} "Sine Wave"
+
+CCTK_INT deriv_order "Order of spatial finite differencing" STEERABLE=never
+{
+  2 :: "Second order finite difference"
+  4 :: "Fourth order finite difference"
+  6 :: "Sixth order finite difference"
+  8 :: "Eighth order finite difference"
+} 4
+
+CCTK_REAL amplitude "Initial amplitude"
+{
+  *:* :: ""
+} 1.0
+
+CCTK_REAL gaussian_width "width of Gaussian"
+{
+  (0:* :: ""
+} 1.0
+
+CCTK_REAL gaussian_shift_x "shift of center in x-dir"
+{
+  *:* :: ""
+} 0.0
+
+CCTK_REAL gaussian_shift_y "shift of center in y-dir"
+{
+  *:* :: ""
+} 0.0
+
+CCTK_REAL gaussian_shift_z "shift of center in z-dir"
+{
+  *:* :: ""
+} 0.0
+
+BOOLEAN use_jacobian "use the jacobian come with the multipatch system" STEERABLE=always
+{
+} "no"
+
+
+SHARES: CurvBase
+
+USES KEYWORD patch_system

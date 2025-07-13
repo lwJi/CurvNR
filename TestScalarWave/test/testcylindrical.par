@@ -1,0 +1,70 @@
+ActiveThorns = "
+  CarpetX
+  CoordinatesX
+  CurvBase
+  IOUtil
+  ODESolvers
+  TestScalarWave
+"
+
+$pi = 3.1415926535897932385
+
+$rmax = 11.8
+
+Cactus::presync_mode = "mixed-error"
+Cactus::terminate = "iteration"
+#Cactus::cctk_final_time = 8.0
+Cactus::cctk_itlast = 32
+
+CarpetX::verbose = no
+CarpetX::poison_undefined_values = no
+
+CarpetX::boundary_x = "neumann"
+CarpetX::boundary_y = "neumann"
+CarpetX::boundary_z = "neumann"
+CarpetX::boundary_upper_x = "neumann"
+CarpetX::boundary_upper_y = "neumann"
+CarpetX::boundary_upper_z = "neumann"
+
+CarpetX::max_grid_size_x = 10000000
+CarpetX::max_grid_size_y = 10000000
+CarpetX::max_grid_size_z = 10000000
+
+CarpetX::max_tile_size_x = 10000000
+CarpetX::max_tile_size_y = 10000000
+CarpetX::max_tile_size_z = 10000000
+
+CarpetX::max_num_levels = 1
+CarpetX::ghost_size = 2
+CarpetX::dtfac = 0.005
+
+ODESolvers::method = "RK4"
+
+CurvBase::patch_system = "Cylindrical"
+
+CurvBase::cylindrical_ncells_rh = 64
+CurvBase::cylindrical_ncells_ph = 32
+CurvBase::cylindrical_ncells_z  = 64
+CurvBase::cylindrical_rhmax = +$rmax
+CurvBase::cylindrical_zmin  = -$rmax
+CurvBase::cylindrical_zmax  = +$rmax
+
+TestScalarWave::use_jacobian = yes
+TestScalarWave::initial_condition = "Gaussian"
+TestScalarWave::amplitude = 1.0
+TestScalarWave::gaussian_width = 1.0
+TestScalarWave::gaussian_shift_x = 2.0
+
+IO::out_xline_y = $pi
+IO::out_xline_z = 0.0
+IO::out_yline_x = $rmax/2
+IO::out_yline_z = 0.0
+IO::out_zline_x = $rmax/2
+IO::out_zline_y = $pi
+
+IO::out_dir = $parfile
+IO::out_every = 4
+
+CarpetX::out_tsv_vars = "
+  TestScalarWave::state
+"
