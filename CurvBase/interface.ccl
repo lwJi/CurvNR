@@ -18,6 +18,12 @@ INCLUDES HEADER: CurvBase_MultiPatch.hxx IN CurvBase_MultiPatch.hxx
 
 
 
+# Setup multipatch
+CCTK_INT FUNCTION MultiPatch_Setup()
+PROVIDES FUNCTION MultiPatch_Setup \
+  WITH CurvBase_MultiPatch_Setup \
+  LANGUAGE C
+
 # Number of patches
 CCTK_INT FUNCTION MultiPatch_GetSystemSpecification( \
   CCTK_INT OUT npatches)

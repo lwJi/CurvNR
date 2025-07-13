@@ -3,11 +3,12 @@
 STORAGE: cell_Jacobians
 STORAGE: cell_dJacobians
 
-SCHEDULE CurvBase_MultiPatch_Setup AT startup BEFORE Driver_Startup
-{
-  LANG: C
-  OPTIONS: GLOBAL
-} "Define multi-patch system"
+# Since we use amrex::The_Managed_Arean(), we have to schedule this after amrex::Initialize()
+#SCHEDULE CurvBase_MultiPatch_Setup AT startup BEFORE Driver_Startup
+#{
+#  LANG: C
+#  OPTIONS: GLOBAL
+#} "Define multi-patch system"
 
 if (!CCTK_EQUALS(patch_system, "none")) {
   SCHEDULE CurvBase_MultiPatch_Coordinates_Setup AT basegrid AFTER Coordinates_Setup
