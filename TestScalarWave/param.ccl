@@ -6,6 +6,14 @@ KEYWORD initial_condition "Initial condition"
   "Gaussian" :: "Gaussian"
 } "Sine Wave"
 
+CCTK_INT deriv_order "Order of spatial finite differencing" STEERABLE=never
+{
+  2 :: "Second order finite difference"
+  4 :: "Fourth order finite difference"
+  6 :: "Sixth order finite difference"
+  8 :: "Eighth order finite difference"
+} 4
+
 CCTK_REAL amplitude "Initial amplitude"
 {
   *:* :: ""
@@ -35,6 +43,7 @@ BOOLEAN use_jacobian "use the jacobian come with the multipatch system" STEERABL
 {
 } "no"
 
-BOOLEAN combine_derivs_jacobian "combine derivs and jacobian multiplication" STEERABLE=always
-{
-} "no"
+
+SHARES: CurvBase
+
+USES KEYWORD patch_system
