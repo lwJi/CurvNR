@@ -2,7 +2,7 @@
 /* Produced with Generato */
 
 const auto calcderivs1_1 =
-    [=] CCTK_DEVICE(const CCTK_REAL *gf_, int i, int j, int k)
+    [layout2, invDxyz] CCTK_DEVICE(const CCTK_REAL *gf_, int i, int j, int k)
         CCTK_ATTRIBUTE_ALWAYS_INLINE {
 if constexpr (DORDER == 2) {
   return fd_1_o2<1>(layout2, gf_, i, j, k, invDxyz);
@@ -19,7 +19,7 @@ if constexpr (DORDER == 2) {
 };
 
 const auto calcderivs1_2 =
-    [=] CCTK_DEVICE(const CCTK_REAL *gf_, int i, int j, int k)
+    [layout2, invDxyz] CCTK_DEVICE(const CCTK_REAL *gf_, int i, int j, int k)
         CCTK_ATTRIBUTE_ALWAYS_INLINE {
 if constexpr (DORDER == 2) {
   return fd_1_o2<2>(layout2, gf_, i, j, k, invDxyz);
@@ -36,7 +36,7 @@ if constexpr (DORDER == 2) {
 };
 
 const auto calcderivs1_3 =
-    [=] CCTK_DEVICE(const CCTK_REAL *gf_, int i, int j, int k)
+    [layout2, invDxyz] CCTK_DEVICE(const CCTK_REAL *gf_, int i, int j, int k)
         CCTK_ATTRIBUTE_ALWAYS_INLINE {
 if constexpr (DORDER == 2) {
   return fd_1_o2<3>(layout2, gf_, i, j, k, invDxyz);

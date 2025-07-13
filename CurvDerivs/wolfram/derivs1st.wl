@@ -26,7 +26,7 @@ SetOutputFile[FileNameJoin[{Directory[], "derivs1st.hxx"}]];
 SetMainPrint[
   Do[
     pr["const auto calcderivs1_" <> ToString[iDir] <> " ="];
-    pr["    [=] CCTK_DEVICE(const CCTK_REAL *gf_, int i, int j, int k)"];
+    pr["    [layout2, invDxyz] CCTK_DEVICE(const CCTK_REAL *gf_, int i, int j, int k)"];
     pr["        CCTK_ATTRIBUTE_ALWAYS_INLINE {"];
     Do[
       If[aOrd == 2,
