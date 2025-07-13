@@ -1,0 +1,7 @@
+# Main make.code.defn file for thorn TestScalarWave
+
+# Source files in this directory
+SRCS = testscalarwave.cxx
+
+# Subdirectories containing source files
+SUBDIRS =

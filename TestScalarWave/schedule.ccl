@@ -1,0 +1,27 @@
+# Schedule definitions for thorn TestScalarWave
+
+STORAGE: state rhs
+
+SCHEDULE TestScalarWave_Initial AT initial
+{
+  LANG: C
+  READS: CoordinatesX::cell_coords(everywhere)
+  WRITES: state(interior)
+  SYNC: state
+} "Initialize scalar wave state"
+
+SCHEDULE TestScalarWave_RHS IN ODESolvers_RHS
+{
+  LANG: C
+  READS: state(everywhere)
+  READS: CurvBase::cell_Jacobians(interior)
+  READS: CurvBase::cell_dJacobians(interior)
+  WRITES: rhs(interior)
+} "Calculate scalar wave RHS"
+
+SCHEDULE TestScalarWave_Sync IN ODESolvers_PostStep
+{
+  LANG: C
+  OPTIONS: global
+  SYNC: state
+} "Synchronize"
