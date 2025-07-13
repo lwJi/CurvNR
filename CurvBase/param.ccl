@@ -109,3 +109,36 @@ BOOLEAN spherical_cutout_th "Cutout at theta-dir" STEERABLE=always
 BOOLEAN spherical_cutout_ph "Cutout at phi-dir" STEERABLE=always
 {
 } "no"
+
+# Cylindrical patch system
+
+INT cylindrical_ncells_rh "Number of cells in rho direction"
+{
+  0:* :: ""
+} 10
+
+INT cylindrical_ncells_ph "Number of cells in phi direction"
+{
+  0:* :: ""
+} 10
+
+INT cylindrical_ncells_z "Number of cells in z direction"
+{
+  0:* :: ""
+} 10
+
+REAL cylindrical_rhmax "rhmax"
+{
+  0:* :: ""
+} +11.8
+
+REAL cylindrical_zmin "zmin"
+{
+  *:* :: ""
+} -11.8
+
+REAL cylindrical_zmax "zmax"
+{
+  *:* :: ""
+} +11.8
+

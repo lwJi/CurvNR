@@ -34,12 +34,18 @@ extern "C" int CurvBase_MultiPatch_Setup() {
     mp->select_cartesian(ncells, xmin, xmax);
   } else if (CCTK_EQUALS(patch_system, "Spherical")) {
     Index ncells{spherical_ncells_r, spherical_ncells_th, spherical_ncells_ph};
-    Coord xmin{spherical_rmin, 0, 0};
+    Coord xmin{spherical_rmin, 0.0, 0.0};
     Coord xmax{spherical_rmax, onepi, twopi};
     std::array<bool, dim> cutouts{spherical_cutout_r != 0,
                                   spherical_cutout_th != 0,
                                   spherical_cutout_ph != 0};
     mp->select_spherical(ncells, xmin, xmax, cutouts);
+  } else if (CCTK_EQUALS(patch_system, "Cylindrical")) {
+    Index ncells{cylindrical_ncells_rh, cylindrical_ncells_ph,
+                 cylindrical_ncells_z};
+    Coord xmin{0.0, 0.0, cylindrical_zmin};
+    Coord xmax{cylindrical_rhmax, twopi, cylindrical_zmax};
+    mp->select_cylindrical(ncells, xmin, xmax);
   } else if (CCTK_EQUALS(patch_system, "CubedSphere")) {
     Index ncells{cartesian_ncells_i, cartesian_ncells_j, cartesian_ncells_k};
     Coord xmin{-1.0, -1.0, -1.0};

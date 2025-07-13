@@ -130,6 +130,14 @@ public:
            "Exceeded MaxP patches");
   }
 
+  CCTK_HOST void select_cylindrical(Index ncells, Coord xmin, Coord xmax) {
+    clear();
+    const PatchFaces faces = {{{inner_face, inner_face, outer_face},
+                               {outer_face, inner_face, outer_face}}};
+    assert(add_patch(make_patch<CylindricalMeta>(ncells, xmin, xmax, faces)) &&
+           "Exceeded MaxP patches");
+  }
+
   CCTK_HOST void select_cubedsphere(Index ncells, Coord xmin, Coord xmax,
                                     CCTK_REAL r0, CCTK_REAL r1) {
     clear();
