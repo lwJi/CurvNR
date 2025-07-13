@@ -114,140 +114,105 @@ private:
     }
   }
 
-  // l2g
-  [[nodiscard]] static CCTK_HOST CCTK_DEVICE auto
-  l2g_impl(const Coord &l, const CartesianMeta &m) {
-    return cart_l2g(l, &m);
-  }
-  [[nodiscard]] static CCTK_HOST CCTK_DEVICE auto
-  l2g_impl(const Coord &l, const SphericalMeta &m) {
-    return sph_l2g(l, &m);
-  }
-  [[nodiscard]] static CCTK_HOST CCTK_DEVICE auto
-  l2g_impl(const Coord &l, const CubedSphereWedgeMeta &m) {
-    return cubedspherewedge_l2g(l, &m);
-  }
-
-  // g2l
-  [[nodiscard]] static CCTK_HOST CCTK_DEVICE auto
-  g2l_impl(const Coord &g, const CartesianMeta &m) {
-    return cart_g2l(g, &m);
-  }
-  [[nodiscard]] static CCTK_HOST CCTK_DEVICE auto
-  g2l_impl(const Coord &g, const SphericalMeta &m) {
-    return sph_g2l(g, &m);
-  }
-  [[nodiscard]] static CCTK_HOST CCTK_DEVICE auto
-  g2l_impl(const Coord &g, const CubedSphereWedgeMeta &m) {
-    return cubedspherewedge_g2l(g, &m);
-  }
-
-  // is_valid
-  [[nodiscard]] static CCTK_HOST CCTK_DEVICE bool
-  is_valid_impl(const Coord &l, const CartesianMeta &m) {
-    return cart_valid(l, &m);
-  }
-  [[nodiscard]] static CCTK_HOST CCTK_DEVICE bool
-  is_valid_impl(const Coord &l, const SphericalMeta &m) {
-    return sph_valid(l, &m);
-  }
-  [[nodiscard]] static CCTK_HOST CCTK_DEVICE bool
-  is_valid_impl(const Coord &l, const CubedSphereWedgeMeta &m) {
-    return cubedspherewedge_valid(l, &m);
-  }
-
-  // jac_g2l_g
-  [[nodiscard]] static CCTK_HOST CCTK_DEVICE constexpr Jac_t
-  jac_g2l_g_impl(const Coord &g, const CartesianMeta &) {
-    return jac_cart2cart_cart(g);
-  }
-  [[nodiscard]] static CCTK_HOST CCTK_DEVICE constexpr Jac_t
-  jac_g2l_g_impl(const Coord &g, const SphericalMeta &) {
-    return jac_cart2sph_cart(g);
-  }
-  [[nodiscard]] static CCTK_HOST CCTK_DEVICE constexpr Jac_t
-  jac_g2l_g_impl(const Coord &g, const CubedSphereWedgeMeta &) {
-    return jac_cart2wedge_cart(g);
-  }
-
-  // jac_g2l_l
-  [[nodiscard]] static CCTK_HOST CCTK_DEVICE constexpr Jac_t
-  jac_g2l_l_impl(const Coord &l, const CartesianMeta &) {
-    return jac_cart2cart_cart(l);
-  }
-  [[nodiscard]] static CCTK_HOST CCTK_DEVICE constexpr Jac_t
-  jac_g2l_l_impl(const Coord &l, const SphericalMeta &) {
-    return jac_cart2sph_sph(l);
-  }
-  [[nodiscard]] static CCTK_HOST CCTK_DEVICE constexpr Jac_t
-  jac_g2l_l_impl(const Coord &l, const CubedSphereWedgeMeta &) {
-    return jac_cart2wedge_wedge(l);
-  }
-
-  // djac_g2l_g
-  [[nodiscard]] static CCTK_HOST CCTK_DEVICE constexpr dJac_t
-  djac_g2l_g_impl(const Coord &g, const CartesianMeta &) {
-    return djac_cart2cart_cart(g);
-  }
-  [[nodiscard]] static CCTK_HOST CCTK_DEVICE constexpr dJac_t
-  djac_g2l_g_impl(const Coord &g, const SphericalMeta &) {
-    return djac_cart2sph_cart(g);
-  }
-  [[nodiscard]] static CCTK_HOST CCTK_DEVICE constexpr dJac_t
-  djac_g2l_g_impl(const Coord &g, const CubedSphereWedgeMeta &) {
-    return djac_cart2wedge_cart(g);
-  }
-
-  // djac_g2l_l
-  [[nodiscard]] static CCTK_HOST CCTK_DEVICE constexpr dJac_t
-  djac_g2l_l_impl(const Coord &l, const CartesianMeta &) {
-    return djac_cart2cart_cart(l);
-  }
-  [[nodiscard]] static CCTK_HOST CCTK_DEVICE constexpr dJac_t
-  djac_g2l_l_impl(const Coord &l, const SphericalMeta &) {
-    return djac_cart2sph_sph(l);
-  }
-  [[nodiscard]] static CCTK_HOST CCTK_DEVICE constexpr dJac_t
-  djac_g2l_l_impl(const Coord &l, const CubedSphereWedgeMeta &) {
-    return djac_cart2wedge_wedge(l);
-  }
-
 public:
   [[nodiscard]] CCTK_HOST CCTK_DEVICE Coord l2g(const Coord &l) const noexcept {
-    return visit_meta([&](const auto &m) { return l2g_impl(l, m); });
+    return visit_meta([&](const auto &m) {
+      using MetaT = std::decay_t<decltype(m)>;
+      if constexpr (std::is_same_v<MetaT, CartesianMeta>) {
+        return cart_l2g(l, &m);
+      } else if constexpr (std::is_same_v<MetaT, SphericalMeta>) {
+        return sph_l2g(l, &m);
+      } else if constexpr (std::is_same_v<MetaT, CubedSphereWedgeMeta>) {
+        return cubedspherewedge_l2g(l, &m);
+      }
+    });
   }
 
   [[nodiscard]] CCTK_HOST CCTK_DEVICE Coord g2l(const Coord &g) const noexcept {
-    return visit_meta([&](const auto &m) { return g2l_impl(g, m); });
+    return visit_meta([&](const auto &m) {
+      using MetaT = std::decay_t<decltype(m)>;
+      if constexpr (std::is_same_v<MetaT, CartesianMeta>) {
+        return cart_g2l(g, &m);
+      } else if constexpr (std::is_same_v<MetaT, SphericalMeta>) {
+        return sph_g2l(g, &m);
+      } else if constexpr (std::is_same_v<MetaT, CubedSphereWedgeMeta>) {
+        return cubedspherewedge_g2l(g, &m);
+      }
+    });
   }
 
   [[nodiscard]] CCTK_HOST CCTK_DEVICE bool
   is_valid(const Coord &l) const noexcept {
-    return visit_meta([&](const auto &m) { return is_valid_impl(l, m); });
+    return visit_meta([&](const auto &m) {
+      using MetaT = std::decay_t<decltype(m)>;
+      if constexpr (std::is_same_v<MetaT, CartesianMeta>) {
+        return cart_valid(l, &m);
+      } else if constexpr (std::is_same_v<MetaT, SphericalMeta>) {
+        return sph_valid(l, &m);
+      } else if constexpr (std::is_same_v<MetaT, CubedSphereWedgeMeta>) {
+        return cubedspherewedge_valid(l, &m);
+      }
+    });
   }
 
   [[nodiscard]] CCTK_HOST
       CCTK_DEVICE CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr Jac_t
       jac_g2l_g(const Coord &g) const noexcept {
-    return visit_meta([&](const auto &m) { return jac_g2l_g_impl(g, m); });
+    return visit_meta([&](const auto &m) {
+      using MetaT = std::decay_t<decltype(m)>;
+      if constexpr (std::is_same_v<MetaT, CartesianMeta>) {
+        return jac_cart2cart_cart(g);
+      } else if constexpr (std::is_same_v<MetaT, SphericalMeta>) {
+        return jac_cart2sph_cart(g);
+      } else if constexpr (std::is_same_v<MetaT, CubedSphereWedgeMeta>) {
+        return jac_cart2wedge_cart(g);
+      }
+    });
   }
 
   [[nodiscard]] CCTK_HOST
       CCTK_DEVICE CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr Jac_t
       jac_g2l_l(const Coord &l) const noexcept {
-    return visit_meta([&](const auto &m) { return jac_g2l_l_impl(l, m); });
+    return visit_meta([&](const auto &m) {
+      using MetaT = std::decay_t<decltype(m)>;
+      if constexpr (std::is_same_v<MetaT, CartesianMeta>) {
+        return jac_cart2cart_cart(l);
+      } else if constexpr (std::is_same_v<MetaT, SphericalMeta>) {
+        return jac_cart2sph_sph(l);
+      } else if constexpr (std::is_same_v<MetaT, CubedSphereWedgeMeta>) {
+        return jac_cart2wedge_wedge(l);
+      }
+    });
   }
 
   [[nodiscard]] CCTK_HOST
       CCTK_DEVICE CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr dJac_t
       djac_g2l_g(const Coord &g) const noexcept {
-    return visit_meta([&](const auto &m) { return djac_g2l_g_impl(g, m); });
+    return visit_meta([&](const auto &m) {
+      using MetaT = std::decay_t<decltype(m)>;
+      if constexpr (std::is_same_v<MetaT, CartesianMeta>) {
+        return djac_cart2cart_cart(g);
+      } else if constexpr (std::is_same_v<MetaT, SphericalMeta>) {
+        return djac_cart2sph_cart(g);
+      } else if constexpr (std::is_same_v<MetaT, CubedSphereWedgeMeta>) {
+        return djac_cart2wedge_cart(g);
+      }
+    });
   }
 
   [[nodiscard]] CCTK_HOST
       CCTK_DEVICE CCTK_ATTRIBUTE_ALWAYS_INLINE constexpr dJac_t
       djac_g2l_l(const Coord &l) const noexcept {
-    return visit_meta([&](const auto &m) { return djac_g2l_l_impl(l, m); });
+    return visit_meta([&](const auto &m) {
+      using MetaT = std::decay_t<decltype(m)>;
+      if constexpr (std::is_same_v<MetaT, CartesianMeta>) {
+        return djac_cart2cart_cart(l);
+      } else if constexpr (std::is_same_v<MetaT, SphericalMeta>) {
+        return djac_cart2sph_sph(l);
+      } else if constexpr (std::is_same_v<MetaT, CubedSphereWedgeMeta>) {
+        return djac_cart2wedge_wedge(l);
+      }
+    });
   }
 };
 
