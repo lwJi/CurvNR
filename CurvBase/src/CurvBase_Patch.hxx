@@ -13,6 +13,7 @@
 
 #include "CurvBase_PatchCartesian.hxx"
 #include "CurvBase_PatchCubedSphereWedge.hxx"
+#include "CurvBase_PatchCylindrical.hxx"
 #include "CurvBase_PatchSpherical.hxx"
 
 namespace CurvBase {
@@ -32,17 +33,19 @@ inline constexpr bool is_any_v = (std::is_same_v<T, Ts> || ...);
 // Patch Definition
 //==============================================================================
 
-enum class PatchType { Cartesian, Spherical, CubedSphereWedge };
+enum class PatchType { Cartesian, Spherical, Cylindrical, CubedSphereWedge };
 
 union MetaUnion {
   CartesianMeta cart;
   SphericalMeta sph;
+  CylindricalMeta cyl;
   CubedSphereWedgeMeta cs_wedge;
 
   // Constructors for host-side convenience
   CCTK_HOST constexpr MetaUnion() : cart{} {} // Default constructor
   CCTK_HOST constexpr MetaUnion(const CartesianMeta &m) : cart(m) {}
   CCTK_HOST constexpr MetaUnion(const SphericalMeta &m) : sph(m) {}
+  CCTK_HOST constexpr MetaUnion(const CylindricalMeta &m) : cyl(m) {}
   CCTK_HOST constexpr MetaUnion(const CubedSphereWedgeMeta &m) : cs_wedge(m) {}
 };
 
@@ -82,13 +85,15 @@ struct Patch {
       type = PatchType::Cartesian;
     } else if constexpr (std::is_same_v<MetaT, SphericalMeta>) {
       type = PatchType::Spherical;
+    } else if constexpr (std::is_same_v<MetaT, CylindricalMeta>) {
+      type = PatchType::Cylindrical;
     } else if constexpr (std::is_same_v<MetaT, CubedSphereWedgeMeta>) {
       type = PatchType::CubedSphereWedge;
     }
 
-    static_assert(
-        is_any_v<MetaT, CartesianMeta, SphericalMeta, CubedSphereWedgeMeta>,
-        "Unsupported MetaT");
+    static_assert(is_any_v<MetaT, CartesianMeta, SphericalMeta, CylindricalMeta,
+                           CubedSphereWedgeMeta>,
+                  "Unsupported MetaT");
 
     for (std::size_t d = 0; d < dim; ++d) {
       assert(ncells[d] > 0 && "ncells must be positive");
@@ -107,6 +112,8 @@ private:
       return std::forward<Visitor>(visitor)(meta.cart);
     case PatchType::Spherical:
       return std::forward<Visitor>(visitor)(meta.sph);
+    case PatchType::Cylindrical:
+      return std::forward<Visitor>(visitor)(meta.cyl);
     case PatchType::CubedSphereWedge:
       return std::forward<Visitor>(visitor)(meta.cs_wedge);
     default:
@@ -122,6 +129,8 @@ public:
         return cart_l2g(l, &m);
       } else if constexpr (std::is_same_v<MetaT, SphericalMeta>) {
         return sph_l2g(l, &m);
+      } else if constexpr (std::is_same_v<MetaT, CylindricalMeta>) {
+        return cyl_l2g(l, &m);
       } else if constexpr (std::is_same_v<MetaT, CubedSphereWedgeMeta>) {
         return cubedspherewedge_l2g(l, &m);
       }
@@ -135,6 +144,8 @@ public:
         return cart_g2l(g, &m);
       } else if constexpr (std::is_same_v<MetaT, SphericalMeta>) {
         return sph_g2l(g, &m);
+      } else if constexpr (std::is_same_v<MetaT, CylindricalMeta>) {
+        return cyl_g2l(g, &m);
       } else if constexpr (std::is_same_v<MetaT, CubedSphereWedgeMeta>) {
         return cubedspherewedge_g2l(g, &m);
       }
@@ -149,6 +160,8 @@ public:
         return cart_valid(l, &m);
       } else if constexpr (std::is_same_v<MetaT, SphericalMeta>) {
         return sph_valid(l, &m);
+      } else if constexpr (std::is_same_v<MetaT, CylindricalMeta>) {
+        return cyl_valid(l, &m);
       } else if constexpr (std::is_same_v<MetaT, CubedSphereWedgeMeta>) {
         return cubedspherewedge_valid(l, &m);
       }
@@ -164,6 +177,8 @@ public:
         return jac_cart2cart_cart(g);
       } else if constexpr (std::is_same_v<MetaT, SphericalMeta>) {
         return jac_cart2sph_cart(g);
+      } else if constexpr (std::is_same_v<MetaT, CylindricalMeta>) {
+        return jac_cart2cyl_cart(g);
       } else if constexpr (std::is_same_v<MetaT, CubedSphereWedgeMeta>) {
         return jac_cart2wedge_cart(g);
       }
@@ -179,6 +194,8 @@ public:
         return jac_cart2cart_cart(l);
       } else if constexpr (std::is_same_v<MetaT, SphericalMeta>) {
         return jac_cart2sph_sph(l);
+      } else if constexpr (std::is_same_v<MetaT, CylindricalMeta>) {
+        return jac_cart2cyl_cyl(l);
       } else if constexpr (std::is_same_v<MetaT, CubedSphereWedgeMeta>) {
         return jac_cart2wedge_wedge(l);
       }
@@ -194,6 +211,8 @@ public:
         return djac_cart2cart_cart(g);
       } else if constexpr (std::is_same_v<MetaT, SphericalMeta>) {
         return djac_cart2sph_cart(g);
+      } else if constexpr (std::is_same_v<MetaT, CylindricalMeta>) {
+        return djac_cart2cyl_cart(g);
       } else if constexpr (std::is_same_v<MetaT, CubedSphereWedgeMeta>) {
         return djac_cart2wedge_cart(g);
       }
@@ -209,6 +228,8 @@ public:
         return djac_cart2cart_cart(l);
       } else if constexpr (std::is_same_v<MetaT, SphericalMeta>) {
         return djac_cart2sph_sph(l);
+      } else if constexpr (std::is_same_v<MetaT, CylindricalMeta>) {
+        return djac_cart2cyl_cyl(l);
       } else if constexpr (std::is_same_v<MetaT, CubedSphereWedgeMeta>) {
         return djac_cart2wedge_wedge(l);
       }
