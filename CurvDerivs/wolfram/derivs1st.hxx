@@ -13,7 +13,7 @@ if constexpr (DORDER == 2) {
 } else if constexpr (DORDER == 8) {
   return fd_1_o8<1>(layout2, gf_, i, j, k, invDxyz);
 } else {
-  static_assert(false, "Unsupported derivative order");
+  static_assert(DORDER <= 8, "Unsupported derivative order");
   return 0.;
 }
 };
@@ -30,7 +30,7 @@ if constexpr (DORDER == 2) {
 } else if constexpr (DORDER == 8) {
   return fd_1_o8<2>(layout2, gf_, i, j, k, invDxyz);
 } else {
-  static_assert(false, "Unsupported derivative order");
+  static_assert(DORDER <= 8, "Unsupported derivative order");
   return 0.;
 }
 };
@@ -47,7 +47,7 @@ if constexpr (DORDER == 2) {
 } else if constexpr (DORDER == 8) {
   return fd_1_o8<3>(layout2, gf_, i, j, k, invDxyz);
 } else {
-  static_assert(false, "Unsupported derivative order");
+  static_assert(DORDER <= 8, "Unsupported derivative order");
   return 0.;
 }
 };

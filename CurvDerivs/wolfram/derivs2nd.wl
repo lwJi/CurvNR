@@ -40,7 +40,7 @@ SetMainPrint[
       {aOrd, 2, 8, 2}
     ];
     pr["} else {"];
-    pr["  static_assert(false, \"Unsupported derivative order\");"];
+    pr["  static_assert(DORDER <= 8, \"Unsupported derivative order\");"];
     pr["  return 0.;"];
     pr["}"];
     pr["};"];
