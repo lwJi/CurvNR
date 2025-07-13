@@ -8,6 +8,7 @@ KEYWORD patch_system "Patch system"
   "Cartesian" :: ""
   "CubedSphere" :: "1 cartesian + 6 wedges"
   "Spherical" :: ""
+  "Cylindrical" :: ""
 } "none"
 
 PRIVATE:
