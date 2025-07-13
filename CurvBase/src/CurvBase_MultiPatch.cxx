@@ -16,6 +16,10 @@ extern "C" int CurvBase_MultiPatch_Setup() {
 
   if (g_active_mp == nullptr) {
     void *ptr = amrex::The_Managed_Arena()->alloc(sizeof(AMP));
+
+    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+        ptr != nullptr, "Managed-arena allocation of MultiPatch failed");
+
     new (ptr) AMP(); // construct the object in the allocated memory using
                      // placement new.
     g_active_mp = static_cast<AMP *>(ptr);
