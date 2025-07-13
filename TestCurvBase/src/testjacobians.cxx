@@ -15,7 +15,7 @@ extern "C" void TestCurvBase_CalcJacobianErrors(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTSX_TestCurvBase_CalcJacobianErrors;
   DECLARE_CCTK_PARAMETERS;
 
-  auto &mp = active_mp();
+  auto mp = active_mp();
 
   if (CCTK_EQUALS(patch_system, "Spherical")) {
 

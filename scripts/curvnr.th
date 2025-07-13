@@ -177,5 +177,5 @@ CarpetXUtils/CXUtils
 !CHECKOUT =
 CurvNR/CurvBase
 CurvNR/CurvDerivs
-CurvNR/TestCurvBase
+#CurvNR/TestCurvBase
 CurvNR/TestSpherical

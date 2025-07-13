@@ -159,11 +159,9 @@ public:
 constexpr std::size_t MAX_PATCHES = 10;
 using AMP = MultiPatch<MAX_PATCHES>;
 
-extern AMREX_GPU_MANAGED AMP g_active_mp;
+extern AMREX_GPU_MANAGED AMP *g_active_mp;
 
-// extern CCTK_DEVICE AMP *d_mp_ptr = &g_active_mp; // used on device only
-
-inline AMP &active_mp() { return g_active_mp; }
+CCTK_HOST inline AMP &active_mp() { return *g_active_mp; }
 
 } // namespace CurvBase
 

@@ -7,20 +7,25 @@
 namespace CurvBase {
 using namespace Loop;
 
-AMREX_GPU_MANAGED AMP g_active_mp;
-
-// CCTK_DEVICE AMP *d_mp_ptr = &g_active_mp; // used on device only
+AMREX_GPU_MANAGED AMP *g_active_mp = nullptr;
 
 extern "C" int CurvBase_MultiPatch_Setup() {
   DECLARE_CCTK_PARAMETERS;
 
-  AMP tmp;
+  if (g_active_mp == nullptr) {
+    void *ptr = amrex::The_Managed_Arena()->alloc(sizeof(AMP));
+    new (ptr) AMP(); // construct the object in the allocated memory using
+                     // placement new.
+    g_active_mp = static_cast<AMP *>(ptr);
+  }
+
+  auto mp = active_mp();
 
   if (CCTK_EQUALS(patch_system, "Cartesian")) {
     Index ncells{cartesian_ncells_i, cartesian_ncells_j, cartesian_ncells_k};
     Coord xmin{cartesian_xmin, cartesian_ymin, cartesian_zmin};
     Coord xmax{cartesian_xmax, cartesian_ymax, cartesian_zmax};
-    tmp.select_cartesian(ncells, xmin, xmax);
+    mp.select_cartesian(ncells, xmin, xmax);
   } else if (CCTK_EQUALS(patch_system, "Spherical")) {
     Index ncells{spherical_ncells_r, spherical_ncells_th, spherical_ncells_ph};
     Coord xmin{spherical_rmin, 0, 0};
@@ -28,20 +33,26 @@ extern "C" int CurvBase_MultiPatch_Setup() {
     std::array<bool, dim> cutouts{spherical_cutout_r != 0,
                                   spherical_cutout_th != 0,
                                   spherical_cutout_ph != 0};
-    tmp.select_spherical(ncells, xmin, xmax, cutouts);
+    mp.select_spherical(ncells, xmin, xmax, cutouts);
   } else if (CCTK_EQUALS(patch_system, "CubedSphere")) {
     Index ncells{cartesian_ncells_i, cartesian_ncells_j, cartesian_ncells_k};
     Coord xmin{-1.0, -1.0, -1.0};
     Coord xmax{1.0, 1.0, 1.0};
-    tmp.select_cubedsphere(ncells, xmin, xmax, cubedsphere_rmin,
+    mp.select_cubedsphere(ncells, xmin, xmax, cubedsphere_rmin,
                            cubedsphere_rmax);
   } else {
     CCTK_VERROR("Unknown multi-patch system \"%s\"", patch_system);
   }
 
-  active_mp() = tmp; // plain struct copy: variant knows which alt is active
-
   return 0;
+}
+
+extern "C" void CurvBase_MultiPatch_Finalize(CCTK_ARGUMENTS) {
+  if (g_active_mp) {
+    g_active_mp->~AMP();
+    amrex::The_Managed_Arena()->free(g_active_mp);
+    g_active_mp = nullptr;
+  }
 }
 
 extern "C" void CurvBase_MultiPatch_Coordinates_Setup(CCTK_ARGUMENTS) {
@@ -49,7 +60,7 @@ extern "C" void CurvBase_MultiPatch_Coordinates_Setup(CCTK_ARGUMENTS) {
   DECLARE_CCTK_PARAMETERS;
 
   // access active multipatch system
-  auto &mp = active_mp();
+  auto mp = active_mp();
 
   grid.loop_all_device<0, 0, 0>(grid.nghostzones,
                                 [=] ARITH_DEVICE(const Loop::PointDesc &p)
@@ -122,7 +133,7 @@ extern "C" CCTK_INT CurvBase_MultiPatch_GetPatchSpecification(
     const CCTK_INT ipatch, CCTK_INT *restrict const is_cartesian,
     const CCTK_INT size, CCTK_INT *restrict const ncells,
     CCTK_REAL *restrict const xmin, CCTK_REAL *restrict const xmax) {
-  auto &mp = active_mp();
+  auto mp = active_mp();
 
   assert(size == dim);
   assert(ipatch >= 0 && ipatch < static_cast<CCTK_INT>(mp.size()));
@@ -146,7 +157,7 @@ extern "C" CCTK_INT CurvBase_MultiPatch_GetPatchSpecification(
 extern "C" CCTK_INT CurvBase_MultiPatch_GetBoundarySpecification(
     const CCTK_INT ipatch, const CCTK_INT size,
     CCTK_INT *restrict const is_interpatch_boundary) {
-  auto &mp = active_mp();
+  auto mp = active_mp();
 
   assert(size == 2 * dim);
   assert(ipatch >= 0 && ipatch < static_cast<CCTK_INT>(mp.size()));
@@ -170,7 +181,7 @@ extern "C" void CurvBase_MultiPatch_GlobalToLocal(
     const CCTK_REAL *restrict const globalsz, CCTK_INT *restrict const patches,
     CCTK_REAL *restrict const localsx, CCTK_REAL *restrict const localsy,
     CCTK_REAL *restrict const localsz) {
-  const auto &mp = active_mp();
+  const auto mp = active_mp();
   for (int n = 0; n < npoints; ++n) {
     const std::array<CCTK_REAL, dim> x{globalsx[n], globalsy[n], globalsz[n]};
     const auto [l, patch_id] = mp.g2l(x);

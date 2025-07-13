@@ -6,6 +6,7 @@ STORAGE: cell_dJacobians
 SCHEDULE CurvBase_MultiPatch_Setup AT startup BEFORE Driver_Startup
 {
   LANG: C
+  OPTIONS: GLOBAL
 } "Define multi-patch system"
 
 if (!CCTK_EQUALS(patch_system, "none")) {
@@ -25,3 +26,9 @@ if (!CCTK_EQUALS(patch_system, "none")) {
   #  OPTIONS: meta
   #} "Check parameters"
 }
+
+SCHEDULE CurvBase_MultiPatch_Finalize AT terminate BEFORE Driver_Shutdown
+{
+  LANG: C
+  OPTIONS: GLOBAL
+} "Free MultiPatch instance and stuff"
