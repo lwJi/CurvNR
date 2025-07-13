@@ -161,7 +161,7 @@ using AMP = MultiPatch<MAX_PATCHES>;
 
 extern AMREX_GPU_MANAGED AMP *g_active_mp;
 
-CCTK_HOST CCTK_DEVICE AMP &active_mp();
+CCTK_HOST CCTK_DEVICE AMP *active_mp();
 
 } // namespace CurvBase
 

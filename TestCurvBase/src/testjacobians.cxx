@@ -25,8 +25,8 @@ extern "C" void TestCurvBase_CalcJacobianErrors(CCTK_ARGUMENTS) {
           const Coord l = {p.x, p.y, p.z};
           const Coord g = {ccoordx(p.I), ccoordy(p.I), ccoordz(p.I)};
 
-          const Jac_t jac = mp.jac_g2l_g(p.patch, g);
-          const dJac_t djac = mp.djac_g2l_g(p.patch, g);
+          const Jac_t jac = mp->jac_g2l_g(p.patch, g);
+          const dJac_t djac = mp->djac_g2l_g(p.patch, g);
 
           err_cJ1x(p.I) = jac[0][0] - cJ1x(p.I);
           err_cJ1y(p.I) = jac[0][1] - cJ1y(p.I);
