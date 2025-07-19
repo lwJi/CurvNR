@@ -2,7 +2,7 @@
 
 set -ex
 
-export CURVNRSPACE="$PWD"
+export CURVBASESPACE="$PWD"
 export WORKSPACE="$PWD/../workspace"
 export PAGESSPACE="$PWD/gh-pages"
 mkdir -p "$WORKSPACE"
@@ -16,16 +16,16 @@ export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
 export OMPI_ALLOW_RUN_AS_ROOT=1
 export OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
 
-time ./simfactory/bin/sim --machine="actions-$ACCELERATOR-$REAL_PRECISION" create-run TestJob01_temp_1 --cores 1 --num-threads 2 --testsuite --select-tests=CurvNR
+time ./simfactory/bin/sim --machine="actions-$ACCELERATOR-$REAL_PRECISION" create-run TestJob01_temp_1 --cores 1 --num-threads 2 --testsuite --select-tests=CurvBase
 ONEPROC_DIR="$(./simfactory/bin/sim --machine="actions-$ACCELERATOR-$REAL_PRECISION" get-output-dir TestJob01_temp_1)/TEST/sim"
 
-time ./simfactory/bin/sim --machine="actions-$ACCELERATOR-$REAL_PRECISION" create-run TestJob01_temp_2 --cores 2 --num-threads 1 --testsuite --select-tests=CurvNR
+time ./simfactory/bin/sim --machine="actions-$ACCELERATOR-$REAL_PRECISION" create-run TestJob01_temp_2 --cores 2 --num-threads 1 --testsuite --select-tests=CurvBase
 TWOPROC_DIR="$(./simfactory/bin/sim --machine="actions-$ACCELERATOR-$REAL_PRECISION" get-output-dir TestJob01_temp_2)/TEST/sim"
 
 # # Parse results and generate plots
 # cd "$PAGESSPACE"
-# python3 "$CURVNRSPACE/scripts/store.py" "$WORKSPACE/Cactus/repos/CurvNR" "$ONEPROC_DIR" "$TWOPROC_DIR"
-# python3 "$CURVNRSPACE/scripts/logpage.py" "$WORKSPACE/Cactus/repos/CurvNR"
+# python3 "$CURVBASESPACE/scripts/store.py" "$WORKSPACE/Cactus/repos/CurvBase" "$ONEPROC_DIR" "$TWOPROC_DIR"
+# python3 "$CURVBASESPACE/scripts/logpage.py" "$WORKSPACE/Cactus/repos/CurvBase"
 # 
 # # Store HTML results
 # git add docs
