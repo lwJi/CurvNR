@@ -171,11 +171,11 @@ CarpetX/TmunuBaseX
 !CHECKOUT =
 CarpetXUtils/CXUtils
 
-# CurvNR thorns
+# CurvBase thorns
 !TARGET   = $ARR
 !TYPE     = ignore
 !CHECKOUT =
-CurvNR/CurvBase
-CurvNR/CurvDerivs
-#CurvNR/TestCurvBase
-CurvNR/TestSpherical
+CurvBase/CurvBase
+CurvBase/CurvDerivs
+#CurvBase/TestCurvBase
+CurvBase/TestSpherical
