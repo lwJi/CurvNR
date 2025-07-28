@@ -62,13 +62,13 @@ if (CCTK_EQUALS(initial_data, "Cartesian Minkowski")) {
   SCHEDULE CurvADM_initial_data IN CurvADM_InitialData
   {
     LANG: C
-    WRITES: metric(everywhere) curv(everywhere)
+    WRITES: metric(everywhere) excurv(everywhere)
   } "Set up Cartesian Minkowski initial data"
 } else if (CCTK_EQUALS(initial_data, "linear wave")) {
   SCHEDULE CurvADM_linear_wave IN CurvADM_InitialData
   {
     LANG: C
-    WRITES: metric(everywhere) curv(everywhere)
+    WRITES: metric(everywhere) excurv(everywhere)
   } "Set up linear wave initial data"
 }
 
