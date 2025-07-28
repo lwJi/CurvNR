@@ -175,7 +175,10 @@ CarpetXUtils/CXUtils
 !TARGET   = $ARR
 !TYPE     = ignore
 !CHECKOUT =
+CurvBase/CurvADM
 CurvBase/CurvBase
 CurvBase/CurvDerivs
-#CurvBase/TestCurvBase
+CurvBase/CurvTmunu
+CurvBase/TestCurvBase
+CurvBase/TestScalarWave
 CurvBase/TestSpherical
