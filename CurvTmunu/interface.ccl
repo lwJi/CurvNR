@@ -1,0 +1,14 @@
+# Interface definition for thorn CurvTmunu
+
+IMPLEMENTS: CurvTmunu
+
+USES INCLUDE HEADER: loop_device.hxx
+
+
+PUBLIC:
+
+CCTK_REAL eTtt TYPE=gf CENTERING={ccc} TAGS='checkpoint="no"' "T_00"
+
+CCTK_REAL eTti TYPE=gf CENTERING={ccc} TAGS='checkpoint="no"' { eTtx eTty eTtz } "T_0i"
+
+CCTK_REAL eTij TYPE=gf CENTERING={ccc} TAGS='checkpoint="no"' { eTxx eTxy eTxz eTyy eTyz eTzz } "T_ij"
