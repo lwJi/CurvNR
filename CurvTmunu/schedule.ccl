@@ -1,0 +1,30 @@
+# Schedule definitions for thorn CurvTmunu
+
+SCHEDULE GROUP CurvTmunu_SetTmunuVars AT initial AFTER CurvADM_SetADMVars
+{
+} "Schedule group for setting T_munu"
+
+if (CCTK_IsThornActive("ODESolvers")) {
+  SCHEDULE GROUP CurvTmunu_SetTmunuVars IN ODESolvers_PostStep AFTER CurvADM_SetADMVars
+  {
+  } "Schedule group for setting T_munu"
+} else {
+  SCHEDULE GROUP CurvTmunu_SetTmunuVars AT postregrid AFTER CurvADM_SetADMVars
+  {
+  } "Schedule group for setting T_munu"
+
+  SCHEDULE GROUP CurvTmunu_SetTmunuVars AT poststep AFTER CurvADM_SetADMVars
+  {
+  } "Schedule group for setting T_munu"
+}
+
+
+SCHEDULE CurvTmunu_ZeroTmunu IN CurvTmunu_SetTmunuVars
+{
+  LANG: C
+  WRITES: eTtt(everywhere) eTti(everywhere) eTij(everywhere)
+} "Set T_munu to zero"
+
+SCHEDULE GROUP CurvTmunu_AddToTmunu IN CurvTmunu_SetTmunuVars AFTER CurvTmunu_ZeroTmunu
+{
+} "Add to T_munu here"
