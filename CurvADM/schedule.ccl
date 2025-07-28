@@ -1,0 +1,105 @@
+# Schedule definitions for thorn CurvADM
+
+if (CCTK_IsThornActive("ODESolvers")) {
+
+  SCHEDULE GROUP CurvADM_InitialData IN ODESolvers_Initial
+  {
+  } "Schedule group for calculating ADM initial data"
+
+  SCHEDULE GROUP CurvADM_InitialGauge IN ODESolvers_Initial AFTER CurvADM_InitialData
+  {
+  } "Schedule group for the ADM initial gauge condition"
+
+  SCHEDULE GROUP CurvADM_PostInitial IN ODESolvers_Initial AFTER (CurvADM_InitialData CurvADM_InitialGauge)
+  {
+  } "Schedule group for modifying the ADM initial data, such as e.g. adding noise"
+
+  SCHEDULE GROUP CurvADM_SetADMVars IN ODESolvers_PostStep
+  {
+  } "Set ADM variables in this group"
+
+  SCHEDULE GROUP CurvADM_SetADMRHS IN ODESolvers_PostStep
+  {
+  } "Set ADM RHS variables in this group"
+
+} else {
+
+  SCHEDULE GROUP CurvADM_SetADMVars AT post_recover_variables
+  {
+  } "Set ADM variables in this group"
+
+  SCHEDULE GROUP CurvADM_SetADMRHS AT post_recover_variables
+  {
+  } "Set ADM RHS variables in this group"
+
+  SCHEDULE GROUP CurvADM_SetADMVars AT postregrid
+  {
+  } "Set ADM variables in this group"
+
+  SCHEDULE GROUP CurvADM_SetADMRHS AT postregrid
+  {
+  } "Set ADM RHS variables in this group"
+
+  SCHEDULE GROUP CurvADM_SetADMVars AT postrestrict
+  {
+  } "Set ADM variables in this group"
+  
+  SCHEDULE GROUP CurvADM_SetADMRHS AT postrestrict
+  {
+  } "Set ADM RHS variables in this group"
+
+  SCHEDULE GROUP CurvADM_SetADMVars AT poststep
+  {
+  } "Set ADM variables in this group"
+  
+  SCHEDULE GROUP CurvADM_SetADMRHS AT poststep
+  {
+  } "Set ADM RHS variables in this group"
+
+}
+
+if (CCTK_EQUALS(initial_data, "Cartesian Minkowski")) {
+  SCHEDULE CurvADM_initial_data IN CurvADM_InitialData
+  {
+    LANG: C
+    WRITES: metric(everywhere) curv(everywhere)
+  } "Set up Cartesian Minkowski initial data"
+} else if (CCTK_EQUALS(initial_data, "linear wave")) {
+  SCHEDULE CurvADM_linear_wave IN CurvADM_InitialData
+  {
+    LANG: C
+    WRITES: metric(everywhere) curv(everywhere)
+  } "Set up linear wave initial data"
+}
+
+if (CCTK_EQUALS(initial_lapse, "one")) {
+  SCHEDULE CurvADM_initial_lapse IN CurvADM_InitialGauge
+  {
+    LANG: C
+    WRITES: lapse(everywhere)
+  } "Set lapse to one"
+}
+
+if (CCTK_EQUALS(initial_dtlapse, "zero")) {
+  SCHEDULE CurvADM_initial_dtlapse IN CurvADM_InitialGauge
+  {
+    LANG: C
+    WRITES: dtlapse(everywhere)
+  } "Set dtlapse to zero"
+}
+
+if (CCTK_EQUALS(initial_shift, "zero")) {
+  SCHEDULE CurvADM_initial_shift IN CurvADM_InitialGauge
+  {
+    LANG: C
+    WRITES: shift(everywhere)
+  } "Set shift to zero"
+}
+
+if (CCTK_EQUALS(initial_dtshift, "zero")) {
+  SCHEDULE CurvADM_initial_dtshift IN CurvADM_InitialGauge
+  {
+    LANG: C
+    WRITES: dtshift(everywhere)
+  } "Set dtshift to zero"
+}

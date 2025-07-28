@@ -1,0 +1,7 @@
+# Main make.code.defn file for thorn CurvADM
+
+# Source files in this directory
+SRCS = adm.cxx linear_wave.cxx
+
+# Subdirectories containing source files
+SUBDIRS =
